@@ -1,783 +1,1309 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pulih — Perjalanan Pemulihan</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-  :root {
-    --bg: #0d0f14;
-    --surface: #151820;
-    --surface2: #1c2030;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.13);
-    --text: #f0f2f8;
-    --muted: #7a8099;
-    --accent: #7c9fff;
-    --accent-glow: rgba(124,159,255,0.18);
-    --green: #4ade80;
-    --green-dim: rgba(74,222,128,0.12);
-    --amber: #fbbf24;
-    --amber-dim: rgba(251,191,36,0.12);
-    --red: #f87171;
-    --red-dim: rgba(248,113,113,0.12);
-    --purple: #c084fc;
-    --r: 14px;
-    --r-sm: 8px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    line-height: 1.6;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-  /* Background subtle pattern */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(124,159,255,0.06) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pulih — Perjalanan Pemulihan</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg: #0d0f14;
+            --surface: #151820;
+            --surface2: #1c2030;
+            --border: rgba(255, 255, 255, 0.07);
+            --border2: rgba(255, 255, 255, 0.13);
+            --text: #f0f2f8;
+            --muted: #7a8099;
+            --accent: #7c9fff;
+            --accent-glow: rgba(124, 159, 255, 0.18);
+            --green: #4ade80;
+            --green-dim: rgba(74, 222, 128, 0.12);
+            --amber: #fbbf24;
+            --amber-dim: rgba(251, 191, 36, 0.12);
+            --red: #f87171;
+            --red-dim: rgba(248, 113, 113, 0.12);
+            --purple: #c084fc;
+            --r: 14px;
+            --r-sm: 8px;
+        }
 
-  /* LAYOUT */
-  .shell { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 0 20px 120px; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-  /* HEADER */
-  .header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 28px 0 20px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 28px;
-  }
-  .logo { font-family: 'DM Serif Display', serif; font-size: 26px; letter-spacing: -0.5px; }
-  .logo span { color: var(--accent); }
-  .date-pill {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 100px; padding: 6px 14px; font-size: 13px; color: var(--muted);
-  }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-  /* STREAK HERO */
-  .streak-card {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: var(--r);
-    padding: 36px 32px;
-    text-align: center;
-    margin-bottom: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-  .streak-card::before {
-    content: '';
-    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-    width: 200px; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  }
-  .streak-num {
-    font-family: 'DM Serif Display', serif;
-    font-size: 88px; line-height: 1;
-    color: var(--accent);
-    text-shadow: 0 0 60px rgba(124,159,255,0.35);
-    margin-bottom: 8px;
-  }
-  .streak-label { font-size: 18px; color: var(--muted); font-weight: 300; margin-bottom: 24px; }
-  .streak-sub { font-size: 13px; color: var(--muted); }
-  .streak-sub strong { color: var(--text); }
+        /* Background subtle pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(124, 159, 255, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
-  .milestone-row {
-    display: flex; gap: 10px; margin-top: 24px; justify-content: center; flex-wrap: wrap;
-  }
-  .milestone {
-    padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 500;
-    border: 1px solid var(--border); color: var(--muted);
-  }
-  .milestone.earned { border-color: var(--green); color: var(--green); background: var(--green-dim); }
-  .milestone.next { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+        /* LAYOUT */
+        .shell {
+            position: relative;
+            z-index: 1;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 20px 120px;
+        }
 
-  /* STATS ROW */
-  .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  .stat-box {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--r); padding: 20px 22px;
-  }
-  .stat-val { font-size: 32px; font-family: 'DM Serif Display', serif; margin-bottom: 2px; }
-  .stat-lbl { font-size: 12px; color: var(--muted); }
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 28px 0 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 28px;
+        }
 
-  /* BUTTONS */
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    border: none; border-radius: var(--r-sm); padding: 13px 22px;
-    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
-    cursor: pointer; transition: all 0.18s ease; text-decoration: none;
-  }
-  .btn-primary { background: var(--accent); color: #0d0f14; }
-  .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
-  .btn-ghost {
-    background: var(--surface2); color: var(--text);
-    border: 1px solid var(--border2);
-  }
-  .btn-ghost:hover { border-color: var(--border2); background: var(--surface); }
-  .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
-  .btn-danger:hover { background: rgba(248,113,113,0.2); }
-  .btn-full { width: 100%; justify-content: center; }
-  .btn-sos {
-    background: var(--red); color: white; font-size: 15px; padding: 18px 32px;
-    border-radius: var(--r); width: 100%; justify-content: center;
-    box-shadow: 0 4px 20px rgba(248,113,113,0.3);
-  }
-  .btn-sos:hover { transform: scale(1.02); box-shadow: 0 6px 28px rgba(248,113,113,0.45); }
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 26px;
+            letter-spacing: -0.5px;
+        }
 
-  /* SECTION */
-  .section-title {
-    font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--muted); margin-bottom: 12px; margin-top: 28px;
-  }
+        .logo span {
+            color: var(--accent);
+        }
 
-  /* ACTION ROW */
-  .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .date-pill {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 6px 14px;
+            font-size: 13px;
+            color: var(--muted);
+        }
 
-  /* DARURAT PANEL */
-  .darurat-panel {
-    background: var(--surface); border: 1px solid rgba(248,113,113,0.2);
-    border-radius: var(--r); padding: 24px; margin-bottom: 16px;
-    display: none;
-  }
-  .darurat-panel.open { display: block; }
-  .darurat-panel h3 {
-    font-family: 'DM Serif Display', serif; font-size: 18px; margin-bottom: 6px; color: var(--red);
-  }
-  .darurat-panel p { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
-  .technique-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-  .technique {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: var(--r-sm); padding: 14px; cursor: pointer;
-    transition: all 0.15s; text-align: center;
-  }
-  .technique:hover { border-color: var(--border2); background: var(--surface); }
-  .technique .icon { font-size: 24px; margin-bottom: 6px; }
-  .technique .name { font-size: 13px; font-weight: 500; }
-  .technique .desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+        /* STREAK HERO */
+        .streak-card {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: var(--r);
+            padding: 36px 32px;
+            text-align: center;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
 
-  /* BREATHING */
-  .breathing-modal {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-    z-index: 999; align-items: center; justify-content: center;
-  }
-  .breathing-modal.open { display: flex; }
-  .breathing-box {
-    background: var(--surface); border: 1px solid var(--border2);
-    border-radius: 20px; padding: 48px; text-align: center; max-width: 360px; width: 90%;
-  }
-  .breath-circle {
-    width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 24px;
-    background: var(--accent-glow); border: 2px solid var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; color: var(--accent); font-weight: 500;
-    transition: all 0.1s;
-  }
-  .breath-instruction { font-size: 22px; font-family: 'DM Serif Display', serif; margin-bottom: 8px; }
-  .breath-count { font-size: 40px; font-family: 'DM Serif Display', serif; color: var(--accent); margin-bottom: 20px; }
-  .breath-phase { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+        .streak-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
 
-  /* JURNAL */
-  .jurnal-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--r); padding: 24px; margin-bottom: 16px;
-    display: none;
-  }
-  .jurnal-card.open { display: block; }
-  .jurnal-card h3 { font-family: 'DM Serif Display', serif; font-size: 18px; margin-bottom: 16px; }
-  .field-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 8px; display: block; }
-  .mood-row { display: flex; gap: 10px; margin-bottom: 20px; }
-  .mood-btn {
-    flex: 1; padding: 12px 6px; border: 1px solid var(--border);
-    background: var(--surface2); border-radius: var(--r-sm); cursor: pointer;
-    text-align: center; transition: all 0.15s; font-size: 20px;
-  }
-  .mood-btn.sel { border-color: var(--accent); background: var(--accent-glow); }
-  .mood-btn span { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; }
-  .trigger-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-  .trigger-pill {
-    padding: 7px 14px; border: 1px solid var(--border); border-radius: 100px;
-    background: var(--surface2); cursor: pointer; font-size: 13px; transition: all 0.15s;
-  }
-  .trigger-pill.sel { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
-  textarea {
-    width: 100%; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: var(--r-sm); color: var(--text); font-family: 'DM Sans', sans-serif;
-    font-size: 14px; padding: 14px; resize: vertical; min-height: 90px;
-    outline: none; transition: border 0.15s; margin-bottom: 16px;
-  }
-  textarea:focus { border-color: var(--border2); }
-  textarea::placeholder { color: var(--muted); }
+        .streak-num {
+            font-family: 'DM Serif Display', serif;
+            font-size: 88px;
+            line-height: 1;
+            color: var(--accent);
+            text-shadow: 0 0 60px rgba(124, 159, 255, 0.35);
+            margin-bottom: 8px;
+        }
 
-  /* JURNAL HISTORY */
-  .entry-item {
-    border-top: 1px solid var(--border); padding: 16px 0;
-  }
-  .entry-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .entry-date { font-size: 12px; color: var(--muted); }
-  .entry-mood { font-size: 18px; }
-  .entry-note { font-size: 13px; color: var(--muted); }
-  .entry-triggers { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .tag {
-    font-size: 11px; padding: 3px 10px; border-radius: 100px;
-    background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,0.2);
-  }
+        .streak-label {
+            font-size: 18px;
+            color: var(--muted);
+            font-weight: 300;
+            margin-bottom: 24px;
+        }
 
-  /* URGE TIMER */
-  .urge-timer {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: var(--r); padding: 20px; text-align: center; margin-top: 12px;
-    display: none;
-  }
-  .urge-timer.show { display: block; }
-  .timer-num { font-size: 48px; font-family: 'DM Serif Display', serif; color: var(--accent); }
-  .timer-bar { height: 4px; background: var(--surface); border-radius: 2px; margin: 12px 0; overflow: hidden; }
-  .timer-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 1s linear; width: 100%; }
+        .streak-sub {
+            font-size: 13px;
+            color: var(--muted);
+        }
 
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: var(--surface2); border: 1px solid var(--border2); border-radius: 100px;
-    padding: 12px 24px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 9999;
-    white-space: nowrap;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .streak-sub strong {
+            color: var(--text);
+        }
 
-  /* MOTIVASI */
-  .motivasi-card {
-    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
-    border: 1px solid var(--border2);
-    border-radius: var(--r); padding: 24px; margin-bottom: 16px;
-    position: relative; overflow: hidden;
-  }
-  .motivasi-card::after {
-    content: '"';
-    position: absolute; right: 20px; top: 10px;
-    font-size: 80px; font-family: 'DM Serif Display', serif;
-    color: rgba(255,255,255,0.04); line-height: 1;
-  }
-  .motivasi-text { font-family: 'DM Serif Display', serif; font-size: 17px; line-height: 1.5; margin-bottom: 10px; }
-  .motivasi-src { font-size: 12px; color: var(--muted); }
+        .milestone-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-  /* RELAPSE MODAL */
-  .relapse-modal {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-    z-index: 998; align-items: center; justify-content: center;
-  }
-  .relapse-modal.open { display: flex; }
-  .relapse-box {
-    background: var(--surface); border: 1px solid rgba(248,113,113,0.3);
-    border-radius: 20px; padding: 40px; max-width: 420px; width: 90%;
-  }
-  .relapse-box h2 { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 10px; }
-  .relapse-box p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
-  .relapse-row { display: flex; gap: 12px; }
+        .milestone {
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
 
-  /* LOADING */
-  .loading { text-align: center; padding: 40px; color: var(--muted); }
+        .milestone.earned {
+            border-color: var(--green);
+            color: var(--green);
+            background: var(--green-dim);
+        }
 
-  /* PROGRESS BAR to next milestone */
-  .next-milestone-bar {
-    background: var(--surface2); border-radius: 100px; height: 6px; margin-top: 16px; overflow: hidden;
-  }
-  .next-milestone-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width 0.6s ease; }
-  .next-milestone-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 6px; }
-</style>
+        .milestone.next {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        /* STATS ROW */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 20px 22px;
+        }
+
+        .stat-val {
+            font-size: 32px;
+            font-family: 'DM Serif Display', serif;
+            margin-bottom: 2px;
+        }
+
+        .stat-lbl {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            border-radius: var(--r-sm);
+            padding: 13px 22px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0d0f14;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border2);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--border2);
+            background: var(--surface);
+        }
+
+        .btn-danger {
+            background: var(--red-dim);
+            color: var(--red);
+            border: 1px solid rgba(248, 113, 113, 0.25);
+        }
+
+        .btn-danger:hover {
+            background: rgba(248, 113, 113, 0.2);
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-sos {
+            background: var(--red);
+            color: white;
+            font-size: 15px;
+            padding: 18px 32px;
+            border-radius: var(--r);
+            width: 100%;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(248, 113, 113, 0.3);
+        }
+
+        .btn-sos:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 28px rgba(248, 113, 113, 0.45);
+        }
+
+        /* SECTION */
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 12px;
+            margin-top: 28px;
+        }
+
+        /* ACTION ROW */
+        .action-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        /* DARURAT PANEL */
+        .darurat-panel {
+            background: var(--surface);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            border-radius: var(--r);
+            padding: 24px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .darurat-panel.open {
+            display: block;
+        }
+
+        .darurat-panel h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px;
+            margin-bottom: 6px;
+            color: var(--red);
+        }
+
+        .darurat-panel p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .technique-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .technique {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: center;
+        }
+
+        .technique:hover {
+            border-color: var(--border2);
+            background: var(--surface);
+        }
+
+        .technique .icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .technique .name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .technique .desc {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* BREATHING */
+        .breathing-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .breathing-modal.open {
+            display: flex;
+        }
+
+        .breathing-box {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 20px;
+            padding: 48px;
+            text-align: center;
+            max-width: 360px;
+            width: 90%;
+        }
+
+        .breath-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            background: var(--accent-glow);
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 500;
+            transition: all 0.1s;
+        }
+
+        .breath-instruction {
+            font-size: 22px;
+            font-family: 'DM Serif Display', serif;
+            margin-bottom: 8px;
+        }
+
+        .breath-count {
+            font-size: 40px;
+            font-family: 'DM Serif Display', serif;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .breath-phase {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+
+        /* JURNAL */
+        .jurnal-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 24px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .jurnal-card.open {
+            display: block;
+        }
+
+        .jurnal-card h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .field-label {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .mood-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mood-btn {
+            flex: 1;
+            padding: 12px 6px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            border-radius: var(--r-sm);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s;
+            font-size: 20px;
+        }
+
+        .mood-btn.sel {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .mood-btn span {
+            display: block;
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+
+        .trigger-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .trigger-pill {
+            padding: 7px 14px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            background: var(--surface2);
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.15s;
+        }
+
+        .trigger-pill.sel {
+            border-color: var(--amber);
+            color: var(--amber);
+            background: var(--amber-dim);
+        }
+
+        textarea {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            padding: 14px;
+            resize: vertical;
+            min-height: 90px;
+            outline: none;
+            transition: border 0.15s;
+            margin-bottom: 16px;
+        }
+
+        textarea:focus {
+            border-color: var(--border2);
+        }
+
+        textarea::placeholder {
+            color: var(--muted);
+        }
+
+        /* JURNAL HISTORY */
+        .entry-item {
+            border-top: 1px solid var(--border);
+            padding: 16px 0;
+        }
+
+        .entry-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .entry-date {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .entry-mood {
+            font-size: 18px;
+        }
+
+        .entry-note {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .entry-triggers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 100px;
+            background: var(--amber-dim);
+            color: var(--amber);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        /* URGE TIMER */
+        .urge-timer {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 20px;
+            text-align: center;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .urge-timer.show {
+            display: block;
+        }
+
+        .timer-num {
+            font-size: 48px;
+            font-family: 'DM Serif Display', serif;
+            color: var(--accent);
+        }
+
+        .timer-bar {
+            height: 4px;
+            background: var(--surface);
+            border-radius: 2px;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 1s linear;
+            width: 100%;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 100px;
+            padding: 12px 24px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 9999;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* MOTIVASI */
+        .motivasi-card {
+            background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+            border: 1px solid var(--border2);
+            border-radius: var(--r);
+            padding: 24px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .motivasi-card::after {
+            content: '"';
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 80px;
+            font-family: 'DM Serif Display', serif;
+            color: rgba(255, 255, 255, 0.04);
+            line-height: 1;
+        }
+
+        .motivasi-text {
+            font-family: 'DM Serif Display', serif;
+            font-size: 17px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .motivasi-src {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* RELAPSE MODAL */
+        .relapse-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 998;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .relapse-modal.open {
+            display: flex;
+        }
+
+        .relapse-box {
+            background: var(--surface);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 420px;
+            width: 90%;
+        }
+
+        .relapse-box h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .relapse-box p {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .relapse-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+
+        /* PROGRESS BAR to next milestone */
+        .next-milestone-bar {
+            background: var(--surface2);
+            border-radius: 100px;
+            height: 6px;
+            margin-top: 16px;
+            overflow: hidden;
+        }
+
+        .next-milestone-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 100px;
+            transition: width 0.6s ease;
+        }
+
+        .next-milestone-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="shell">
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo">P<span>ulih</span></div>
-    <div class="date-pill" id="headerDate">—</div>
-  </div>
-
-  <!-- LOADING -->
-  <div class="loading" id="loadingState">Memuat data...</div>
-
-  <!-- MAIN CONTENT (hidden until loaded) -->
-  <div id="mainContent" style="display:none">
-
-    <!-- MOTIVASI HARIAN -->
-    <div class="motivasi-card" id="motivasiCard">
-      <div class="motivasi-text" id="motivasiText">Memuat...</div>
-      <div class="motivasi-src" id="motivasiSrc"></div>
-    </div>
-
-    <!-- STREAK HERO -->
-    <div class="streak-card">
-      <div class="streak-num" id="streakNum">0</div>
-      <div class="streak-label">hari bersih</div>
-      <div class="streak-sub">Dimulai: <strong id="startDateLabel">—</strong> &nbsp;·&nbsp; Terpanjang: <strong id="longestLabel">0</strong> hari</div>
-      <div class="milestone-row" id="milestoneRow"></div>
-      <div class="next-milestone-bar">
-        <div class="next-milestone-fill" id="nextFill" style="width:0%"></div>
-      </div>
-      <div class="next-milestone-label">
-        <span id="nextFrom">0 hari</span>
-        <span id="nextTarget">Target berikutnya</span>
-      </div>
-    </div>
-
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-box">
-        <div class="stat-val" id="statLongest" style="color:var(--green)">0</div>
-        <div class="stat-lbl">Streak terpanjang (hari)</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-val" id="statRelapses" style="color:var(--amber)">0</div>
-        <div class="stat-lbl">Total relapse tercatat</div>
-      </div>
-    </div>
-
-    <!-- DARURAT -->
-    <div class="section-title">🚨 Tombol Darurat</div>
-    <button class="btn btn-sos" onclick="toggleDarurat()">
-      🛑 &nbsp;URGE SEKARANG — Butuh bantuan
-    </button>
-
-    <!-- DARURAT PANEL -->
-    <div class="darurat-panel" id="daruratPanel">
-      <h3>Tahan dulu. Urge akan berlalu.</h3>
-      <p>Urge biasanya hanya bertahan 10–20 menit. Pilih teknik di bawah:</p>
-      <div class="technique-grid">
-        <div class="technique" onclick="startBreathing()">
-          <div class="icon">🫁</div>
-          <div class="name">Pernapasan Kotak</div>
-          <div class="desc">4-4-4-4 detik</div>
+    <div class="shell">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">P<span>ulih</span></div>
+            <div class="date-pill" id="headerDate">—</div>
         </div>
-        <div class="technique" onclick="startTimer()">
-          <div class="icon">⏱</div>
-          <div class="name">Timer 10 Menit</div>
-          <div class="desc">Tahan sebentar saja</div>
+
+        <!-- LOADING -->
+        <div class="loading" id="loadingState">Memuat data...</div>
+
+        <!-- MAIN CONTENT (hidden until loaded) -->
+        <div id="mainContent" style="display:none">
+
+            <!-- MOTIVASI HARIAN -->
+            <div class="motivasi-card" id="motivasiCard">
+                <div class="motivasi-text" id="motivasiText">Memuat...</div>
+                <div class="motivasi-src" id="motivasiSrc"></div>
+            </div>
+
+            <!-- STREAK HERO -->
+            <div class="streak-card">
+                <div class="streak-num" id="streakNum">0</div>
+                <div class="streak-label">hari bersih</div>
+                <div class="streak-sub">Dimulai: <strong id="startDateLabel">—</strong> &nbsp;·&nbsp; Terpanjang:
+                    <strong id="longestLabel">0</strong> hari
+                </div>
+                <div class="milestone-row" id="milestoneRow"></div>
+                <div class="next-milestone-bar">
+                    <div class="next-milestone-fill" id="nextFill" style="width:0%"></div>
+                </div>
+                <div class="next-milestone-label">
+                    <span id="nextFrom">0 hari</span>
+                    <span id="nextTarget">Target berikutnya</span>
+                </div>
+            </div>
+
+            <!-- STATS -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-val" id="statLongest" style="color:var(--green)">0</div>
+                    <div class="stat-lbl">Streak terpanjang (hari)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-val" id="statRelapses" style="color:var(--amber)">0</div>
+                    <div class="stat-lbl">Total relapse tercatat</div>
+                </div>
+            </div>
+
+            <!-- DARURAT -->
+            <div class="section-title">🚨 Tombol Darurat</div>
+            <button class="btn btn-sos" onclick="toggleDarurat()">
+                🛑 &nbsp;URGE SEKARANG — Butuh bantuan
+            </button>
+
+            <!-- DARURAT PANEL -->
+            <div class="darurat-panel" id="daruratPanel">
+                <h3>Tahan dulu. Urge akan berlalu.</h3>
+                <p>Urge biasanya hanya bertahan 10–20 menit. Pilih teknik di bawah:</p>
+                <div class="technique-grid">
+                    <div class="technique" onclick="startBreathing()">
+                        <div class="icon">🫁</div>
+                        <div class="name">Pernapasan Kotak</div>
+                        <div class="desc">4-4-4-4 detik</div>
+                    </div>
+                    <div class="technique" onclick="startTimer()">
+                        <div class="icon">⏱</div>
+                        <div class="name">Timer 10 Menit</div>
+                        <div class="desc">Tahan sebentar saja</div>
+                    </div>
+                    <div class="technique" onclick="callTrusted()">
+                        <div class="icon">📞</div>
+                        <div class="name">Hubungi Seseorang</div>
+                        <div class="desc">Bicara dengan siapapun</div>
+                    </div>
+                    <div class="technique" onclick="doActivity()">
+                        <div class="icon">🏃</div>
+                        <div class="name">Gerak Sekarang</div>
+                        <div class="desc">20 push-up / jalan</div>
+                    </div>
+                </div>
+                <div class="urge-timer" id="urgeTimerBox">
+                    <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Tahan sampai timer habis</div>
+                    <div class="timer-num" id="timerNum">10:00</div>
+                    <div class="timer-bar">
+                        <div class="timer-fill" id="timerFill"></div>
+                    </div>
+                    <button class="btn btn-ghost" style="margin-top:8px" onclick="berhasilTahan()">✅ Berhasil
+                        tahan!</button>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:4px">
+                    <button class="btn btn-ghost" style="flex:1" onclick="logUrge('berhasil_tahan')">✅ Berhasil
+                        tahan</button>
+                    <button class="btn btn-danger" style="flex:1" onclick="openRelapse()">❌ Relapse</button>
+                </div>
+            </div>
+
+            <!-- ACTION ROW -->
+            <div class="section-title" style="margin-top:24px">📋 Aktivitas Harian</div>
+            <div class="action-row">
+                <button class="btn btn-ghost btn-full" onclick="toggleJurnal()">📝 Tulis Jurnal</button>
+                <button class="btn btn-ghost btn-full" onclick="checkIn()">☀️ Check-in Hari Ini</button>
+            </div>
+
+            <!-- JURNAL -->
+            <div class="jurnal-card" id="jurnalCard">
+                <h3>Jurnal Hari Ini</h3>
+                <label class="field-label">Mood kamu saat ini?</label>
+                <div class="mood-row" id="moodRow">
+                    <div class="mood-btn" data-val="1" onclick="setMood(1)">😞<span>Buruk</span></div>
+                    <div class="mood-btn" data-val="2" onclick="setMood(2)">😔<span>Rendah</span></div>
+                    <div class="mood-btn" data-val="3" onclick="setMood(3)">😐<span>Oke</span></div>
+                    <div class="mood-btn" data-val="4" onclick="setMood(4)">🙂<span>Baik</span></div>
+                    <div class="mood-btn" data-val="5" onclick="setMood(5)">😊<span>Luar Biasa</span></div>
+                </div>
+                <label class="field-label">Pemicu yang kamu rasakan hari ini?</label>
+                <div class="trigger-pills" id="triggerPills">
+                    <div class="trigger-pill" onclick="toggleTrigger('Bosan')">Bosan</div>
+                    <div class="trigger-pill" onclick="toggleTrigger('Stres')">Stres</div>
+                    <div class="trigger-pill" onclick="toggleTrigger('Kesepian')">Kesepian</div>
+                    <div class="trigger-pill" onclick="toggleTrigger('Cemas')">Cemas</div>
+                    <div class="trigger-pill" onclick="toggleTrigger('Begadang')">Begadang</div>
+                    <div class="trigger-pill" onclick="toggleTrigger('Sendirian')">Sendirian</div>
+                    <div class="trigger-pill" onclick="toggleTrigger('Media sosial')">Media sosial</div>
+                    <div class="trigger-pill" onclick="toggleTrigger('Tidak ada')">Tidak ada</div>
+                </div>
+                <label class="field-label">Catatan / refleksi</label>
+                <textarea id="jurnalNotes"
+                    placeholder="Bagaimana perasaanmu hari ini? Apa yang membantu? Apa yang sulit?"></textarea>
+                <button class="btn btn-primary btn-full" onclick="saveJurnal()">Simpan Jurnal</button>
+            </div>
+
+            <!-- RIWAYAT JURNAL -->
+            <div class="section-title">📖 Riwayat Jurnal</div>
+            <div id="jurnalHistory">
+                <div style="color:var(--muted);font-size:13px;padding:12px 0">Belum ada jurnal. Mulai tulis hari ini.
+                </div>
+            </div>
+
+        </div><!-- /mainContent -->
+    </div><!-- /shell -->
+
+    <!-- BREATHING MODAL -->
+    <div class="breathing-modal" id="breathingModal">
+        <div class="breathing-box">
+            <div class="breath-circle" id="breathCircle">Siap</div>
+            <div class="breath-instruction" id="breathInstruction">Box Breathing</div>
+            <div class="breath-count" id="breathCount">—</div>
+            <div class="breath-phase" id="breathPhase">Teknik ini menenangkan sistem saraf dalam 2–4 siklus</div>
+            <div style="display:flex;gap:12px;justify-content:center">
+                <button class="btn btn-primary" onclick="startBreathCycle()" id="breathStartBtn">Mulai</button>
+                <button class="btn btn-ghost" onclick="closeBreathing()">Tutup</button>
+            </div>
         </div>
-        <div class="technique" onclick="callTrusted()">
-          <div class="icon">📞</div>
-          <div class="name">Hubungi Seseorang</div>
-          <div class="desc">Bicara dengan siapapun</div>
+    </div>
+
+    <!-- RELAPSE MODAL -->
+    <div class="relapse-modal" id="relapseModal">
+        <div class="relapse-box">
+            <h2>Ini bukan akhir. 💙</h2>
+            <p>Relapse adalah bagian dari pemulihan, bukan kegagalan total. Yang penting kamu kembali lagi. Setiap hari
+                baru adalah kesempatan baru.</p>
+            <label class="field-label">Refleksi singkat (opsional)</label>
+            <textarea id="relapseNotes" placeholder="Apa yang terjadi? Apa yang bisa dilakukan berbeda?"
+                style="margin-bottom:20px"></textarea>
+            <div class="relapse-row">
+                <button class="btn btn-ghost" style="flex:1" onclick="closeRelapse()">Batal</button>
+                <button class="btn btn-danger" style="flex:1" onclick="confirmRelapse()">Catat & Mulai Ulang</button>
+            </div>
         </div>
-        <div class="technique" onclick="doActivity()">
-          <div class="icon">🏃</div>
-          <div class="name">Gerak Sekarang</div>
-          <div class="desc">20 push-up / jalan</div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://tdoxttalxwunrweypybw.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkb3h0dGFseHd1bnJ3ZXlweWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTQ4NDIsImV4cCI6MjA5MzY3MDg0Mn0.X9-1HiW9uge5s2-Q85VF8hAgKp-u01xzf5JEGaoy0Rg';
+
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const USER_ID = 'default_user'; // DIKEMBALIKAN KE HARDCODE KARENA AUTH DINONAKTIFKAN
+
+        const MOTIVASI = [
+            { text: "Otak yang kamu miliki hari ini sedang menyembuhkan dirinya sendiri. Setiap hari bersih membangun kembali jalur-jalur yang lebih sehat.", src: "Neurosains Pemulihan" },
+            { text: "Kamu tidak berjuang melawan kelemahan — kamu berjuang melawan jalur dopamin yang sudah terbentuk bertahun-tahun.", src: "Psikologi Kecanduan" },
+            { text: "Urge itu seperti ombak. Ia datang dengan kuat, tapi selalu berlalu. Tugasmu bukan menghentikannya, tapi tetap berdiri sampai ia surut.", src: "Terapi Penerimaan & Komitmen" },
+            { text: "Setiap kali kamu menolak urge, kamu memperkuat jalur neuron yang baru. Kamu secara harfiah membentuk ulang otakmu.", src: "Neuroplastisitas" },
+            { text: "Pemulihan bukan garis lurus. Ia berliku, kadang mundur. Yang penting bukan kesempurnaan, tapi arah perjalanan.", src: "Prinsip Pemulihan" },
+            { text: "Hari yang paling sulit seringkali adalah hari sebelum sesuatu berubah.", src: "Kebijaksanaan Pemulihan" }
+        ];
+
+        const MILESTONES = [1, 3, 7, 14, 21, 30, 60, 90, 180, 365];
+        const MOOD_EMOJIS = ['', '😞', '😔', '😐', '🙂', '😊'];
+
+        let streakData = null;
+        let selectedMood = 0;
+        let selectedTriggers = [];
+        let timerInterval = null;
+        let timerSeconds = 600;
+        let breathInterval = null;
+
+        // ==========================================
+        // INISIALISASI
+        // ==========================================
+        async function init() {
+            document.getElementById('headerDate').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+            const m = MOTIVASI[Math.floor(Math.random() * MOTIVASI.length)];
+            document.getElementById('motivasiText').textContent = m.text;
+            document.getElementById('motivasiSrc').textContent = '— ' + m.src;
+
+            try {
+                // Langsung memuat data menggunakan default_user (Tanpa Auth)
+                await loadStreak();
+                await loadJurnalHistory();
+
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            } catch (error) {
+                document.getElementById('loadingState').textContent = 'Gagal memuat sistem: ' + error.message;
+                console.error('Init error:', error);
+            }
+        }
+
+        // ==========================================
+        // STREAK & CHECK-IN
+        // ==========================================
+        async function loadStreak() {
+            try {
+                const { data, error } = await sb.from('streak_data').select('*').eq('user_id', USER_ID).single();
+
+                // Gunakan zona waktu lokal untuk membandingkan hari
+                const todayObj = new Date();
+                todayObj.setHours(0, 0, 0, 0); // Normalize ke tengah malam
+                const todayStr = new Date(todayObj.getTime() - (todayObj.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+
+                if (error && error.code !== 'PGRST116') { // PGRST116 adalah error "row not found"
+                    throw error;
+                }
+
+                if (!data) {
+                    const { data: newData, error: insertErr } = await sb.from('streak_data').insert({
+                        user_id: USER_ID, start_date: todayStr, last_check_in: todayStr,
+                        current_streak: 0, longest_streak: 0, total_relapses: 0
+                    }).select().single();
+                    if (insertErr) throw insertErr;
+                    streakData = newData;
+                } else {
+                    streakData = data;
+
+                    // Validasi Check-in Harian (Solusi Anti-Cheat)
+                    if (streakData.last_check_in) {
+                        const lastCheck = new Date(streakData.last_check_in);
+                        const diffDays = Math.floor((todayObj - lastCheck) / (1000 * 60 * 60 * 24));
+
+                        if (diffDays > 1) {
+                            // Telat check-in > 1 hari = Streak Reset
+                            streakData.current_streak = 0;
+                            streakData.start_date = todayStr;
+                            streakData.last_check_in = todayStr;
+
+                            await sb.from('streak_data').update({
+                                start_date: todayStr,
+                                last_check_in: todayStr,
+                                current_streak: 0
+                            }).eq('user_id', USER_ID);
+
+                            showToast('⚠️ Streak ter-reset karena kamu melewatkan check-in harian.');
+                        } else {
+                            // Hitung normal
+                            const start = new Date(streakData.start_date);
+                            streakData.current_streak = Math.floor((todayObj - start) / (1000 * 60 * 60 * 24));
+                        }
+                    }
+                }
+                renderStreak();
+            } catch (err) {
+                showToast('Gagal memuat data streak.');
+                console.error(err);
+            }
+        }
+
+        function renderStreak() {
+            if (!streakData) return;
+            const streak = streakData.current_streak || 0;
+            document.getElementById('streakNum').textContent = streak;
+            document.getElementById('longestLabel').textContent = streakData.longest_streak || 0;
+            document.getElementById('statLongest').textContent = streakData.longest_streak || 0;
+            document.getElementById('statRelapses').textContent = streakData.total_relapses || 0;
+
+            const startDate = streakData.start_date
+                ? new Date(streakData.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+                : '—';
+            document.getElementById('startDateLabel').textContent = startDate;
+
+            const row = document.getElementById('milestoneRow');
+            row.innerHTML = '';
+            MILESTONES.forEach(m => {
+                const el = document.createElement('div');
+                el.className = 'milestone' + (streak >= m ? ' earned' : (getNextMilestone(streak) === m ? ' next' : ''));
+                el.textContent = (streak >= m ? '✓ ' : '') + m + 'h';
+                row.appendChild(el);
+            });
+
+            const next = getNextMilestone(streak);
+            const prev = getPrevMilestone(streak);
+            const pct = next > prev ? Math.min(100, ((streak - prev) / (next - prev)) * 100) : 100;
+            document.getElementById('nextFill').style.width = pct + '%';
+            document.getElementById('nextFrom').textContent = streak + ' hari';
+            document.getElementById('nextTarget').textContent = 'Target: ' + next + ' hari';
+        }
+
+        function getNextMilestone(streak) { return MILESTONES.find(m => m > streak) || MILESTONES[MILESTONES.length - 1]; }
+        function getPrevMilestone(streak) { return [...MILESTONES].reverse().find(m => m <= streak) || 0; }
+
+        async function checkIn() {
+            try {
+                const todayStr = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                if (streakData.last_check_in === todayStr) {
+                    showToast('✅ Sudah check-in hari ini!');
+                    return;
+                }
+                const { error } = await sb.from('streak_data').update({ last_check_in: todayStr }).eq('user_id', USER_ID);
+                if (error) throw error;
+
+                streakData.last_check_in = todayStr;
+                // Update local streak count jika check-in berhasil maju 1 hari
+                const start = new Date(streakData.start_date);
+                const todayObj = new Date(todayStr);
+                streakData.current_streak = Math.floor((todayObj - start) / (1000 * 60 * 60 * 24));
+
+                renderStreak();
+                showToast('☀️ Check-in tercatat! Tetap semangat!');
+            } catch (err) {
+                showToast('Gagal check-in. Coba lagi.');
+            }
+        }
+
+        // ==========================================
+        // URGE & DARURAT
+        // ==========================================
+        function toggleDarurat() {
+            const p = document.getElementById('daruratPanel');
+            p.classList.toggle('open');
+            if (p.classList.contains('open')) p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        async function logUrge(outcome) {
+            try {
+                const { error } = await sb.from('urge_log').insert({ user_id: USER_ID, outcome });
+                if (error) throw error;
+                showToast(outcome === 'berhasil_tahan' ? '💪 Luar biasa! Kamu berhasil!' : 'Dicatat. Bangkit lagi ya!');
+            } catch (err) {
+                showToast('Gagal mencatat log.');
+            } finally {
+                document.getElementById('daruratPanel').classList.remove('open');
+                stopTimer();
+            }
+        }
+
+        // ==========================================
+        // BREATHING
+        // ==========================================
+        let breathPhaseIdx = 0;
+        let breathCount = 0;
+        let breathCycleCount = 0;
+        const PHASES = [
+            { name: 'Tarik napas', dur: 4, scale: '1.4', text: 'Perlahan, dalam...' },
+            { name: 'Tahan', dur: 4, scale: '1.4', text: 'Tahan dengan tenang...' },
+            { name: 'Buang napas', dur: 4, scale: '1', text: 'Keluarkan perlahan...' },
+            { name: 'Tahan', dur: 4, scale: '1', text: 'Kosong, rileks...' },
+        ];
+
+        function startBreathing() { document.getElementById('breathingModal').classList.add('open'); }
+        function closeBreathing() {
+            document.getElementById('breathingModal').classList.remove('open');
+            clearInterval(breathInterval);
+            // Reset state saat modal ditutup
+            breathPhaseIdx = 0;
+            breathCycleCount = 0;
+            document.getElementById('breathStartBtn').style.display = '';
+            document.getElementById('breathStartBtn').textContent = 'Mulai';
+            document.getElementById('breathInstruction').textContent = 'Box Breathing';
+            document.getElementById('breathCount').textContent = '—';
+            document.getElementById('breathPhase').textContent = 'Teknik ini menenangkan sistem saraf dalam 2–4 siklus';
+            document.getElementById('breathCircle').style.transform = 'scale(1)';
+        }
+
+        function startBreathCycle() {
+            clearInterval(breathInterval); // Cegah double trigger
+            document.getElementById('breathStartBtn').style.display = 'none';
+            breathPhaseIdx = 0;
+            breathCycleCount = 0;
+            runBreathPhase();
+        }
+
+        function runBreathPhase() {
+            const phase = PHASES[breathPhaseIdx];
+            const circle = document.getElementById('breathCircle');
+            circle.style.transform = 'scale(' + phase.scale + ')';
+            circle.style.background = breathPhaseIdx % 2 === 0 ? 'rgba(124,159,255,0.25)' : 'rgba(124,159,255,0.08)';
+            document.getElementById('breathInstruction').textContent = phase.name;
+            document.getElementById('breathPhase').textContent = phase.text;
+
+            let cnt = phase.dur;
+            document.getElementById('breathCount').textContent = cnt;
+
+            clearInterval(breathInterval);
+            breathInterval = setInterval(() => {
+                cnt--;
+                document.getElementById('breathCount').textContent = cnt;
+                if (cnt <= 0) {
+                    clearInterval(breathInterval);
+                    breathPhaseIdx = (breathPhaseIdx + 1) % PHASES.length;
+                    if (breathPhaseIdx === 0) breathCycleCount++;
+
+                    if (breathCycleCount >= 4) {
+                        document.getElementById('breathInstruction').textContent = 'Selesai 🎉';
+                        document.getElementById('breathCount').textContent = '';
+                        document.getElementById('breathPhase').textContent = 'Bagus! Sistem sarafmu sudah lebih tenang.';
+                        document.getElementById('breathStartBtn').style.display = '';
+                        document.getElementById('breathStartBtn').textContent = 'Ulangi';
+                        return;
+                    }
+                    runBreathPhase();
+                }
+            }, 1000);
+        }
+
+        function startTimer() {
+            const box = document.getElementById('urgeTimerBox');
+            box.classList.add('show');
+            timerSeconds = 600;
+            updateTimerDisplay();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                document.getElementById('timerFill').style.width = (timerSeconds / 600 * 100) + '%';
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timerNum').textContent = 'Selesai! 🎉';
+                    document.getElementById('timerFill').style.width = '0%';
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timerSeconds / 60);
+            const s = timerSeconds % 60;
+            document.getElementById('timerNum').textContent = m + ':' + String(s).padStart(2, '0');
+        }
+
+        function stopTimer() { clearInterval(timerInterval); document.getElementById('urgeTimerBox').classList.remove('show'); }
+        function berhasilTahan() { logUrge('berhasil_tahan'); }
+        function callTrusted() { showToast('📞 Hubungi seseorang yang kamu percaya sekarang!'); }
+        function doActivity() { showToast('🏃 Lakukan 20 push-up atau jalan kaki sekarang!'); }
+
+        // ==========================================
+        // JURNAL
+        // ==========================================
+        function toggleJurnal() { document.getElementById('jurnalCard').classList.toggle('open'); }
+        function setMood(v) { selectedMood = v; document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('sel', +b.dataset.val === v)); }
+        function toggleTrigger(t) {
+            const idx = selectedTriggers.indexOf(t);
+            if (idx > -1) selectedTriggers.splice(idx, 1); else selectedTriggers.push(t);
+            document.querySelectorAll('.trigger-pill').forEach(p => { p.classList.toggle('sel', selectedTriggers.includes(p.textContent)); });
+        }
+
+        async function saveJurnal() {
+            const notes = document.getElementById('jurnalNotes').value.trim();
+            if (!selectedMood) { showToast('Pilih mood dulu ya!'); return; }
+            const todayStr = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+
+            try {
+                const { error } = await sb.from('journal_entries').insert({
+                    user_id: USER_ID, entry_date: todayStr,
+                    mood: selectedMood, triggers: selectedTriggers, notes
+                });
+                if (error) throw error;
+
+                showToast('✅ Jurnal tersimpan!');
+                document.getElementById('jurnalCard').classList.remove('open');
+                selectedMood = 0; selectedTriggers = [];
+                document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('sel'));
+                document.querySelectorAll('.trigger-pill').forEach(p => p.classList.remove('sel'));
+                document.getElementById('jurnalNotes').value = '';
+                await loadJurnalHistory();
+            } catch (err) {
+                showToast('Gagal simpan: ' + err.message);
+            }
+        }
+
+        async function loadJurnalHistory() {
+            try {
+                const { data, error } = await sb.from('journal_entries')
+                    .select('*').eq('user_id', USER_ID)
+                    .order('created_at', { ascending: false }).limit(10);
+                if (error) throw error;
+
+                const el = document.getElementById('jurnalHistory');
+                if (!data || !data.length) {
+                    el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px 0">Belum ada jurnal. Mulai tulis hari ini.</div>';
+                    return;
+                }
+                el.innerHTML = data.map(e => `
+      <div class="entry-item">
+        <div class="entry-header">
+          <div class="entry-date">${new Date(e.created_at).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' })}</div>
+          <div class="entry-mood">${MOOD_EMOJIS[e.mood] || ''}</div>
         </div>
+        ${e.notes ? `<div class="entry-note">${e.notes}</div>` : ''}
+        ${e.triggers && e.triggers.length ? `<div class="entry-triggers">${e.triggers.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
       </div>
-      <div class="urge-timer" id="urgeTimerBox">
-        <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Tahan sampai timer habis</div>
-        <div class="timer-num" id="timerNum">10:00</div>
-        <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
-        <button class="btn btn-ghost" style="margin-top:8px" onclick="berhasilTahan()">✅ Berhasil tahan!</button>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:4px">
-        <button class="btn btn-ghost" style="flex:1" onclick="logUrge('berhasil_tahan')">✅ Berhasil tahan</button>
-        <button class="btn btn-danger" style="flex:1" onclick="openRelapse()">❌ Relapse</button>
-      </div>
-    </div>
+    `).join('');
+            } catch (err) {
+                console.error('Gagal load jurnal:', err);
+            }
+        }
 
-    <!-- ACTION ROW -->
-    <div class="section-title" style="margin-top:24px">📋 Aktivitas Harian</div>
-    <div class="action-row">
-      <button class="btn btn-ghost btn-full" onclick="toggleJurnal()">📝 Tulis Jurnal</button>
-      <button class="btn btn-ghost btn-full" onclick="checkIn()">☀️ Check-in Hari Ini</button>
-    </div>
+        // ==========================================
+        // RELAPSE
+        // ==========================================
+        function openRelapse() { document.getElementById('relapseModal').classList.add('open'); }
+        function closeRelapse() { document.getElementById('relapseModal').classList.remove('open'); }
 
-    <!-- JURNAL -->
-    <div class="jurnal-card" id="jurnalCard">
-      <h3>Jurnal Hari Ini</h3>
-      <label class="field-label">Mood kamu saat ini?</label>
-      <div class="mood-row" id="moodRow">
-        <div class="mood-btn" data-val="1" onclick="setMood(1)">😞<span>Buruk</span></div>
-        <div class="mood-btn" data-val="2" onclick="setMood(2)">😔<span>Rendah</span></div>
-        <div class="mood-btn" data-val="3" onclick="setMood(3)">😐<span>Oke</span></div>
-        <div class="mood-btn" data-val="4" onclick="setMood(4)">🙂<span>Baik</span></div>
-        <div class="mood-btn" data-val="5" onclick="setMood(5)">😊<span>Luar Biasa</span></div>
-      </div>
-      <label class="field-label">Pemicu yang kamu rasakan hari ini?</label>
-      <div class="trigger-pills" id="triggerPills">
-        <div class="trigger-pill" onclick="toggleTrigger('Bosan')">Bosan</div>
-        <div class="trigger-pill" onclick="toggleTrigger('Stres')">Stres</div>
-        <div class="trigger-pill" onclick="toggleTrigger('Kesepian')">Kesepian</div>
-        <div class="trigger-pill" onclick="toggleTrigger('Cemas')">Cemas</div>
-        <div class="trigger-pill" onclick="toggleTrigger('Begadang')">Begadang</div>
-        <div class="trigger-pill" onclick="toggleTrigger('Sendirian')">Sendirian</div>
-        <div class="trigger-pill" onclick="toggleTrigger('Media sosial')">Media sosial</div>
-        <div class="trigger-pill" onclick="toggleTrigger('Tidak ada')">Tidak ada</div>
-      </div>
-      <label class="field-label">Catatan / refleksi</label>
-      <textarea id="jurnalNotes" placeholder="Bagaimana perasaanmu hari ini? Apa yang membantu? Apa yang sulit?"></textarea>
-      <button class="btn btn-primary btn-full" onclick="saveJurnal()">Simpan Jurnal</button>
-    </div>
+        async function confirmRelapse() {
+            const notes = document.getElementById('relapseNotes').value.trim();
+            const todayStr = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            const newLongest = Math.max(streakData.longest_streak || 0, streakData.current_streak || 0);
 
-    <!-- RIWAYAT JURNAL -->
-    <div class="section-title">📖 Riwayat Jurnal</div>
-    <div id="jurnalHistory">
-      <div style="color:var(--muted);font-size:13px;padding:12px 0">Belum ada jurnal. Mulai tulis hari ini.</div>
-    </div>
+            // Optimistic UI Update (Update state HARI INI sebelum render & db call)
+            streakData.current_streak = 0;
+            streakData.longest_streak = newLongest;
+            streakData.start_date = todayStr;
+            streakData.last_check_in = todayStr;
+            streakData.total_relapses = (streakData.total_relapses || 0) + 1;
+            renderStreak(); // Render instan! Tidak ada delay visual.
 
-  </div><!-- /mainContent -->
-</div><!-- /shell -->
+            closeRelapse();
+            document.getElementById('daruratPanel').classList.remove('open');
+            document.getElementById('relapseNotes').value = '';
+            showToast('💙 Dicatat. Mulai lagi dari hari ini. Kamu bisa!');
 
-<!-- BREATHING MODAL -->
-<div class="breathing-modal" id="breathingModal">
-  <div class="breathing-box">
-    <div class="breath-circle" id="breathCircle">Siap</div>
-    <div class="breath-instruction" id="breathInstruction">Box Breathing</div>
-    <div class="breath-count" id="breathCount">—</div>
-    <div class="breath-phase" id="breathPhase">Teknik ini menenangkan sistem saraf dalam 2–4 siklus</div>
-    <div style="display:flex;gap:12px;justify-content:center">
-      <button class="btn btn-primary" onclick="startBreathCycle()" id="breathStartBtn">Mulai</button>
-      <button class="btn btn-ghost" onclick="closeBreathing()">Tutup</button>
-    </div>
-  </div>
-</div>
+            try {
+                // Jalankan semua operasi DB secara paralel
+                await Promise.all([
+                    sb.from('journal_entries').insert({
+                        user_id: USER_ID, entry_date: todayStr,
+                        mood: 2, triggers: ['Relapse'], notes: notes || 'Relapse tercatat.', is_relapse: true
+                    }),
+                    sb.from('urge_log').insert({ user_id: USER_ID, outcome: 'relapse' }),
+                    sb.from('streak_data').update({
+                        start_date: todayStr, last_check_in: todayStr,
+                        current_streak: 0, longest_streak: newLongest,
+                        total_relapses: streakData.total_relapses
+                    }).eq('user_id', USER_ID)
+                ]);
 
-<!-- RELAPSE MODAL -->
-<div class="relapse-modal" id="relapseModal">
-  <div class="relapse-box">
-    <h2>Ini bukan akhir. 💙</h2>
-    <p>Relapse adalah bagian dari pemulihan, bukan kegagalan total. Yang penting kamu kembali lagi. Setiap hari baru adalah kesempatan baru.</p>
-    <label class="field-label">Refleksi singkat (opsional)</label>
-    <textarea id="relapseNotes" placeholder="Apa yang terjadi? Apa yang bisa dilakukan berbeda?" style="margin-bottom:20px"></textarea>
-    <div class="relapse-row">
-      <button class="btn btn-ghost" style="flex:1" onclick="closeRelapse()">Batal</button>
-      <button class="btn btn-danger" style="flex:1" onclick="confirmRelapse()">Catat & Mulai Ulang</button>
-    </div>
-  </div>
-</div>
+                // Refresh history diam-diam di background
+                await loadJurnalHistory();
+            } catch (err) {
+                showToast('⚠️ Data relapse mungkin tidak tersimpan sempurna. Cek koneksi internetmu.');
+                console.error('Relapse error:', err);
+            }
+        }
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+        // ==========================================
+        // UTILITAS
+        // ==========================================
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
 
-<script>
-const SUPABASE_URL = 'https://tdoxttalxwunrweypybw.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkb3h0dGFseHd1bnJ3ZXlweWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTQ4NDIsImV4cCI6MjA5MzY3MDg0Mn0.X9-1HiW9uge5s2-Q85VF8hAgKp-u01xzf5JEGaoy0Rg';
-const USER_ID = 'default_user';
-
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-const MOTIVASI = [
-  { text: "Otak yang kamu miliki hari ini sedang menyembuhkan dirinya sendiri. Setiap hari bersih membangun kembali jalur-jalur yang lebih sehat.", src: "Neurosains Pemulihan" },
-  { text: "Kamu tidak berjuang melawan kelemahan — kamu berjuang melawan jalur dopamin yang sudah terbentuk bertahun-tahun. Itu bukan hal mudah, dan kamu pantas bangga.", src: "Psikologi Kecanduan" },
-  { text: "Urge itu seperti ombak. Ia datang dengan kuat, tapi selalu berlalu. Tugasmu bukan menghentikannya, tapi tetap berdiri sampai ia surut.", src: "Terapi Penerimaan & Komitmen" },
-  { text: "Setiap kali kamu menolak urge, kamu memperkuat jalur neuron yang baru. Kamu secara harfiah membentuk ulang otakmu.", src: "Neuroplastisitas" },
-  { text: "Pemulihan bukan garis lurus. Ia berliku, kadang mundur. Yang penting bukan kesempurnaan, tapi arah perjalanan.", src: "Prinsip Pemulihan" },
-  { text: "Hari yang paling sulit seringkali adalah hari sebelum sesuatu berubah.", src: "Kebijaksanaan Pemulihan" },
-  { text: "Kamu sudah memilih untuk memulai hari ini. Itu keputusan yang luar biasa berani.", src: "Untuk Kamu" },
-];
-
-const MILESTONES = [1, 3, 7, 14, 21, 30, 60, 90, 180, 365];
-const MOOD_EMOJIS = ['', '😞', '😔', '😐', '🙂', '😊'];
-
-let streakData = null;
-let selectedMood = 0;
-let selectedTriggers = [];
-let timerInterval = null;
-let timerSeconds = 600;
-let breathInterval = null;
-
-// INIT
-async function init() {
-  document.getElementById('headerDate').textContent = new Date().toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long'});
-
-  // Motivasi acak
-  const m = MOTIVASI[Math.floor(Math.random() * MOTIVASI.length)];
-  document.getElementById('motivasiText').textContent = m.text;
-  document.getElementById('motivasiSrc').textContent = '— ' + m.src;
-
-  await loadStreak();
-  await loadJurnalHistory();
-
-  document.getElementById('loadingState').style.display = 'none';
-  document.getElementById('mainContent').style.display = 'block';
-}
-
-async function loadStreak() {
-  const { data, error } = await sb.from('streak_data')
-    .select('*').eq('user_id', USER_ID).single();
-
-  if (error || !data) {
-    // Buat data baru
-    const today = new Date().toISOString().split('T')[0];
-    const { data: newData } = await sb.from('streak_data').insert({
-      user_id: USER_ID, start_date: today, last_check_in: today,
-      current_streak: 0, longest_streak: 0, total_relapses: 0
-    }).select().single();
-    streakData = newData;
-  } else {
-    streakData = data;
-    // Hitung streak dari start_date
-    if (streakData.start_date) {
-      const start = new Date(streakData.start_date);
-      const today = new Date();
-      const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-      streakData.current_streak = diff;
-    }
-  }
-  renderStreak();
-}
-
-function renderStreak() {
-  if (!streakData) return;
-  const streak = streakData.current_streak || 0;
-  document.getElementById('streakNum').textContent = streak;
-  document.getElementById('longestLabel').textContent = streakData.longest_streak || 0;
-  document.getElementById('statLongest').textContent = streakData.longest_streak || 0;
-  document.getElementById('statRelapses').textContent = streakData.total_relapses || 0;
-
-  const startDate = streakData.start_date
-    ? new Date(streakData.start_date).toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'})
-    : '—';
-  document.getElementById('startDateLabel').textContent = startDate;
-
-  // Milestones
-  const row = document.getElementById('milestoneRow');
-  row.innerHTML = '';
-  MILESTONES.forEach(m => {
-    const el = document.createElement('div');
-    el.className = 'milestone' + (streak >= m ? ' earned' : (getNextMilestone(streak) === m ? ' next' : ''));
-    el.textContent = (streak >= m ? '✓ ' : '') + m + 'h';
-    row.appendChild(el);
-  });
-
-  // Progress to next milestone
-  const next = getNextMilestone(streak);
-  const prev = getPrevMilestone(streak);
-  const pct = next > prev ? Math.min(100, ((streak - prev) / (next - prev)) * 100) : 100;
-  document.getElementById('nextFill').style.width = pct + '%';
-  document.getElementById('nextFrom').textContent = streak + ' hari';
-  document.getElementById('nextTarget').textContent = 'Target: ' + next + ' hari';
-}
-
-function getNextMilestone(streak) {
-  return MILESTONES.find(m => m > streak) || MILESTONES[MILESTONES.length - 1];
-}
-function getPrevMilestone(streak) {
-  const prev = [...MILESTONES].reverse().find(m => m <= streak);
-  return prev || 0;
-}
-
-async function checkIn() {
-  const today = new Date().toISOString().split('T')[0];
-  if (streakData.last_check_in === today) {
-    showToast('✅ Sudah check-in hari ini!');
-    return;
-  }
-  await sb.from('streak_data').update({ last_check_in: today }).eq('user_id', USER_ID);
-  streakData.last_check_in = today;
-  showToast('☀️ Check-in tercatat! Tetap semangat!');
-}
-
-// DARURAT
-function toggleDarurat() {
-  const p = document.getElementById('daruratPanel');
-  p.classList.toggle('open');
-  if (p.classList.contains('open')) p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-async function logUrge(outcome) {
-  await sb.from('urge_log').insert({ user_id: USER_ID, outcome });
-  showToast(outcome === 'berhasil_tahan' ? '💪 Luar biasa! Kamu berhasil!' : 'Dicatat. Bangkit lagi ya!');
-  document.getElementById('daruratPanel').classList.remove('open');
-  stopTimer();
-}
-
-function startTimer() {
-  const box = document.getElementById('urgeTimerBox');
-  box.classList.add('show');
-  timerSeconds = 600;
-  updateTimerDisplay();
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    timerSeconds--;
-    updateTimerDisplay();
-    document.getElementById('timerFill').style.width = (timerSeconds / 600 * 100) + '%';
-    if (timerSeconds <= 0) {
-      clearInterval(timerInterval);
-      document.getElementById('timerNum').textContent = 'Selesai! 🎉';
-      document.getElementById('timerFill').style.width = '0%';
-    }
-  }, 1000);
-}
-
-function updateTimerDisplay() {
-  const m = Math.floor(timerSeconds / 60);
-  const s = timerSeconds % 60;
-  document.getElementById('timerNum').textContent = m + ':' + String(s).padStart(2, '0');
-}
-
-function stopTimer() { clearInterval(timerInterval); document.getElementById('urgeTimerBox').classList.remove('show'); }
-
-function berhasilTahan() { logUrge('berhasil_tahan'); }
-function callTrusted() { showToast('📞 Hubungi seseorang yang kamu percaya sekarang!'); }
-function doActivity() { showToast('🏃 Lakukan 20 push-up atau jalan kaki sekarang!'); }
-
-// BREATHING
-function startBreathing() {
-  document.getElementById('breathingModal').classList.add('open');
-}
-function closeBreathing() {
-  document.getElementById('breathingModal').classList.remove('open');
-  clearInterval(breathInterval);
-}
-
-let breathPhaseIdx = 0;
-const PHASES = [
-  { name: 'Tarik napas', dur: 4, scale: '1.4', text: 'Perlahan, dalam...' },
-  { name: 'Tahan', dur: 4, scale: '1.4', text: 'Tahan dengan tenang...' },
-  { name: 'Buang napas', dur: 4, scale: '1', text: 'Keluarkan perlahan...' },
-  { name: 'Tahan', dur: 4, scale: '1', text: 'Kosong, rileks...' },
-];
-let breathCount = 0;
-let breathCycleCount = 0;
-
-function startBreathCycle() {
-  document.getElementById('breathStartBtn').style.display = 'none';
-  breathPhaseIdx = 0; breathCycleCount = 0;
-  runBreathPhase();
-}
-
-function runBreathPhase() {
-  const phase = PHASES[breathPhaseIdx];
-  const circle = document.getElementById('breathCircle');
-  circle.style.transform = 'scale(' + phase.scale + ')';
-  circle.style.background = breathPhaseIdx % 2 === 0 ? 'rgba(124,159,255,0.25)' : 'rgba(124,159,255,0.08)';
-  document.getElementById('breathInstruction').textContent = phase.name;
-  document.getElementById('breathPhase').textContent = phase.text;
-  let cnt = phase.dur;
-  document.getElementById('breathCount').textContent = cnt;
-  clearInterval(breathInterval);
-  breathInterval = setInterval(() => {
-    cnt--;
-    document.getElementById('breathCount').textContent = cnt;
-    if (cnt <= 0) {
-      clearInterval(breathInterval);
-      breathPhaseIdx = (breathPhaseIdx + 1) % PHASES.length;
-      if (breathPhaseIdx === 0) breathCycleCount++;
-      if (breathCycleCount >= 4) {
-        document.getElementById('breathInstruction').textContent = 'Selesai 🎉';
-        document.getElementById('breathCount').textContent = '';
-        document.getElementById('breathPhase').textContent = 'Bagus! Sistem sarafmu sudah lebih tenang.';
-        document.getElementById('breathStartBtn').style.display = '';
-        document.getElementById('breathStartBtn').textContent = 'Ulangi';
-        return;
-      }
-      runBreathPhase();
-    }
-  }, 1000);
-}
-
-// JURNAL
-function toggleJurnal() {
-  document.getElementById('jurnalCard').classList.toggle('open');
-}
-
-function setMood(v) {
-  selectedMood = v;
-  document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('sel', +b.dataset.val === v));
-}
-
-function toggleTrigger(t) {
-  const idx = selectedTriggers.indexOf(t);
-  if (idx > -1) selectedTriggers.splice(idx, 1); else selectedTriggers.push(t);
-  document.querySelectorAll('.trigger-pill').forEach(p => {
-    p.classList.toggle('sel', selectedTriggers.includes(p.textContent));
-  });
-}
-
-async function saveJurnal() {
-  const notes = document.getElementById('jurnalNotes').value.trim();
-  if (!selectedMood) { showToast('Pilih mood dulu ya!'); return; }
-  const today = new Date().toISOString().split('T')[0];
-  const { error } = await sb.from('journal_entries').insert({
-    user_id: USER_ID, entry_date: today,
-    mood: selectedMood, triggers: selectedTriggers, notes
-  });
-  if (error) { showToast('Gagal simpan: ' + error.message); return; }
-  showToast('✅ Jurnal tersimpan!');
-  document.getElementById('jurnalCard').classList.remove('open');
-  selectedMood = 0; selectedTriggers = [];
-  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('sel'));
-  document.querySelectorAll('.trigger-pill').forEach(p => p.classList.remove('sel'));
-  document.getElementById('jurnalNotes').value = '';
-  await loadJurnalHistory();
-}
-
-async function loadJurnalHistory() {
-  const { data } = await sb.from('journal_entries')
-    .select('*').eq('user_id', USER_ID)
-    .order('created_at', { ascending: false }).limit(10);
-  const el = document.getElementById('jurnalHistory');
-  if (!data || !data.length) {
-    el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px 0">Belum ada jurnal. Mulai tulis hari ini.</div>';
-    return;
-  }
-  el.innerHTML = data.map(e => `
-    <div class="entry-item">
-      <div class="entry-header">
-        <div class="entry-date">${new Date(e.created_at).toLocaleDateString('id-ID', {weekday:'short',day:'numeric',month:'short'})}</div>
-        <div class="entry-mood">${MOOD_EMOJIS[e.mood] || ''}</div>
-      </div>
-      ${e.notes ? `<div class="entry-note">${e.notes}</div>` : ''}
-      ${e.triggers && e.triggers.length ? `<div class="entry-triggers">${e.triggers.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
-    </div>
-  `).join('');
-}
-
-// RELAPSE
-function openRelapse() { document.getElementById('relapseModal').classList.add('open'); }
-function closeRelapse() { document.getElementById('relapseModal').classList.remove('open'); }
-
-async function confirmRelapse() {
-  const notes = document.getElementById('relapseNotes').value.trim();
-  const today = new Date().toISOString().split('T')[0];
-
-  // Catat di jurnal sebagai relapse
-  await sb.from('journal_entries').insert({
-    user_id: USER_ID, entry_date: today,
-    mood: 2, triggers: ['Relapse'], notes: notes || 'Relapse tercatat.', is_relapse: true
-  });
-
-  // Log urge
-  await sb.from('urge_log').insert({ user_id: USER_ID, outcome: 'relapse' });
-
-  // Update streak: reset streak, tambah relapse count, update start_date
-  const newLongest = Math.max(streakData.longest_streak || 0, streakData.current_streak || 0);
-  await sb.from('streak_data').update({
-    start_date: today, last_check_in: today,
-    current_streak: 0, longest_streak: newLongest,
-    total_relapses: (streakData.total_relapses || 0) + 1
-  }).eq('user_id', USER_ID);
-
-  closeRelapse();
-  document.getElementById('relapseModal').classList.remove('open');
-  document.getElementById('daruratPanel').classList.remove('open');
-  document.getElementById('relapseNotes').value = '';
-  showToast('💙 Dicatat. Mulai lagi dari hari ini. Kamu bisa!');
-  await loadStreak();
-  await loadJurnalHistory();
-}
-
-// TOAST
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-init();
-</script>
+        init();
+    </script>
 </body>
+
 </html>
