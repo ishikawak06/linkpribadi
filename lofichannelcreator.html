@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lofi Channel Creator</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --bg2: #111318;
+    --bg3: #181b22;
+    --surface: #1e2229;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --accent: #7c6af7;
+    --accent2: #a89cf8;
+    --accent-glow: rgba(124,106,247,0.18);
+    --rain: #4fc3f7;
+    --rain-dim: rgba(79,195,247,0.15);
+    --text: #e8eaf0;
+    --text2: #8b90a0;
+    --text3: #555a6a;
+    --green: #5dca8a;
+    --amber: #f7c355;
+    --red: #f07070;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --font: 'Syne', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Rain effect background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(79,195,247,0.012) 80px, rgba(79,195,247,0.012) 81px),
+      repeating-linear-gradient(180deg, transparent, transparent 40px, rgba(79,195,247,0.008) 40px, rgba(79,195,247,0.008) 41px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 24px 80px; position: relative; z-index: 1; }
+
+  /* Header */
+  header {
+    padding: 36px 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-icon {
+    width: 38px;
+    height: 38px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(124,106,247,0.4);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .logo-text { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+  .logo-sub { font-size: 11px; color: var(--text3); font-family: var(--mono); letter-spacing: 0.5px; margin-top: 1px; }
+  .api-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 5px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .api-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 4px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 1;
+    min-width: 100px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .tab:hover { color: var(--text); background: var(--surface); }
+  .tab.active { background: var(--surface); color: var(--accent2); border: 1px solid rgba(124,106,247,0.25); }
+  .tab-icon { font-size: 14px; }
+
+  /* Panel */
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+  /* Form section */
+  .form-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .form-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    font-family: var(--mono);
+  }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width:600px){ .form-grid { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field.full { grid-column: 1 / -1; }
+  label { font-size: 12px; color: var(--text2); font-weight: 500; }
+
+  input, select, textarea {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    padding: 9px 12px;
+    width: 100%;
+    outline: none;
+    transition: border 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: rgba(124,106,247,0.5); }
+  select option { background: var(--bg3); }
+  textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+
+  /* Tags input */
+  .tag-wrap {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 6px 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    cursor: text;
+    min-height: 40px;
+    align-items: center;
+  }
+  .tag-wrap:focus-within { border-color: rgba(124,106,247,0.5); }
+  .tag {
+    background: var(--accent-glow);
+    border: 1px solid rgba(124,106,247,0.3);
+    color: var(--accent2);
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+  }
+  .tag-remove { cursor: pointer; opacity: 0.6; font-size: 11px; }
+  .tag-remove:hover { opacity: 1; }
+  .tag-input {
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    flex: 1;
+    min-width: 80px;
+    padding: 2px 4px;
+    font-family: var(--font);
+  }
+
+  /* Generate button */
+  .btn-generate {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .btn-generate:hover { background: #8d7ef8; transform: translateY(-1px); }
+  .btn-generate:active { transform: translateY(0); }
+  .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Output */
+  .output-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-top: 16px;
+    display: none;
+  }
+  .output-box.visible { display: block; animation: fadeIn 0.25s ease; }
+  .output-header {
+    padding: 10px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .output-label { font-size: 11px; font-family: var(--mono); color: var(--text3); letter-spacing: 0.5px; }
+  .btn-copy {
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .btn-copy:hover { border-color: var(--accent); color: var(--accent2); }
+  .btn-copy.copied { border-color: var(--green); color: var(--green); }
+  .output-content {
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+    font-family: var(--mono);
+    min-height: 80px;
+  }
+  .output-content.loading {
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Spinner */
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Multi output sections */
+  .output-sections { display: flex; flex-direction: column; gap: 1px; }
+  .output-section { border-top: 1px solid var(--border); }
+  .output-section:first-child { border-top: none; }
+  .output-section-header {
+    padding: 8px 16px;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--accent2);
+    background: rgba(124,106,247,0.06);
+    letter-spacing: 0.4px;
+    font-weight: 500;
+  }
+  .output-section-content {
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+    font-family: var(--mono);
+  }
+
+  /* Schedule grid */
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+  }
+  @media(max-width:600px){ .schedule-grid { grid-template-columns: repeat(4,1fr); } }
+  .day-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .day-card.selected { background: var(--accent-glow); border-color: rgba(124,106,247,0.4); color: var(--accent2); }
+  .day-card:hover:not(.selected) { border-color: var(--border2); background: var(--surface); }
+  .day-name { font-size: 11px; font-weight: 600; font-family: var(--mono); color: var(--text2); }
+  .day-card.selected .day-name { color: var(--accent2); }
+
+  /* Checklist */
+  .checklist { display: flex; flex-direction: column; gap: 6px; }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .check-item:hover { border-color: var(--border2); }
+  .check-item.done { border-color: rgba(93,202,138,0.25); background: rgba(93,202,138,0.05); }
+  .check-box {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--text3);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    transition: all 0.15s;
+  }
+  .check-item.done .check-box { background: var(--green); border-color: var(--green); color: #0a0c10; }
+  .check-label { font-size: 13px; color: var(--text); }
+  .check-item.done .check-label { color: var(--text2); text-decoration: line-through; }
+  .check-sub { font-size: 11px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
+  .check-item.done .check-sub { color: var(--text3); }
+
+  /* Progress bar */
+  .progress-wrap { margin-bottom: 20px; }
+  .progress-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .progress-label { font-size: 12px; color: var(--text2); }
+  .progress-count { font-size: 12px; font-family: var(--mono); color: var(--accent2); }
+  .progress-bar { height: 4px; background: var(--surface); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s ease; }
+
+  /* Stat cards */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .stat-val { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .stat-lbl { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+
+  /* Tooltip / info */
+  .info-box {
+    background: var(--rain-dim);
+    border: 1px solid rgba(79,195,247,0.2);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.6;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .info-icon { color: var(--rain); flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+
+  /* Section divider */
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🌙</div>
+      <div>
+        <div class="logo-text">Lofi Channel Creator</div>
+        <div class="logo-sub">AI-POWERED · GRATIS · SIAP PAKAI</div>
+      </div>
+    </div>
+    <div class="api-badge">
+      <div class="api-dot"></div>
+      Claude API
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('judul')">
+      <span class="tab-icon">✦</span> Judul & Caption
+    </button>
+    <button class="tab" onclick="switchTab('deskripsi')">
+      <span class="tab-icon">◈</span> Deskripsi
+    </button>
+    <button class="tab" onclick="switchTab('tag')">
+      <span class="tab-icon">⟡</span> Tag SEO
+    </button>
+    <button class="tab" onclick="switchTab('jadwal')">
+      <span class="tab-icon">◷</span> Jadwal
+    </button>
+    <button class="tab" onclick="switchTab('musik')">
+      <span class="tab-icon">♪</span> AI Music
+    </button>
+    <button class="tab" onclick="switchTab('checklist')">
+      <span class="tab-icon">◻</span> Checklist
+    </button>
+  </div>
+
+  <!-- TAB: JUDUL & CAPTION -->
+  <div class="panel active" id="panel-judul">
+    <div class="form-section">
+      <div class="form-section-title">Detail Video</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Tema / Suasana</label>
+          <select id="j-tema">
+            <option value="hujan tokyo malam">🌧 Hujan Tokyo — Malam</option>
+            <option value="kafe osaka sore hari">☕ Kafe Osaka — Sore Hari</option>
+            <option value="musim gugur jepang">🍂 Musim Gugur Jepang</option>
+            <option value="musim dingin salju">❄️ Musim Dingin / Salju</option>
+            <option value="sakura musim semi">🌸 Sakura — Musim Semi</option>
+            <option value="malam berbintang">✨ Malam Berbintang</option>
+            <option value="perpustakaan sunyi">📚 Perpustakaan Sunyi</option>
+            <option value="studio rekaman retro">🎧 Studio Rekaman Retro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Use Case Utama</label>
+          <select id="j-usecase">
+            <option value="belajar dan fokus">📖 Belajar & Fokus</option>
+            <option value="tidur dan relaksasi">😴 Tidur & Relaksasi</option>
+            <option value="kerja dan produktivitas">💻 Kerja & Produktivitas</option>
+            <option value="meditasi dan menenangkan pikiran">🧘 Meditasi</option>
+            <option value="membaca buku">📕 Membaca Buku</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Durasi Video</label>
+          <select id="j-durasi">
+            <option value="1 jam">1 Jam</option>
+            <option value="2 jam">2 Jam</option>
+            <option value="3 jam" selected>3 Jam</option>
+            <option value="5 jam">5 Jam</option>
+            <option value="8 jam">8 Jam</option>
+            <option value="10 jam">10 Jam</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Bahasa Output</label>
+          <select id="j-bahasa">
+            <option value="Inggris (global)">🌐 Inggris (Global)</option>
+            <option value="Indonesia">🇮🇩 Indonesia</option>
+            <option value="Inggris + sedikit kata Jepang">🇯🇵 Mix Inggris + Jepang</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>Catatan Khusus (opsional)</label>
+          <input type="text" id="j-notes" placeholder="contoh: ada suara rintik hujan, nuansa pixel art, dll">
+        </div>
+      </div>
+      <button class="btn-generate" onclick="generateJudul()" id="btn-j">
+        <span>✦</span> Generate Judul & Caption
+      </button>
+    </div>
+
+    <div class="output-box" id="out-judul">
+      <div class="output-header">
+        <span class="output-label">OUTPUT — JUDUL & CAPTION</span>
+        <button class="btn-copy" onclick="copyOutput('out-judul')">⎘ Salin Semua</button>
+      </div>
+      <div class="output-sections" id="out-judul-content"></div>
+    </div>
+  </div>
+
+  <!-- TAB: DESKRIPSI -->
+  <div class="panel" id="panel-deskripsi">
+    <div class="form-section">
+      <div class="form-section-title">Info Video</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Judul Video (opsional)</label>
+          <input type="text" id="d-judul" placeholder="Paste judul dari tab sebelumnya">
+        </div>
+        <div class="field">
+          <label>Tema</label>
+          <select id="d-tema">
+            <option value="hujan tokyo malam">🌧 Hujan Tokyo — Malam</option>
+            <option value="kafe osaka sore hari">☕ Kafe Osaka — Sore Hari</option>
+            <option value="musim gugur jepang">🍂 Musim Gugur Jepang</option>
+            <option value="musim dingin salju">❄️ Musim Dingin / Salju</option>
+            <option value="sakura musim semi">🌸 Sakura — Musim Semi</option>
+            <option value="malam berbintang">✨ Malam Berbintang</option>
+            <option value="perpustakaan sunyi">📚 Perpustakaan Sunyi</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Nama Channel</label>
+          <input type="text" id="d-channel" placeholder="lofi night calm">
+        </div>
+        <div class="field">
+          <label>Sumber Musik (opsional)</label>
+          <input type="text" id="d-musik" placeholder="cth: Music by LofiPeaks (free license)">
+        </div>
+        <div class="field">
+          <label>Bahasa Output</label>
+          <select id="d-bahasa">
+            <option value="Inggris">🌐 Inggris (Global)</option>
+            <option value="Indonesia">🇮🇩 Indonesia</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Gaya Deskripsi</label>
+          <select id="d-gaya">
+            <option value="puitis dan imajinatif">Puitis & Imajinatif</option>
+            <option value="informatif dan to-the-point">Informatif & To-the-point</option>
+            <option value="hangat dan personal">Hangat & Personal</option>
+            <option value="minimalis">Minimalis & Elegan</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-generate" onclick="generateDeskripsi()" id="btn-d">
+        <span>◈</span> Generate Deskripsi YouTube
+      </button>
+    </div>
+
+    <div class="output-box" id="out-deskripsi">
+      <div class="output-header">
+        <span class="output-label">OUTPUT — DESKRIPSI</span>
+        <button class="btn-copy" onclick="copyOutput('out-deskripsi')">⎘ Salin</button>
+      </div>
+      <div class="output-content" id="out-deskripsi-content"></div>
+    </div>
+  </div>
+
+  <!-- TAB: TAG SEO -->
+  <div class="panel" id="panel-tag">
+    <div class="form-section">
+      <div class="form-section-title">Keyword Target</div>
+
+      <div class="info-box">
+        <span class="info-icon">◈</span>
+        <span>YouTube mengizinkan hingga <strong>500 karakter</strong> untuk tag. Kombinasikan tag spesifik (long-tail) dan umum untuk jangkauan terluas.</span>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Tema Video</label>
+          <select id="t-tema">
+            <option value="lofi rain tokyo night study sleep">🌧 Hujan Tokyo — Malam</option>
+            <option value="lofi cafe japan relax chill">☕ Kafe Jepang — Chill</option>
+            <option value="lofi autumn japan nostalgic cozy">🍂 Musim Gugur Jepang</option>
+            <option value="lofi winter snow calm sleep">❄️ Musim Dingin / Salju</option>
+            <option value="lofi sakura spring japan peaceful">🌸 Sakura — Musim Semi</option>
+            <option value="lofi night stars peaceful ambient">✨ Malam Berbintang</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Fokus Use Case</label>
+          <select id="t-usecase">
+            <option value="study focus homework">📖 Belajar / Fokus</option>
+            <option value="sleep relax meditation">😴 Tidur / Relaksasi</option>
+            <option value="work productivity deep focus">💻 Kerja / Produktivitas</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>Keyword tambahan (tekan Enter setelah tiap kata)</label>
+          <div class="tag-wrap" id="extra-tags-wrap" onclick="document.getElementById('extra-tag-input').focus()">
+            <input type="text" class="tag-input" id="extra-tag-input" placeholder="ketik lalu Enter...">
+          </div>
+        </div>
+      </div>
+      <button class="btn-generate" onclick="generateTag()" id="btn-t">
+        <span>⟡</span> Generate Tag SEO
+      </button>
+    </div>
+
+    <div class="output-box" id="out-tag">
+      <div class="output-header">
+        <span class="output-label">OUTPUT — TAG SEO</span>
+        <button class="btn-copy" onclick="copyOutput('out-tag')">⎘ Salin</button>
+      </div>
+      <div class="output-sections" id="out-tag-content"></div>
+    </div>
+  </div>
+
+  <!-- TAB: JADWAL -->
+  <div class="panel" id="panel-jadwal">
+    <div class="form-section">
+      <div class="form-section-title">Preferensi Jadwal</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Frekuensi Upload</label>
+          <select id="sch-freq">
+            <option value="1 video per minggu">1x per minggu</option>
+            <option value="2 video per minggu" selected>2x per minggu</option>
+            <option value="3 video per minggu">3x per minggu</option>
+            <option value="5 video per minggu (weekdays)">5x per minggu</option>
+            <option value="setiap hari">Setiap hari</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Target Audiens (timezone)</label>
+          <select id="sch-tz">
+            <option value="WIB (Indonesia) — target lokal">🇮🇩 WIB — Indonesia</option>
+            <option value="global (UTC+0 optimal posting)">🌐 Global (UTC)</option>
+            <option value="Asia Tenggara dan Asia Timur">🌏 Asia Tenggara & Timur</option>
+            <option value="Amerika dan Eropa">🌎 Amerika & Eropa</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <label style="font-size:12px; color:var(--text2); font-weight:500; display:block; margin-bottom:8px;">Hari upload yang bisa kamu lakukan</label>
+        <div class="schedule-grid" id="day-picker">
+          <div class="day-card selected" data-day="Senin"><div class="day-name">SEN</div></div>
+          <div class="day-card" data-day="Selasa"><div class="day-name">SEL</div></div>
+          <div class="day-card selected" data-day="Rabu"><div class="day-name">RAB</div></div>
+          <div class="day-card" data-day="Kamis"><div class="day-name">KAM</div></div>
+          <div class="day-card" data-day="Jumat"><div class="day-name">JUM</div></div>
+          <div class="day-card selected" data-day="Sabtu"><div class="day-name">SAB</div></div>
+          <div class="day-card" data-day="Minggu"><div class="day-name">MIN</div></div>
+        </div>
+      </div>
+      <button class="btn-generate" onclick="generateJadwal()" id="btn-s" style="margin-top:16px;">
+        <span>◷</span> Generate Jadwal & Strategi Konten
+      </button>
+    </div>
+
+    <div class="output-box" id="out-jadwal">
+      <div class="output-header">
+        <span class="output-label">OUTPUT — JADWAL KONTEN</span>
+        <button class="btn-copy" onclick="copyOutput('out-jadwal')">⎘ Salin</button>
+      </div>
+      <div class="output-content" id="out-jadwal-content"></div>
+    </div>
+  </div>
+
+  <!-- TAB: AI MUSIC PROMPT -->
+  <div class="panel" id="panel-musik">
+
+    <div class="form-section">
+      <div class="form-section-title">Platform AI Musik</div>
+      <div class="info-box">
+        <span class="info-icon">◈</span>
+        <span>App ini generate <strong>prompt teks</strong> yang siap kamu paste ke platform AI musik seperti <strong>Suno AI</strong>, <strong>Udio</strong>, atau <strong>Stable Audio</strong>. Tiap platform punya format prompt sedikit berbeda — pilih platform target kamu.</span>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Platform Target</label>
+          <select id="m-platform" onchange="updatePlatformInfo()">
+            <option value="suno">Suno AI (suno.com) — Gratis</option>
+            <option value="udio">Udio (udio.com) — Gratis</option>
+            <option value="stable">Stable Audio (stableaudio.com)</option>
+            <option value="mubert">Mubert (mubert.com) — Gratis</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tema / Suasana</label>
+          <select id="m-tema">
+            <option value="hujan malam tokyo">🌧 Hujan Malam Tokyo</option>
+            <option value="kafe jepang sore hari">☕ Kafe Jepang — Sore</option>
+            <option value="musim gugur jepang daun berguguran">🍂 Musim Gugur Jepang</option>
+            <option value="musim dingin salju sepi">❄️ Musim Dingin & Salju</option>
+            <option value="sakura musim semi angin sepoi">🌸 Sakura Musim Semi</option>
+            <option value="malam berbintang di desa">✨ Malam Berbintang</option>
+            <option value="perpustakaan sepi malam">📚 Perpustakaan Malam</option>
+            <option value="kereta malam jepang">🚃 Kereta Malam Jepang</option>
+            <option value="pantai saat senja">🌅 Pantai Saat Senja</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Mood / Energi</label>
+          <select id="m-mood">
+            <option value="melankolis, nostalgia, tenang">Melankolis & Nostalgia</option>
+            <option value="damai, mengantuk, rileks dalam">Damai & Mengantuk</option>
+            <option value="fokus, produktif, jernih">Fokus & Produktif</option>
+            <option value="hangat, nyaman, cozy">Hangat & Cozy</option>
+            <option value="sedikit sedih, reflektif">Reflektif & Sedih</option>
+            <option value="ceria namun tetap tenang">Ceria Tapi Tenang</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Instrumen Utama</label>
+          <select id="m-instrumen">
+            <option value="piano, vinyl crackle, soft drums">Piano + Vinyl Crackle</option>
+            <option value="guitar, bass, mellow drums">Guitar + Bass Mellow</option>
+            <option value="jazz piano, saxophone, brushed drums">Jazz Piano + Sax</option>
+            <option value="Rhodes piano, synth pad, lo-fi drums">Rhodes + Synth Pad</option>
+            <option value="koto, shamisen, subtle electronic beat">Koto + Shamisen (Jepang)</option>
+            <option value="acoustic guitar, cello, soft percussion">Acoustic Guitar + Cello</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tempo</label>
+          <select id="m-tempo">
+            <option value="sangat lambat, 60-70 BPM">Sangat Lambat — 60-70 BPM</option>
+            <option value="lambat, 70-80 BPM" selected>Lambat — 70-80 BPM</option>
+            <option value="sedang, 80-90 BPM">Sedang — 80-90 BPM</option>
+            <option value="sedikit lebih cepat, 90-100 BPM">Sedikit Cepat — 90-100 BPM</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Durasi Target</label>
+          <select id="m-durasi">
+            <option value="2-3 menit (1 track pendek)">2-3 menit (1 track)</option>
+            <option value="3-4 menit (1 track standar)" selected>3-4 menit (standar)</option>
+            <option value="5-6 menit (1 track panjang)">5-6 menit (panjang)</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>Elemen Tambahan (opsional)</label>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px;" id="elem-picker">
+            <div class="elem-tag" data-val="suara hujan lembut di latar belakang">🌧 Suara Hujan</div>
+            <div class="elem-tag" data-val="suara kafe, orang berbisik, cangkir kopi">☕ Suara Kafe</div>
+            <div class="elem-tag" data-val="suara jangkrik malam hari">🦗 Jangkrik Malam</div>
+            <div class="elem-tag" data-val="vinyl crackle noise">📀 Vinyl Crackle</div>
+            <div class="elem-tag" data-val="suara alam, angin, dedaunan">🍃 Suara Alam</div>
+            <div class="elem-tag" data-val="bells dan chimes lembut">🔔 Bells & Chimes</div>
+            <div class="elem-tag" data-val="suara kereta lewat">🚃 Suara Kereta</div>
+            <div class="elem-tag" data-val="suara perapian kayu">🔥 Suara Perapian</div>
+          </div>
+        </div>
+        <div class="field full">
+          <label>Referensi Artis / Gaya (opsional)</label>
+          <input type="text" id="m-referensi" placeholder="cth: seperti Nujabes, Jinsang, atau City Girl">
+        </div>
+      </div>
+      <button class="btn-generate" onclick="generateMusikPrompt()" id="btn-m">
+        <span>♪</span> Generate Prompt AI Musik
+      </button>
+    </div>
+
+    <div class="output-box" id="out-musik">
+      <div class="output-header">
+        <span class="output-label" id="out-musik-label">OUTPUT — PROMPT MUSIK</span>
+        <button class="btn-copy" onclick="copyAllSections('out-musik')">⎘ Salin Semua</button>
+      </div>
+      <div class="output-sections" id="out-musik-content"></div>
+    </div>
+
+    <div class="form-section" style="margin-top:16px;">
+      <div class="form-section-title">Panduan Platform</div>
+      <div id="platform-guide">
+        <div class="platform-card" id="guide-suno">
+          <div class="info-box" style="margin-bottom:10px;">
+            <span class="info-icon">★</span>
+            <div>
+              <strong style="color:var(--text); display:block; margin-bottom:4px;">Suno AI — Cara Pakai</strong>
+              <span>1. Buka <strong>suno.com</strong> → klik "Create"<br>
+              2. Pilih mode <strong>"Custom"</strong> (bukan Simple)<br>
+              3. Paste bagian <strong>STYLE TAGS</strong> ke kolom "Style of Music"<br>
+              4. Paste bagian <strong>LYRICS/INSTRUMENTAL</strong> ke kolom "Lyrics" — atau ketik "[Instrumental]" jika tidak mau ada vokal<br>
+              5. Isi kolom <strong>"Title"</strong> dengan nama track<br>
+              6. Klik <strong>Create</strong> — Suno generate 2 versi sekaligus<br>
+              7. Download versi yang paling cocok</span>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
+            <div style="background:var(--bg3); border-radius:var(--radius); padding:8px 10px;">
+              <div style="color:var(--green); font-weight:600; margin-bottom:3px;">✓ Gratis</div>
+              <div style="color:var(--text2);">10 lagu/hari di tier gratis</div>
+            </div>
+            <div style="background:var(--bg3); border-radius:var(--radius); padding:8px 10px;">
+              <div style="color:var(--amber); font-weight:600; margin-bottom:3px;">⚠ Catatan</div>
+              <div style="color:var(--text2);">Cek terms soal royalty-free untuk monetisasi</div>
+            </div>
+          </div>
+        </div>
+        <div class="platform-card" id="guide-udio" style="display:none;">
+          <div class="info-box" style="margin-bottom:10px;">
+            <span class="info-icon">★</span>
+            <div>
+              <strong style="color:var(--text); display:block; margin-bottom:4px;">Udio — Cara Pakai</strong>
+              <span>1. Buka <strong>udio.com</strong> → Login/daftar gratis<br>
+              2. Di kolom prompt, paste bagian <strong>PROMPT UTAMA</strong><br>
+              3. Klik icon pengaturan → aktifkan <strong>"Instrumental"</strong><br>
+              4. Set durasi ke <strong>Full Song</strong> atau pilih durasi manual<br>
+              5. Klik <strong>Create</strong><br>
+              6. Setelah generate, kamu bisa <strong>extend</strong> track agar lebih panjang<br>
+              7. Download via tombol di pojok kanan lagu</span>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
+            <div style="background:var(--bg3); border-radius:var(--radius); padding:8px 10px;">
+              <div style="color:var(--green); font-weight:600; margin-bottom:3px;">✓ Gratis</div>
+              <div style="color:var(--text2);">~10 lagu/hari tier gratis</div>
+            </div>
+            <div style="background:var(--bg3); border-radius:var(--radius); padding:8px 10px;">
+              <div style="color:var(--amber); font-weight:600; margin-bottom:3px;">⚠ Catatan</div>
+              <div style="color:var(--text2);">Hasil kadang lebih pendek, extend berkali-kali</div>
+            </div>
+          </div>
+        </div>
+        <div class="platform-card" id="guide-stable" style="display:none;">
+          <div class="info-box" style="margin-bottom:10px;">
+            <span class="info-icon">★</span>
+            <div>
+              <strong style="color:var(--text); display:block; margin-bottom:4px;">Stable Audio — Cara Pakai</strong>
+              <span>1. Buka <strong>stableaudio.com</strong> → Daftar akun<br>
+              2. Paste <strong>PROMPT UTAMA</strong> ke kolom teks<br>
+              3. Set <strong>Duration</strong> sesuai kebutuhan (max 3 menit di tier gratis)<br>
+              4. Klik <strong>Generate</strong><br>
+              5. Stable Audio fokus pada instrumental — tidak perlu setting tambahan<br>
+              6. Download audio MP3/WAV langsung</span>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
+            <div style="background:var(--bg3); border-radius:var(--radius); padding:8px 10px;">
+              <div style="color:var(--amber); font-weight:600; margin-bottom:3px;">★ Kelebihan</div>
+              <div style="color:var(--text2);">Kualitas audio sangat baik, format WAV</div>
+            </div>
+            <div style="background:var(--bg3); border-radius:var(--radius); padding:8px 10px;">
+              <div style="color:var(--red); font-weight:600; margin-bottom:3px;">✗ Batasan</div>
+              <div style="color:var(--text2);">Max 3 menit di gratis, perlu extend manual</div>
+            </div>
+          </div>
+        </div>
+        <div class="platform-card" id="guide-mubert" style="display:none;">
+          <div class="info-box" style="margin-bottom:10px;">
+            <span class="info-icon">★</span>
+            <div>
+              <strong style="color:var(--text); display:block; margin-bottom:4px;">Mubert — Cara Pakai</strong>
+              <span>1. Buka <strong>mubert.com</strong> → Login gratis<br>
+              2. Pilih tab <strong>"Generate"</strong><br>
+              3. Paste <strong>MOOD TAGS</strong> ke kolom pencarian/prompt<br>
+              4. Atur <strong>Duration</strong> hingga 25 menit<br>
+              5. Klik <strong>Generate Track</strong><br>
+              6. Mubert sangat cocok untuk lofi panjang dan livestream<br>
+              7. Download untuk penggunaan personal gratis</span>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
+            <div style="background:var(--bg3); border-radius:var(--radius); padding:8px 10px;">
+              <div style="color:var(--green); font-weight:600; margin-bottom:3px;">✓ Kelebihan</div>
+              <div style="color:var(--text2);">Bisa generate hingga 25 menit sekaligus</div>
+            </div>
+            <div style="background:var(--bg3); border-radius:var(--radius); padding:8px 10px;">
+              <div style="color:var(--amber); font-weight:600; margin-bottom:3px;">⚠ Catatan</div>
+              <div style="color:var(--text2);">Perlu upgrade untuk monetisasi komersial</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: CHECKLIST -->
+  <div class="panel" id="panel-checklist">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">Progress setup channel</span>
+        <span class="progress-count" id="prog-count">0 / 18</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-val" id="s-done">0</div>
+        <div class="stat-lbl">SELESAI</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="s-left">18</div>
+        <div class="stat-lbl">TERSISA</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="s-pct">0%</div>
+        <div class="stat-lbl">PROGRESS</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">⬝ Persiapan Dasar</div>
+      <div class="checklist" id="cl-basic"></div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">⬝ Musik & Audio</div>
+      <div class="checklist" id="cl-music"></div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">⬝ Visual & Branding</div>
+      <div class="checklist" id="cl-visual"></div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">⬝ Upload & SEO</div>
+      <div class="checklist" id="cl-upload"></div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">⬝ Monetisasi</div>
+      <div class="checklist" id="cl-monetize"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = "https://api.anthropic.com/v1/messages";
+const MODEL = "claude-sonnet-4-20250514";
+
+async function callClaude(systemPrompt, userPrompt, btnId) {
+  const btn = document.getElementById(btnId);
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Generating...';
+
+  try {
+    const resp = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }]
+      })
+    });
+    const data = await resp.json();
+    return data.content?.[0]?.text || "Error: tidak ada respons.";
+  } catch(e) {
+    return "Error: " + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = btn.getAttribute('data-original');
+  }
+}
+
+// Store original button text
+document.querySelectorAll('.btn-generate').forEach(b => {
+  b.setAttribute('data-original', b.innerHTML);
+});
+
+// Tab switcher
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.closest('.tab').classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+// Copy output
+function copyOutput(boxId) {
+  const box = document.getElementById(boxId);
+  const allText = Array.from(box.querySelectorAll('[data-text]'))
+    .map(el => el.getAttribute('data-text')).join('\n\n') ||
+    box.querySelector('.output-content')?.innerText || '';
+  navigator.clipboard.writeText(allText.trim());
+  const btn = box.querySelector('.btn-copy');
+  btn.classList.add('copied');
+  btn.textContent = '✓ Disalin!';
+  setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = '⎘ Salin'; }, 2000);
+}
+
+function showSection(containerId, sections) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  sections.forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'output-section';
+    el.setAttribute('data-text', s.label + '\n' + s.content);
+    el.innerHTML = `<div class="output-section-header">${s.label}</div><div class="output-section-content">${s.content}</div>`;
+    c.appendChild(el);
+  });
+  document.getElementById(containerId).closest('.output-box').classList.add('visible');
+}
+
+// ── JUDUL & CAPTION ──
+async function generateJudul() {
+  const tema = document.getElementById('j-tema').value;
+  const usecase = document.getElementById('j-usecase').value;
+  const durasi = document.getElementById('j-durasi').value;
+  const bahasa = document.getElementById('j-bahasa').value;
+  const notes = document.getElementById('j-notes').value;
+
+  const sys = `Kamu adalah spesialis konten YouTube lofi musik. Tugas kamu adalah membuat judul, caption, dan hook yang menarik untuk channel lofi dengan estetika Jepang. Output harus dalam bahasa: ${bahasa}. Selalu buat konten yang spesifik, atmosferik, dan mengandung kata kunci SEO yang relevan. Jangan berikan penjelasan, langsung output saja dalam format yang diminta.`;
+
+  const usr = `Buat konten YouTube untuk video lofi berikut:
+- Tema/suasana: ${tema}
+- Use case: ${usecase}
+- Durasi: ${durasi}
+${notes ? `- Catatan: ${notes}` : ''}
+
+Berikan output dalam 4 bagian terpisah dengan format PERSIS seperti ini (gunakan header ===):
+
+=== JUDUL UTAMA (klik-baiting tapi elegan, max 70 karakter) ===
+[1 judul terbaik]
+
+=== 4 JUDUL ALTERNATIF ===
+1. [judul]
+2. [judul]
+3. [judul]
+4. [judul]
+
+=== CAPTION PENDEK (untuk thumbnail/pinned comment, max 100 karakter) ===
+[1 caption]
+
+=== HOOK KALIMAT PEMBUKA (untuk deskripsi atau pinned comment) ===
+[2-3 kalimat pembuka yang menarik dan atmosferik]`;
+
+  const raw = await callClaude(sys, usr, 'btn-j');
+  const parts = raw.split(/===.*?===/g).filter(s => s.trim());
+  const headers = raw.match(/===.*?===/g) || [];
+  const sections = headers.map((h, i) => ({
+    label: h.replace(/===/g, '').trim(),
+    content: (parts[i+1] || parts[i] || '').trim()
+  })).filter(s => s.content);
+
+  if (sections.length > 0) {
+    showSection('out-judul-content', sections);
+  } else {
+    showSection('out-judul-content', [{ label: 'HASIL', content: raw }]);
+  }
+  document.getElementById('out-judul').classList.add('visible');
+}
+
+// ── DESKRIPSI ──
+async function generateDeskripsi() {
+  const judul = document.getElementById('d-judul').value;
+  const tema = document.getElementById('d-tema').value;
+  const channel = document.getElementById('d-channel').value || 'lofi night calm';
+  const musik = document.getElementById('d-musik').value;
+  const bahasa = document.getElementById('d-bahasa').value;
+  const gaya = document.getElementById('d-gaya').value;
+
+  const sys = `Kamu adalah copywriter konten YouTube lofi. Buat deskripsi YouTube yang SEO-friendly, menarik, dan dalam bahasa ${bahasa}. Gaya penulisan: ${gaya}. Jangan berikan penjelasan tambahan, langsung output deskripsinya saja.`;
+
+  const usr = `Buat deskripsi YouTube lengkap untuk:
+- Nama channel: ${channel}
+- Tema: ${tema}
+${judul ? `- Judul video: ${judul}` : ''}
+${musik ? `- Sumber musik: ${musik}` : ''}
+
+Deskripsi harus mencakup:
+1. Paragraf pembuka atmosferik (2-3 kalimat)
+2. Apa yang ada di video ini (suasana, jenis musik)
+3. Cocok untuk apa (belajar, tidur, dll)
+4. Ajakan subscribe dan bell notification
+5. Hashtag relevan (15-20 hashtag) di bagian akhir
+6. Kredit musik (jika ada) atau "Music: royalty-free"
+7. Timestamp jika relevan (contoh: 00:00 Start)
+
+Panjang total: 250-400 kata. Format siap paste ke YouTube.`;
+
+  const raw = await callClaude(sys, usr, 'btn-d');
+  const box = document.getElementById('out-deskripsi');
+  const content = document.getElementById('out-deskripsi-content');
+  content.textContent = raw;
+  box.classList.add('visible');
+}
+
+// ── TAG SEO ──
+async function generateTag() {
+  const tema = document.getElementById('t-tema').value;
+  const usecase = document.getElementById('t-usecase').value;
+  const extraTags = Array.from(document.querySelectorAll('#extra-tags-wrap .tag'))
+    .map(t => t.getAttribute('data-val')).join(', ');
+
+  const sys = `Kamu adalah spesialis SEO YouTube untuk niche musik lofi. Buat daftar tag yang dioptimalkan untuk algoritma YouTube. Jangan berikan penjelasan, langsung output tag saja.`;
+
+  const usr = `Buat tag SEO YouTube untuk video lofi dengan:
+- Tema: ${tema}
+- Use case: ${usecase}
+${extraTags ? `- Keyword tambahan dari user: ${extraTags}` : ''}
+
+Berikan output dalam 3 bagian:
+
+=== TAG UTAMA (copy-paste langsung ke YouTube, dipisah koma) ===
+[30-35 tag, max 500 karakter total, campuran pendek dan panjang]
+
+=== STRATEGI TAG (penjelasan singkat kenapa tag ini efektif) ===
+[3-4 poin singkat]
+
+=== KATA KUNCI UNTUK JUDUL & DESKRIPSI ===
+[10 kata kunci penting yang harus muncul di judul/deskripsi]`;
+
+  const raw = await callClaude(sys, usr, 'btn-t');
+  const parts = raw.split(/===.*?===/g).filter(s => s.trim());
+  const headers = raw.match(/===.*?===/g) || [];
+  const sections = headers.map((h, i) => ({
+    label: h.replace(/===/g, '').trim(),
+    content: (parts[i+1] || parts[i] || '').trim()
+  })).filter(s => s.content);
+
+  if (sections.length > 0) {
+    showSection('out-tag-content', sections);
+  } else {
+    showSection('out-tag-content', [{ label: 'TAG SEO', content: raw }]);
+  }
+  document.getElementById('out-tag').classList.add('visible');
+}
+
+// ── JADWAL ──
+async function generateJadwal() {
+  const freq = document.getElementById('sch-freq').value;
+  const tz = document.getElementById('sch-tz').value;
+  const days = Array.from(document.querySelectorAll('#day-picker .day-card.selected'))
+    .map(d => d.getAttribute('data-day')).join(', ');
+
+  const sys = `Kamu adalah konsultan strategi konten YouTube untuk channel lofi musik. Buat jadwal dan strategi konten yang realistis dan terstruktur untuk pemula yang ingin monetisasi. Berikan saran yang konkret dan actionable.`;
+
+  const usr = `Buat jadwal konten YouTube untuk channel lofi baru dengan kondisi:
+- Frekuensi upload target: ${freq}
+- Target audiens/timezone: ${tz}
+- Hari yang tersedia: ${days || 'fleksibel'}
+- Tujuan: monetisasi (target 1.000 subs + 4.000 jam tayang)
+
+Berikan:
+1. Jadwal upload mingguan (hari dan jam terbaik)
+2. Tema konten untuk 4 minggu pertama (rotasi tema)
+3. Strategi livestream 24/7 (kapan mulai, cara setup)
+4. Milestone: apa yang harus dicapai tiap bulan
+5. Tips konsistensi untuk pemula
+
+Format terstruktur dan mudah diikuti.`;
+
+  const raw = await callClaude(sys, usr, 'btn-s');
+  const box = document.getElementById('out-jadwal');
+  const content = document.getElementById('out-jadwal-content');
+  content.textContent = raw;
+  box.classList.add('visible');
+}
+
+// ── TAG INPUT ──
+const tagInput = document.getElementById('extra-tag-input');
+const tagWrap = document.getElementById('extra-tags-wrap');
+const extraTags = [];
+
+tagInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    const val = tagInput.value.trim().replace(/,$/, '');
+    if (val && !extraTags.includes(val)) {
+      extraTags.push(val);
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.setAttribute('data-val', val);
+      tag.innerHTML = val + '<span class="tag-remove" onclick="removeTag(this, \'' + val + '\')">✕</span>';
+      tagWrap.insertBefore(tag, tagInput);
+    }
+    tagInput.value = '';
+  }
+});
+
+function removeTag(el, val) {
+  const idx = extraTags.indexOf(val);
+  if (idx > -1) extraTags.splice(idx, 1);
+  el.parentElement.remove();
+}
+
+// ── DAY PICKER ──
+document.querySelectorAll('#day-picker .day-card').forEach(card => {
+  card.addEventListener('click', () => card.classList.toggle('selected'));
+});
+
+// ── CHECKLIST ──
+const checklistData = {
+  'cl-basic': [
+    { label: 'Buat akun Google baru khusus untuk channel', sub: 'Pisahkan dari akun pribadi' },
+    { label: 'Setup YouTube Studio dan verifikasi channel', sub: 'studio.youtube.com' },
+    { label: 'Tentukan nama channel (cek ketersediaan)', sub: 'Cek juga di IG & Twitter' },
+    { label: 'Tulis deskripsi channel (pakai tab Deskripsi di app ini)', sub: 'Min 200 karakter, sertakan keyword' },
+  ],
+  'cl-music': [
+    { label: 'Pilih sumber musik: royalty-free atau buat sendiri', sub: 'Pixabay Music / LMMS / izin produser' },
+    { label: 'Download setidaknya 5 track siap pakai', sub: 'Backup di folder tersendiri' },
+    { label: 'Test upload 1 video — cek apakah ada copyright claim', sub: 'Cek di YouTube Studio > Content' },
+    { label: 'Siapkan suara hujan / ambient (opsional tapi direkomendasikan)', sub: 'freesound.org — gratis' },
+  ],
+  'cl-visual': [
+    { label: 'Buat logo/ikon channel di Canva', sub: '800x800px, simpel dan memorable' },
+    { label: 'Buat banner channel (channel art)', sub: '2560x1440px di Canva' },
+    { label: 'Siapkan template thumbnail (reusable)', sub: 'Konsisten di setiap video' },
+    { label: 'Pilih atau buat animasi loop (pixel art / GIF)', sub: 'Giphy / Piskel.com — gratis' },
+  ],
+  'cl-upload': [
+    { label: 'Upload video pertama dengan judul dari app ini', sub: 'Gunakan tab Judul & Caption' },
+    { label: 'Isi deskripsi lengkap (output dari tab Deskripsi)', sub: 'Jangan biarkan kosong' },
+    { label: 'Tambahkan semua tag SEO (output dari tab Tag SEO)', sub: 'Max 500 karakter' },
+    { label: 'Set thumbnail kustom (bukan auto-generate)', sub: 'Thumbnail kustom = CTR lebih tinggi' },
+    { label: 'Tambahkan ke Playlist (buat playlist bertema)', sub: 'cth: "Tokyo Rain Lofi Collection"' },
+    { label: 'Aktifkan fitur subtitle/caption otomatis', sub: 'Bantu aksesibilitas dan SEO' },
+  ],
+  'cl-monetize': [
+    { label: 'Cek progress: 1.000 subscriber + 4.000 jam tayang', sub: 'YouTube Studio > Monetization' },
+    { label: 'Daftar ke program YouTube Partner (YPP)', sub: 'Setelah memenuhi syarat' },
+    { label: 'Distribusikan musik ke Spotify via DistroKid/TuneCore', sub: 'Mulai dari $22.99/tahun (DistroKid)' },
+    { label: 'Setup Patreon atau Ko-fi untuk dukungan komunitas', sub: 'Mulai setelah 500+ subscriber' },
+  ]
+};
+
+let checkStates = {};
+
+function buildChecklist() {
+  Object.entries(checklistData).forEach(([containerId, items]) => {
+    const container = document.getElementById(containerId);
+    items.forEach((item, i) => {
+      const key = containerId + '_' + i;
+      checkStates[key] = false;
+      const el = document.createElement('div');
+      el.className = 'check-item';
+      el.setAttribute('data-key', key);
+      el.innerHTML = `<div class="check-box" id="cb-${key}"></div><div><div class="check-label">${item.label}</div><div class="check-sub">${item.sub}</div></div>`;
+      el.addEventListener('click', () => toggleCheck(key, el));
+      container.appendChild(el);
+    });
+  });
+  updateProgress();
+}
+
+function toggleCheck(key, el) {
+  checkStates[key] = !checkStates[key];
+  el.classList.toggle('done', checkStates[key]);
+  el.querySelector('.check-box').textContent = checkStates[key] ? '✓' : '';
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = Object.keys(checkStates).length;
+  const done = Object.values(checkStates).filter(Boolean).length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('prog-count').textContent = done + ' / ' + total;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('s-done').textContent = done;
+  document.getElementById('s-left').textContent = total - done;
+  document.getElementById('s-pct').textContent = pct + '%';
+}
+
+buildChecklist();
+</script>
+</body>
+</html>
