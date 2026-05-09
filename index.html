@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkVault</title>
+    <title>LinkVault Pro</title>
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Marked.js untuk Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
@@ -30,17 +33,18 @@
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Syne', sans-serif;
             background: var(--bg);
             color: var(--text);
-            min-height: 100vh
+            min-height: 100vh;
+            padding-bottom: 80px;
         }
 
-        /* ── PASSWORD ── */
+        /* PASSWORD & UI UTILS (Dipersingkat agar rapi) */
         #pw-screen {
             display: flex;
             align-items: center;
@@ -49,7 +53,7 @@
             position: fixed;
             inset: 0;
             z-index: 999;
-            background: radial-gradient(ellipse at 60% 40%, #1a103a 0%, var(--bg) 70%);
+            background: var(--bg);
         }
 
         .pw-card {
@@ -59,102 +63,38 @@
             padding: 52px 44px;
             width: 360px;
             text-align: center;
-            box-shadow: 0 0 80px rgba(124, 106, 255, .12);
-        }
-
-        .pw-logo {
-            font-size: 42px;
-            margin-bottom: 16px
-        }
-
-        .pw-card h1 {
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 6px
-        }
-
-        .pw-card h1 span {
-            color: var(--accent2)
-        }
-
-        .pw-card p {
-            color: var(--text2);
-            font-size: 12px;
-            font-family: 'Space Mono', monospace;
-            margin-bottom: 34px;
-            letter-spacing: .5px
         }
 
         .pw-wrap input {
             width: 100%;
-            padding: 14px 18px;
+            padding: 14px;
             background: var(--bg3);
             border: 1px solid var(--border);
             border-radius: 10px;
             color: var(--text);
-            font-size: 18px;
-            font-family: 'Space Mono', monospace;
-            letter-spacing: 6px;
             text-align: center;
             outline: none;
-            transition: border-color .2s;
+            margin: 20px 0;
+            letter-spacing: 5px;
         }
 
-        .pw-wrap input:focus {
-            border-color: var(--accent)
-        }
-
-        .pw-wrap input.shake {
-            border-color: var(--danger);
-            animation: shake .4s
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0)
-            }
-
-            25% {
-                transform: translateX(-8px)
-            }
-
-            75% {
-                transform: translateX(8px)
-            }
-        }
-
-        .pw-btn {
+        .btn-primary {
             width: 100%;
-            margin-top: 14px;
-            padding: 14px;
+            padding: 12px;
             background: var(--accent);
             color: #fff;
             border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all .2s;
-            letter-spacing: .5px;
+            font-weight: bold;
         }
 
-        .pw-btn:hover {
-            background: var(--accent2);
-            transform: translateY(-1px)
-        }
-
-        /* ── APP ── */
         #app {
             display: none;
             min-height: 100vh;
-            flex-direction: column
+            flex-direction: column;
         }
 
-        /* HEADER */
         header {
             background: var(--bg2);
             border-bottom: 1px solid var(--border);
@@ -171,60 +111,38 @@
         .logo {
             font-size: 21px;
             font-weight: 800;
-            white-space: nowrap;
-            letter-spacing: -0.5px
         }
 
         .logo b {
-            color: var(--accent2)
-        }
-
-        .logo span {
-            color: var(--text3);
-            font-weight: 400
+            color: var(--accent2);
         }
 
         .search-wrap {
             flex: 1;
-            max-width: 380px;
-            position: relative
+            display: flex;
+            gap: 10px;
+            max-width: 600px;
         }
 
-        .search-wrap input {
-            width: 100%;
-            padding: 9px 14px 9px 38px;
+        .search-wrap input,
+        .search-wrap select {
+            padding: 9px 14px;
             background: var(--bg3);
             border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text);
-            font-size: 13px;
-            font-family: 'Syne', sans-serif;
             outline: none;
-            transition: border-color .2s;
+            font-size: 13px;
         }
 
-        .search-wrap input:focus {
-            border-color: var(--accent)
-        }
-
-        .search-wrap input::placeholder {
-            color: var(--text3)
-        }
-
-        .s-icon {
-            position: absolute;
-            left: 11px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 14px;
-            pointer-events: none
+        .search-wrap input {
+            flex: 1;
         }
 
         .hdr-btns {
             display: flex;
-            align-items: center;
             gap: 8px;
-            margin-left: auto
+            margin-left: auto;
         }
 
         .btn-ico {
@@ -235,1151 +153,599 @@
             background: var(--bg3);
             color: var(--text2);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            transition: all .2s;
-            flex-shrink: 0;
         }
 
-        .btn-ico:hover {
-            border-color: var(--accent);
-            color: var(--accent2)
-        }
-
-        .btn-add-link {
-            padding: 8px 16px;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all .2s;
-            white-space: nowrap;
-        }
-
-        .btn-add-link:hover {
-            background: var(--accent2);
-            transform: translateY(-1px)
-        }
-
-        /* STATS BAR */
-        .stats-bar {
+        .stats-bar,
+        .cat-bar {
             background: var(--bg2);
             border-bottom: 1px solid var(--border);
             padding: 8px 20px;
             display: flex;
-            align-items: center;
             gap: 20px;
-            font-size: 11px;
-            font-family: 'Space Mono', monospace;
-            color: var(--text3);
-        }
-
-        .s-num {
-            color: var(--accent2);
-            font-weight: 700
-        }
-
-        /* CAT TABS */
-        .cat-bar {
-            background: var(--bg2);
-            border-bottom: 1px solid var(--border);
-            padding: 0 20px;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            overflow-x: auto;
-            scrollbar-width: none;
-            flex-shrink: 0;
-        }
-
-        .cat-bar::-webkit-scrollbar {
-            display: none
-        }
-
-        .c-tab {
-            padding: 13px 15px;
-            border: none;
-            background: transparent;
-            color: var(--text2);
             font-size: 12px;
-            font-family: 'Syne', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            border-bottom: 2px solid transparent;
-            transition: all .2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-shrink: 0;
+            overflow-x: auto;
         }
 
-        .c-tab:hover {
-            color: var(--text)
-        }
-
-        .c-tab.active {
-            color: var(--accent2);
-            border-bottom-color: var(--accent)
-        }
-
-        .c-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0
-        }
-
-        .c-cnt {
-            font-size: 10px;
-            background: var(--bg3);
-            padding: 1px 7px;
-            border-radius: 20px;
-            color: var(--text3);
-            font-family: 'Space Mono', monospace;
-        }
-
-        .btn-newcat {
-            padding: 7px 13px;
-            background: transparent;
-            border: 1px dashed var(--border);
-            border-radius: 6px;
-            color: var(--text3);
-            font-size: 11px;
-            font-family: 'Syne', sans-serif;
-            cursor: pointer;
-            white-space: nowrap;
-            margin-left: 8px;
-            transition: all .2s;
-            flex-shrink: 0;
-        }
-
-        .btn-newcat:hover {
-            border-color: var(--accent);
-            color: var(--accent2)
-        }
-
-        /* MAIN */
         main {
             padding: 24px 20px;
             max-width: 1400px;
             margin: 0 auto;
-            width: 100%
+            width: 100%;
         }
 
-        /* GRID */
         .links-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
         }
 
-        /* CARD */
+        /* KARTU LINK & OG IMAGE */
         .lcard {
             background: var(--bg2);
             border: 1px solid var(--border);
             border-radius: var(--r);
-            padding: 16px;
             cursor: pointer;
-            transition: all .2s;
             position: relative;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
-            animation: fadeUp .3s ease both;
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(8px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
         }
 
         .lcard:hover {
-            border-color: rgba(124, 106, 255, .5);
+            border-color: var(--accent);
             transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(124, 106, 255, .12)
         }
 
         .lcard.pinned {
-            border-color: rgba(255, 209, 102, .25)
+            border-color: rgba(255, 209, 102, .4);
         }
 
-        .pin-tag {
-            position: absolute;
-            top: -1px;
-            left: 13px;
-            width: 18px;
-            height: 18px;
-            background: var(--pin);
-            border-radius: 0 0 5px 5px;
+        .card-img {
+            width: 100%;
+            height: 130px;
+            background: var(--bg3);
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-body {
+            padding: 16px;
+            flex: 1;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 9px;
+            flex-direction: column;
         }
 
         .card-actions {
-            display: none;
             position: absolute;
-            top: 9px;
-            right: 9px;
+            top: 8px;
+            right: 8px;
+            display: flex;
             gap: 4px;
-            background: var(--bg2);
-            border: 1px solid var(--border);
+            background: rgba(13, 13, 28, 0.9);
+            padding: 4px;
             border-radius: 8px;
-            padding: 3px;
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            transition: .2s;
         }
 
-        .lcard:hover .card-actions {
-            display: flex
+        .lcard:hover .card-actions,
+        .lcard.selected .card-actions {
+            opacity: 1;
         }
 
-        .act {
+        .act-btn,
+        .cb-bulk {
             width: 26px;
             height: 26px;
             border-radius: 5px;
             border: none;
             background: transparent;
-            color: var(--text3);
+            color: var(--text);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            transition: all .15s;
         }
 
-        .act:hover {
+        .act-btn:hover {
             background: var(--bg3);
-            color: var(--text)
-        }
-
-        .act.pin-on {
-            color: var(--pin)
-        }
-
-        .act.del:hover {
-            color: var(--danger)
-        }
-
-        .card-top {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin-bottom: 10px
-        }
-
-        .fav {
-            width: 30px;
-            height: 30px;
-            border-radius: 7px;
-            background: var(--bg3);
-            overflow: hidden;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-
-        .fav img {
-            width: 18px;
-            height: 18px;
-            object-fit: contain
         }
 
         .c-meta {
-            flex: 1;
-            min-width: 0
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
         }
 
         .c-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text);
+            font-weight: bold;
+            font-size: 15px;
+            flex: 1;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-bottom: 3px
         }
 
-        .c-url {
-            font-size: 10px;
-            font-family: 'Space Mono', monospace;
-            color: var(--text3);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis
-        }
-
+        /* MARKDOWN STYLING */
         .c-desc {
             font-size: 12px;
             color: var(--text2);
-            line-height: 1.5;
+            line-height: 1.6;
             margin-bottom: 12px;
+            flex: 1;
+        }
+
+        .c-desc.mkd h1,
+        .c-desc.mkd h2,
+        .c-desc.mkd h3 {
+            font-size: 13px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .c-desc.mkd p {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .c-desc.mkd code {
+            background: var(--bg3);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--accent2);
+        }
+
+        .c-desc.mkd ul {
+            padding-left: 16px;
+            margin-bottom: 4px;
         }
 
         .card-foot {
             display: flex;
-            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: auto;
             justify-content: space-between;
-            gap: 6px
+            align-items: center;
         }
 
-        .cat-badge {
-            padding: 2px 9px;
+        .tags-wrap {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .tag-badge {
+            padding: 2px 8px;
             border-radius: 20px;
             font-size: 10px;
-            font-weight: 600;
-            font-family: 'Space Mono', monospace
+            font-family: monospace;
         }
 
-        .vc {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            font-size: 10px;
-            color: var(--text3);
-            font-family: 'Space Mono', monospace
-        }
-
-        /* EMPTY / LOADING */
-        .empty {
-            text-align: center;
-            padding: 70px 20px;
-            color: var(--text3);
-            grid-column: 1/-1
-        }
-
-        .empty-ico {
-            font-size: 44px;
-            margin-bottom: 14px;
-            opacity: .4
-        }
-
-        .empty h3 {
-            font-size: 17px;
-            color: var(--text2);
-            margin-bottom: 6px
-        }
-
-        .empty p {
-            font-size: 12px;
-            font-family: 'Space Mono', monospace
-        }
-
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 80px;
-            grid-column: 1/-1
-        }
-
-        .spin {
-            width: 22px;
-            height: 22px;
-            border: 2px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin .6s linear infinite
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg)
-            }
-        }
-
-        /* MODALS */
+        /* MODALS & FORMS */
         .overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, .75);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, .8);
             z-index: 200;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 16px;
-            animation: fadeIn .15s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0
-            }
-
-            to {
-                opacity: 1
-            }
+            backdrop-filter: blur(4px);
         }
 
         .modal {
             background: var(--bg2);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 28px;
+            padding: 24px;
             width: 100%;
-            max-width: 460px;
-            animation: slideUp .2s ease;
-            box-shadow: 0 24px 80px rgba(0, 0, 0, .6);
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(16px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
-        }
-
-        .modal h2 {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 22px
+            max-width: 500px;
         }
 
         .fg {
-            margin-bottom: 16px
+            margin-bottom: 14px;
         }
 
         .fg label {
             display: block;
             font-size: 11px;
-            font-family: 'Space Mono', monospace;
             color: var(--text3);
-            margin-bottom: 5px;
-            letter-spacing: .5px
+            margin-bottom: 6px;
         }
 
         .fg input,
         .fg textarea,
         .fg select {
             width: 100%;
-            padding: 10px 13px;
+            padding: 10px;
             background: var(--bg3);
             border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text);
-            font-size: 13px;
-            font-family: 'Syne', sans-serif;
-            outline: none;
-            transition: border-color .2s;
-        }
-
-        .fg input:focus,
-        .fg textarea:focus,
-        .fg select:focus {
-            border-color: var(--accent)
         }
 
         .fg textarea {
-            resize: none;
-            height: 76px;
-            line-height: 1.5
+            height: 100px;
+            font-family: monospace;
         }
 
-        .fg select option {
-            background: var(--bg3)
-        }
-
-        .color-row {
+        /* MULTI-TAG SELECTOR UI */
+        .tag-grid {
             display: flex;
-            gap: 7px;
-            flex-wrap: wrap
-        }
-
-        .clr {
-            width: 30px;
-            height: 30px;
-            border-radius: 7px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all .2s
-        }
-
-        .clr.sel {
-            border-color: #fff;
-            transform: scale(1.1)
-        }
-
-        .m-btns {
-            display: flex;
-            gap: 10px;
-            margin-top: 22px;
-            justify-content: flex-end
-        }
-
-        .btn-cancel {
-            padding: 9px 18px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text2);
-            font-size: 13px;
-            font-family: 'Syne', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all .2s;
-        }
-
-        .btn-cancel:hover {
-            border-color: var(--text2);
-            color: var(--text)
-        }
-
-        .btn-save {
-            padding: 9px 22px;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .2s;
-        }
-
-        .btn-save:hover {
-            background: var(--accent2)
-        }
-
-        /* MANAGE CATS */
-        .cat-list {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-            max-height: 240px;
+            gap: 8px;
+            flex-wrap: wrap;
+            max-height: 120px;
             overflow-y: auto;
-            margin-bottom: 10px
+            padding: 8px;
+            background: var(--bg3);
+            border-radius: 8px;
+            border: 1px solid var(--border);
         }
 
-        .ci {
+        .tag-check {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            background: var(--bg3);
-            border-radius: 8px
-        }
-
-        .ci span {
-            flex: 1;
-            font-size: 13px;
-            font-weight: 600
-        }
-
-        .ci small {
-            font-size: 10px;
-            color: var(--text3);
-            font-family: 'Space Mono', monospace
-        }
-
-        .btn-del-cat {
-            padding: 4px 10px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            color: var(--text3);
+            gap: 6px;
+            background: var(--bg2);
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 11px;
             cursor: pointer;
-            transition: all .2s;
+            border: 1px solid transparent;
         }
 
-        .btn-del-cat:hover {
-            border-color: var(--danger);
-            color: var(--danger)
+        .tag-check input {
+            display: none;
         }
 
-        /* SETUP */
-        .sql-box {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 13px;
-            font-family: 'Space Mono', monospace;
-            font-size: 10.5px;
-            color: var(--success);
-            white-space: pre;
-            overflow-x: auto;
-            line-height: 1.8;
-            margin-bottom: 14px;
+        .tag-check.checked {
+            border-color: var(--accent);
+            background: rgba(124, 106, 255, 0.1);
         }
 
-        /* TOAST */
-        .toast {
+        /* BULK ACTION BAR */
+        .bulk-bar {
             position: fixed;
-            bottom: 22px;
-            right: 22px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 18px;
-            font-size: 13px;
-            color: var(--text);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .4);
-            z-index: 999;
-            animation: toastIn .25s ease;
-            display: flex;
+            border: 1px solid var(--accent);
+            padding: 12px 24px;
+            border-radius: 30px;
+            display: none;
+            gap: 16px;
             align-items: center;
-            gap: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            z-index: 150;
         }
 
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
+        .bulk-bar.active {
+            display: flex;
         }
 
-        .toast.ok {
-            border-left: 3px solid var(--success)
+        .btn-action {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
         }
 
-        .toast.err {
-            border-left: 3px solid var(--danger)
+        .btn-action:hover {
+            background: var(--bg3);
+        }
+
+        .btn-action.danger {
+            color: var(--danger);
+            border-color: var(--danger);
         }
     </style>
 </head>
 
 <body>
 
-    <!-- ── PASSWORD SCREEN ── -->
+    <!-- PASSWORD -->
     <div id="pw-screen">
         <div class="pw-card">
-            <div class="pw-logo">🔗</div>
-            <h1>Link<b>Vault</b></h1>
-            <p>personal link manager</p>
-            <div class="pw-wrap">
-                <input type="password" id="pw-in" placeholder="••••••" maxlength="20" autocomplete="off">
-            </div>
-            <button class="pw-btn" onclick="checkPw()">Masuk →</button>
+            <h2>LinkVault Pro</h2>
+            <div class="pw-wrap"><input type="password" id="pw-in" placeholder="••••••" autocomplete="off"></div>
+            <button class="btn-primary" onclick="checkPw()">Masuk</button>
         </div>
     </div>
 
-    <!-- ── MAIN APP ── -->
+    <!-- APP -->
     <div id="app">
-
         <header>
-            <div class="logo">Link<b>Vault</b><span>.io</span></div>
+            <div class="logo">Link<b>Vault</b></div>
             <div class="search-wrap">
-                <span class="s-icon">🔍</span>
-                <input type="text" id="q" placeholder="Cari link… (Ctrl+K)" oninput="doSearch()">
+                <input type="text" id="q" placeholder="Cari link..." oninput="renderGrid()">
+                <select id="f-sort" onchange="renderGrid()">
+                    <option value="newest">Terbaru</option>
+                    <option value="views">Paling Sering Dibuka</option>
+                    <option value="az">A - Z</option>
+                </select>
+                <select id="f-filter" onchange="renderGrid()">
+                    <option value="all">Semua</option>
+                    <option value="unvisited">Belum Dikunjungi</option>
+                    <option value="this_month">Dibuat Bulan Ini</option>
+                </select>
             </div>
             <div class="hdr-btns">
-                <button class="btn-ico" title="Kelola Kategori" onclick="openManage()">🗂️</button>
-                <button class="btn-ico" title="Export JSON" onclick="exportJSON()">📤</button>
-                <button class="btn-ico" title="Import JSON" onclick="document.getElementById('imp').click()">📥</button>
-                <input type="file" id="imp" accept=".json" style="display:none" onchange="importJSON(event)">
-                <button class="btn-add-link" onclick="openAdd()">＋ Tambah Link</button>
+                <button class="btn-ico" onclick="openManage()">🗂</button>
+                <button class="btn-primary" style="width:auto; padding:8px 16px;" onclick="openAdd()">＋ Tambah</button>
             </div>
         </header>
 
-        <div class="stats-bar">
-            <span>📌 <span class="s-num" id="sp">0</span> pinned</span>
-            <span>🔗 <span class="s-num" id="st">0</span> links</span>
-            <span>🏷️ <span class="s-num" id="sc">0</span> kategori</span>
-        </div>
-
-        <div class="cat-bar" id="cat-bar">
-            <button class="c-tab active" data-id="all" onclick="setCat('all',this)">Semua <span class="c-cnt"
-                    id="ca">0</span></button>
-            <button class="c-tab" data-id="pin" onclick="setCat('pin',this)">📌 Pinned <span class="c-cnt"
-                    id="cp">0</span></button>
-        </div>
+        <div class="cat-bar" id="tag-bar"></div>
 
         <main>
-            <div class="links-grid" id="grid">
-                <div class="loading">
-                    <div class="spin"></div>
-                </div>
-            </div>
+            <div class="links-grid" id="grid"></div>
         </main>
+
+        <!-- BULK BAR -->
+        <div class="bulk-bar" id="bulk-bar">
+            <span id="bulk-count">0 terpilih</span>
+            <button class="btn-action danger" onclick="bulkDelete()">Hapus Massal</button>
+            <button class="btn-action" onclick="clearBulk()">Batal</button>
+        </div>
     </div>
 
-    <!-- ── ADD / EDIT LINK MODAL ── -->
-    <div class="overlay" id="m-link" style="display:none" onclick="if(event.target===this)closeLink()">
+    <!-- MODAL LINK -->
+    <div class="overlay" id="m-link" style="display:none" onclick="if(event.target===this)this.style.display='none'">
         <div class="modal">
-            <h2 id="m-link-ttl">＋ Tambah Link</h2>
+            <h2 id="m-link-ttl">Tambah Link</h2>
             <div class="fg">
                 <label>URL *</label>
-                <input type="url" id="f-url" placeholder="https://…" oninput="autoTitle()">
+                <input type="url" id="f-url" onblur="fetchOGData()" placeholder="https://...">
             </div>
             <div class="fg">
-                <label>JUDUL *</label>
-                <input type="text" id="f-ttl" placeholder="Nama link…">
+                <label>JUDUL * (Auto Fetch jika kosong)</label>
+                <input type="text" id="f-ttl">
             </div>
             <div class="fg">
-                <label>DESKRIPSI</label>
-                <textarea id="f-dsc" placeholder="Catatan singkat…"></textarea>
+                <label>DESKRIPSI (Mendukung Markdown)</label>
+                <textarea id="f-dsc" placeholder="# Heading&#10;- Point 1"></textarea>
             </div>
             <div class="fg">
-                <label>KATEGORI</label>
-                <select id="f-cat">
-                    <option value="">— Tanpa Kategori —</option>
-                </select>
+                <label>TAGS (Bisa pilih lebih dari satu)</label>
+                <div class="tag-grid" id="f-tags-container"></div>
             </div>
-            <div class="m-btns">
-                <button class="btn-cancel" onclick="closeLink()">Batal</button>
-                <button class="btn-save" onclick="saveLink()">Simpan</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ── ADD CATEGORY MODAL ── -->
-    <div class="overlay" id="m-cat" style="display:none" onclick="if(event.target===this)closeCat()">
-        <div class="modal">
-            <h2>＋ Tambah Kategori</h2>
-            <div class="fg">
-                <label>NAMA *</label>
-                <input type="text" id="cn" placeholder="cth: Dev Tools, Referensi…">
-            </div>
-            <div class="fg">
-                <label>WARNA</label>
-                <div class="color-row" id="clr-pick"></div>
-            </div>
-            <div class="m-btns">
-                <button class="btn-cancel" onclick="closeCat()">Batal</button>
-                <button class="btn-save" onclick="saveCat()">Simpan</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ── MANAGE CATEGORIES MODAL ── -->
-    <div class="overlay" id="m-manage" style="display:none" onclick="if(event.target===this)closeManage()">
-        <div class="modal">
-            <h2>🗂️ Kelola Kategori</h2>
-            <div class="cat-list" id="cat-list"></div>
-            <div class="m-btns">
-                <button class="btn-cancel" onclick="closeManage()">Tutup</button>
-                <button class="btn-save" onclick="closeManage();openCat()">＋ Tambah Baru</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ── SETUP DB MODAL ── -->
-    <div class="overlay" id="m-setup" style="display:none">
-        <div class="modal" style="max-width:540px">
-            <h2>⚙️ Setup Database</h2>
-            <p style="color:var(--text2);font-size:13px;margin-bottom:14px">
-                Jalankan SQL ini di <strong>Supabase → SQL Editor</strong> lalu klik <em>Sudah Dibuat</em>.
-            </p>
-            <div class="sql-box" id="sql-box"></div>
-            <button class="btn-save" style="width:100%;padding:11px" onclick="copySQL()">📋 Copy SQL</button>
-            <div class="m-btns" style="margin-top:14px">
-                <button class="btn-save" onclick="closeSetup();init()">✓ Sudah Dibuat, Lanjutkan</button>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn-action"
+                    onclick="document.getElementById('m-link').style.display='none'">Batal</button>
+                <button class="btn-primary" style="width:auto;" onclick="saveLink()">Simpan</button>
             </div>
         </div>
     </div>
 
     <script>
-        /* ─── CONFIG ─── */
         const SB_URL = 'https://tdoxttalxwunrweypybw.supabase.co';
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkb3h0dGFseHd1bnJ3ZXlweWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTQ4NDIsImV4cCI6MjA5MzY3MDg0Mn0.X9-1HiW9uge5s2-Q85VF8hAgKp-u01xzf5JEGaoy0Rg';
         const PASS = '141516';
-        const PALETTE = ['#7c6aff', '#f472b6', '#34d399', '#fbbf24', '#38bdf8', '#fb923c', '#e879f9', '#2dd4bf', '#f87171', '#60a5fa'];
-        const SQL = `-- Jalankan di Supabase → SQL Editor
 
-CREATE TABLE IF NOT EXISTS categories (
-  id         UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name       TEXT NOT NULL,
-  color      TEXT DEFAULT '#7c6aff',
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS links (
-  id          UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title       TEXT NOT NULL,
-  url         TEXT NOT NULL,
-  description TEXT,
-  category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
-  is_pinned   BOOLEAN DEFAULT FALSE,
-  view_count  INTEGER DEFAULT 0,
-  created_at  TIMESTAMPTZ DEFAULT NOW()
-);`;
-
-        /* ─── STATE ─── */
-        let db, cats = [], links = [], curCat = 'all', q = '', editId = null, pickColor = PALETTE[0];
-
-        /* ─── PASSWORD ─── */
-        const pwIn = document.getElementById('pw-in');
-        pwIn.addEventListener('keydown', e => { if (e.key === 'Enter') checkPw(); });
+        let db, tags = [], links = [], link_tags = [], activeTag = 'all', editId = null;
+        let selectedLinks = new Set(), tempOgImage = '';
 
         function checkPw() {
-            if (pwIn.value === PASS) {
+            if (document.getElementById('pw-in').value === PASS) {
                 document.getElementById('pw-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
-                document.getElementById('app').style.flexDirection = 'column';
                 init();
-            } else {
-                pwIn.classList.add('shake');
-                setTimeout(() => pwIn.classList.remove('shake'), 500);
-                pwIn.value = '';
-                pwIn.focus();
             }
         }
 
-        /* ─── INIT ─── */
         async function init() {
             db = supabase.createClient(SB_URL, SB_KEY);
-            await loadAll();
+            await loadData();
         }
 
-        async function loadAll() {
-            try {
-                const [cr, lr] = await Promise.all([
-                    db.from('categories').select('*').order('name'),
-                    db.from('links').select('*').order('is_pinned', { ascending: false }).order('created_at', { ascending: false })
-                ]);
-                if (cr.error || lr.error) { showSetup(); return; }
-                cats = cr.data || [];
-                links = lr.data || [];
-                renderTabs(); renderGrid(); fillCatSel(); updateStats();
-            } catch (e) { showSetup(); }
-        }
-
-        /* ─── SETUP ─── */
-        function showSetup() {
-            document.getElementById('sql-box').textContent = SQL;
-            document.getElementById('m-setup').style.display = 'flex';
-        }
-        function closeSetup() { document.getElementById('m-setup').style.display = 'none'; }
-        function copySQL() { navigator.clipboard.writeText(SQL); toast('SQL disalin!'); }
-
-        /* ─── TABS ─── */
-        function renderTabs() {
-            const bar = document.getElementById('cat-bar');
-            while (bar.children.length > 2) bar.removeChild(bar.lastChild);
-
-            cats.forEach(c => {
-                const cnt = links.filter(l => l.category_id === c.id).length;
-                const b = document.createElement('button');
-                b.className = 'c-tab' + (curCat === c.id ? ' active' : '');
-                b.dataset.id = c.id;
-                b.onclick = () => setCat(c.id, b);
-                b.innerHTML = `<span class="c-dot" style="background:${c.color}"></span>${esc(c.name)}<span class="c-cnt">${cnt}</span>`;
-                bar.appendChild(b);
-            });
-
-            const nb = document.createElement('button');
-            nb.className = 'btn-newcat'; nb.onclick = openCat; nb.innerHTML = '＋ Kategori';
-            bar.appendChild(nb);
-
-            document.getElementById('ca').textContent = links.length;
-            document.getElementById('cp').textContent = links.filter(l => l.is_pinned).length;
-        }
-
-        function setCat(id, btn) {
-            curCat = id;
-            document.querySelectorAll('.c-tab').forEach(t => t.classList.remove('active'));
-            btn.classList.add('active');
+        async function loadData() {
+            const [tRes, lRes, ltRes] = await Promise.all([
+                db.from('tags').select('*'),
+                db.from('links').select('*'),
+                db.from('link_tags').select('*')
+            ]);
+            tags = tRes.data || [];
+            links = lRes.data || [];
+            link_tags = ltRes.data || [];
+            renderTagBar();
             renderGrid();
         }
 
-        /* ─── GRID ─── */
+        // --- RENDER UI ---
+        function renderTagBar() {
+            const bar = document.getElementById('tag-bar');
+            bar.innerHTML = `<button class="btn-action ${activeTag === 'all' ? 'danger' : ''}" onclick="setActiveTag('all')">Semua</button>`;
+            tags.forEach(t => {
+                const count = link_tags.filter(lt => lt.tag_id === t.id).length;
+                bar.innerHTML += `<button class="btn-action ${activeTag === t.id ? 'danger' : ''}" style="border-color:${t.color}" onclick="setActiveTag('${t.id}')">${t.name} (${count})</button>`;
+            });
+        }
+
+        function setActiveTag(id) { activeTag = id; renderTagBar(); renderGrid(); }
+
         function renderGrid() {
             const g = document.getElementById('grid');
-            g.innerHTML = '';
+            const q = document.getElementById('q').value.toLowerCase();
+            const sort = document.getElementById('f-sort').value;
+            const filter = document.getElementById('f-filter').value;
+            const now = new Date();
 
-            let rows = [...links];
-            if (curCat === 'pin') rows = rows.filter(l => l.is_pinned);
-            else if (curCat !== 'all') rows = rows.filter(l => l.category_id === curCat);
-
-            if (q) {
-                const qq = q.toLowerCase();
-                rows = rows.filter(l =>
-                    l.title.toLowerCase().includes(qq) ||
-                    l.url.toLowerCase().includes(qq) ||
-                    (l.description || '').toLowerCase().includes(qq)
-                );
-            }
-
-            if (!rows.length) {
-                g.innerHTML = `<div class="empty"><div class="empty-ico">🔗</div><h3>Belum ada link</h3><p>Klik "+ Tambah Link" untuk mulai.</p></div>`;
-                return;
-            }
-
-            rows.forEach((l, i) => {
-                const cat = cats.find(c => c.id === l.category_id);
-                const dom = getDomain(l.url);
-                const fav = `https://www.google.com/s2/favicons?domain=${dom}&sz=32`;
-                const d = document.createElement('div');
-                d.className = 'lcard' + (l.is_pinned ? ' pinned' : '');
-                d.style.animationDelay = `${i * 25}ms`;
-                d.innerHTML = `
-      ${l.is_pinned ? '<div class="pin-tag">📌</div>' : ''}
-      <div class="card-actions">
-        <button class="act ${l.is_pinned ? 'pin-on' : ''}" title="Pin" onclick="event.stopPropagation();togglePin('${l.id}')">📌</button>
-        <button class="act" title="Edit" onclick="event.stopPropagation();openEdit('${l.id}')">✏️</button>
-        <button class="act del" title="Hapus" onclick="event.stopPropagation();delLink('${l.id}')">🗑️</button>
-      </div>
-      <div class="card-top">
-        <div class="fav"><img src="${fav}" onerror="this.parentNode.innerHTML='🌐'" alt=""></div>
-        <div class="c-meta">
-          <div class="c-title">${esc(l.title)}</div>
-          <div class="c-url">${dom}</div>
-        </div>
-      </div>
-      ${l.description ? `<div class="c-desc">${esc(l.description)}</div>` : ''}
-      <div class="card-foot">
-        ${cat ? `<span class="cat-badge" style="background:${cat.color}20;color:${cat.color}">${esc(cat.name)}</span>` : '<span></span>'}
-        <span class="vc">👁 ${l.view_count || 0}</span>
-      </div>`;
-                d.addEventListener('click', () => openURL(l.id, l.url));
-                g.appendChild(d);
+            let data = links.filter(l => {
+                // Search filter
+                const matchQ = l.title.toLowerCase().includes(q) || l.url.toLowerCase().includes(q);
+                // Tag filter
+                const matchTag = activeTag === 'all' || link_tags.some(lt => lt.link_id === l.id && lt.tag_id === activeTag);
+                // Adv filter
+                let matchAdv = true;
+                if (filter === 'unvisited') matchAdv = l.view_count === 0;
+                if (filter === 'this_month') {
+                    const lDate = new Date(l.created_at);
+                    matchAdv = lDate.getMonth() === now.getMonth() && lDate.getFullYear() === now.getFullYear();
+                }
+                return matchQ && matchTag && matchAdv;
             });
+
+            // Sorting
+            data.sort((a, b) => {
+                if (a.is_pinned !== b.is_pinned) return b.is_pinned - a.is_pinned; // Pin always top
+                if (sort === 'newest') return new Date(b.created_at) - new Date(a.created_at);
+                if (sort === 'views') return b.view_count - a.view_count;
+                if (sort === 'az') return a.title.localeCompare(b.title);
+            });
+
+            g.innerHTML = data.map(l => {
+                const lTags = link_tags.filter(lt => lt.link_id === l.id).map(lt => tags.find(t => t.id === lt.tag_id)).filter(Boolean);
+                const tagHtml = lTags.map(t => `<span class="tag-badge" style="background:${t.color}20;color:${t.color}">${t.name}</span>`).join('');
+                const imgHtml = l.og_image ? `<img src="${l.og_image}" class="card-img" onerror="this.style.display='none'">` : '';
+                const isSel = selectedLinks.has(l.id) ? 'checked' : '';
+                const rawDesc = l.description || '';
+                const mdDesc = marked.parse(rawDesc); // Render Markdown
+
+                return `
+                <div class="lcard ${l.is_pinned ? 'pinned' : ''}" onclick="openUrl('${l.id}', '${l.url}')">
+                    ${imgHtml}
+                    <div class="card-actions">
+                        <input type="checkbox" class="cb-bulk" ${isSel} onclick="event.stopPropagation(); toggleBulk('${l.id}')">
+                        <button class="act-btn" onclick="event.stopPropagation(); togglePin('${l.id}', ${!l.is_pinned})">📌</button>
+                        <button class="act-btn" onclick="event.stopPropagation(); openEdit('${l.id}')">✏️</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="c-meta"><div class="c-title">${l.title}</div></div>
+                        <div class="c-desc mkd">${mdDesc}</div>
+                        <div class="card-foot">
+                            <div class="tags-wrap">${tagHtml}</div>
+                            <span style="font-size:10px; color:var(--text3)">👁 ${l.view_count}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
-        async function openURL(id, url) {
-            window.open(url, '_blank', 'noopener');
+        // --- FETCH OPEN GRAPH API ---
+        async function fetchOGData() {
+            const url = document.getElementById('f-url').value;
+            const tEl = document.getElementById('f-ttl');
+            const dEl = document.getElementById('f-dsc');
+            if (!url || tEl.value) return;
+
+            tEl.placeholder = 'Fetching metadata...';
+            try {
+                // Menggunakan API Microlink gratis untuk parsing meta tag & gambar Open Graph
+                const res = await fetch(`https://api.microlink.io?url=${encodeURIComponent(url)}`);
+                const json = await res.json();
+                if (json.status === 'success') {
+                    if (!tEl.value) tEl.value = json.data.title || '';
+                    if (!dEl.value) dEl.value = json.data.description || '';
+                    if (json.data.image) tempOgImage = json.data.image.url;
+                }
+            } catch (e) { console.log('OG Fetch fail', e); }
+            tEl.placeholder = '';
+        }
+
+        // --- LINK ACTIONS ---
+        function openAdd() {
+            editId = null; tempOgImage = '';
+            document.getElementById('m-link-ttl').innerText = 'Tambah Link';
+            document.getElementById('f-url').value = '';
+            document.getElementById('f-ttl').value = '';
+            document.getElementById('f-dsc').value = '';
+            renderTagSelector();
+            document.getElementById('m-link').style.display = 'flex';
+        }
+
+        function renderTagSelector(selectedTagIds = []) {
+            const c = document.getElementById('f-tags-container');
+            c.innerHTML = tags.map(t => {
+                const isChecked = selectedTagIds.includes(t.id);
+                return `<label class="tag-check ${isChecked ? 'checked' : ''}">
+                    <input type="checkbox" value="${t.id}" ${isChecked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('checked')">
+                    <span style="color:${t.color}">●</span> ${t.name}
+                </label>`;
+            }).join('');
+        }
+
+        async function saveLink() {
+            const url = document.getElementById('f-url').value;
+            const title = document.getElementById('f-ttl').value || url;
+            const description = document.getElementById('f-dsc').value;
+
+            // Ambil semua tag yang dicentang
+            const tagInputs = document.querySelectorAll('#f-tags-container input:checked');
+            const selectedTags = Array.from(tagInputs).map(i => i.value);
+
+            let linkId = editId;
+            const linkData = { url, title, description, og_image: tempOgImage || null };
+
+            if (editId) {
+                await db.from('links').update(linkData).eq('id', editId);
+                await db.from('link_tags').delete().eq('link_id', editId); // Reset tags
+            } else {
+                const { data } = await db.from('links').insert([linkData]).select().single();
+                linkId = data.id;
+            }
+
+            // Insert Many-to-Many Tags
+            if (selectedTags.length > 0) {
+                const tagPayload = selectedTags.map(tId => ({ link_id: linkId, tag_id: tId }));
+                await db.from('link_tags').insert(tagPayload);
+            }
+
+            document.getElementById('m-link').style.display = 'none';
+            await loadData();
+        }
+
+        async function openUrl(id, url) {
+            window.open(url, '_blank');
+            // Log visit history & increment counter
+            await db.from('visit_logs').insert([{ link_id: id }]);
+
             const l = links.find(x => x.id === id);
-            if (!l) return;
-            const nv = (l.view_count || 0) + 1;
-            await db.from('links').update({ view_count: nv }).eq('id', id);
-            l.view_count = nv;
+            l.view_count++;
+            await db.from('links').update({ view_count: l.view_count }).eq('id', id);
             renderGrid();
         }
 
-        /* ─── CAT SELECT ─── */
-        function fillCatSel() {
-            const s = document.getElementById('f-cat');
-            const v = s.value;
-            s.innerHTML = '<option value="">— Tanpa Kategori —</option>';
-            cats.forEach(c => {
-                const o = document.createElement('option');
-                o.value = c.id; o.textContent = c.name; s.appendChild(o);
-            });
-            s.value = v;
+        async function togglePin(id, state) {
+            await db.from('links').update({ is_pinned: state }).eq('id', id);
+            await loadData();
         }
 
-        /* ─── LINK MODAL ─── */
-        function openAdd() {
-            editId = null;
-            document.getElementById('m-link-ttl').textContent = '＋ Tambah Link';
-            ['f-url', 'f-ttl', 'f-dsc'].forEach(i => document.getElementById(i).value = '');
-            document.getElementById('f-cat').value = '';
-            document.getElementById('m-link').style.display = 'flex';
-            setTimeout(() => document.getElementById('f-url').focus(), 80);
-        }
+        // --- BULK ACTIONS ---
+        function toggleBulk(id) {
+            if (selectedLinks.has(id)) selectedLinks.delete(id);
+            else selectedLinks.add(id);
 
-        function openEdit(id) {
-            const l = links.find(x => x.id === id); if (!l) return;
-            editId = id;
-            document.getElementById('m-link-ttl').textContent = '✏️ Edit Link';
-            document.getElementById('f-url').value = l.url;
-            document.getElementById('f-ttl').value = l.title;
-            document.getElementById('f-dsc').value = l.description || '';
-            document.getElementById('f-cat').value = l.category_id || '';
-            document.getElementById('m-link').style.display = 'flex';
-        }
-
-        function closeLink() { document.getElementById('m-link').style.display = 'none'; }
-
-        async function saveLink() {
-            const url = document.getElementById('f-url').value.trim();
-            const title = document.getElementById('f-ttl').value.trim();
-            const desc = document.getElementById('f-dsc').value.trim();
-            const catId = document.getElementById('f-cat').value;
-            if (!url) { toast('URL wajib diisi!', 'err'); return; }
-            if (!title) { toast('Judul wajib diisi!', 'err'); return; }
-            const data = { url, title, description: desc || null, category_id: catId || null };
-            if (editId) {
-                const { error } = await db.from('links').update(data).eq('id', editId);
-                if (error) { toast('Gagal: ' + error.message, 'err'); return; }
-                const i = links.findIndex(l => l.id === editId);
-                if (i > -1) links[i] = { ...links[i], ...data };
-                toast('Link diupdate ✓');
+            const bar = document.getElementById('bulk-bar');
+            if (selectedLinks.size > 0) {
+                bar.classList.add('active');
+                document.getElementById('bulk-count').innerText = `${selectedLinks.size} link terpilih`;
             } else {
-                const { data: nl, error } = await db.from('links').insert([data]).select().single();
-                if (error) { toast('Gagal: ' + error.message, 'err'); return; }
-                links.unshift(nl);
-                toast('Link ditambahkan ✓');
+                bar.classList.remove('active');
             }
-            closeLink(); renderTabs(); renderGrid(); updateStats();
         }
 
-        async function delLink(id) {
-            if (!confirm('Hapus link ini?')) return;
-            const { error } = await db.from('links').delete().eq('id', id);
-            if (error) { toast('Gagal: ' + error.message, 'err'); return; }
-            links = links.filter(l => l.id !== id);
-            renderTabs(); renderGrid(); updateStats();
-            toast('Dihapus.');
+        function clearBulk() {
+            selectedLinks.clear();
+            document.getElementById('bulk-bar').classList.remove('active');
+            document.querySelectorAll('.cb-bulk').forEach(cb => cb.checked = false);
         }
 
-        async function togglePin(id) {
-            const l = links.find(x => x.id === id); if (!l) return;
-            const nv = !l.is_pinned;
-            const { error } = await db.from('links').update({ is_pinned: nv }).eq('id', id);
-            if (error) { toast('Gagal', 'err'); return; }
-            l.is_pinned = nv;
-            renderTabs(); renderGrid(); updateStats();
+        async function bulkDelete() {
+            if (!confirm(`Hapus ${selectedLinks.size} link secara permanen?`)) return;
+            const ids = Array.from(selectedLinks);
+            await db.from('links').delete().in('id', ids);
+            clearBulk();
+            await loadData();
         }
-
-        /* ─── AUTO-TITLE ─── */
-        let _at;
-        function autoTitle() {
-            clearTimeout(_at);
-            _at = setTimeout(() => {
-                const url = document.getElementById('f-url').value.trim();
-                const tf = document.getElementById('f-ttl');
-                if (url && !tf.value) { try { tf.value = new URL(url).hostname.replace('www.', ''); } catch (e) { } }
-            }, 600);
-        }
-
-        /* ─── CAT MODAL ─── */
-        function openCat() {
-            document.getElementById('cn').value = '';
-            pickColor = PALETTE[0];
-            renderPicker();
-            document.getElementById('m-cat').style.display = 'flex';
-            setTimeout(() => document.getElementById('cn').focus(), 80);
-        }
-        function closeCat() { document.getElementById('m-cat').style.display = 'none'; }
-
-        function renderPicker() {
-            const w = document.getElementById('clr-pick');
-            w.innerHTML = '';
-            PALETTE.forEach(c => {
-                const d = document.createElement('div');
-                d.className = 'clr' + (c === pickColor ? ' sel' : '');
-                d.style.background = c;
-                d.onclick = () => { pickColor = c; renderPicker(); };
-                w.appendChild(d);
-            });
-        }
-
-        async function saveCat() {
-            const name = document.getElementById('cn').value.trim();
-            if (!name) { toast('Nama wajib!', 'err'); return; }
-            const { data: nc, error } = await db.from('categories').insert([{ name, color: pickColor }]).select().single();
-            if (error) { toast('Gagal: ' + error.message, 'err'); return; }
-            cats.push(nc); cats.sort((a, b) => a.name.localeCompare(b.name));
-            closeCat(); renderTabs(); fillCatSel(); updateStats();
-            toast('Kategori ditambahkan ✓');
-        }
-
-        /* ─── MANAGE MODAL ─── */
-        function openManage() {
-            renderManageList();
-            document.getElementById('m-manage').style.display = 'flex';
-        }
-        function closeManage() { document.getElementById('m-manage').style.display = 'none'; }
-
-        function renderManageList() {
-            const el = document.getElementById('cat-list');
-            if (!cats.length) { el.innerHTML = '<p style="color:var(--text3);font-size:12px;text-align:center;padding:20px;font-family:Space Mono,monospace">Belum ada kategori</p>'; return; }
-            el.innerHTML = cats.map(c => `
-    <div class="ci">
-      <div class="c-dot" style="background:${c.color}"></div>
-      <span>${esc(c.name)}</span>
-      <small>${links.filter(l => l.category_id === c.id).length} links</small>
-      <button class="btn-del-cat" onclick="delCat('${c.id}')">Hapus</button>
-    </div>`).join('');
-        }
-
-        async function delCat(id) {
-            if (!confirm('Hapus kategori? Link di dalamnya tetap ada.')) return;
-            const { error } = await db.from('categories').delete().eq('id', id);
-            if (error) { toast('Gagal: ' + error.message, 'err'); return; }
-            cats = cats.filter(c => c.id !== id);
-            links.forEach(l => { if (l.category_id === id) l.category_id = null; });
-            if (curCat === id) curCat = 'all';
-            renderManageList(); renderTabs(); renderGrid(); fillCatSel(); updateStats();
-            toast('Kategori dihapus.');
-        }
-
-        /* ─── SEARCH ─── */
-        function doSearch() { q = document.getElementById('q').value.trim(); renderGrid(); }
-
-        /* ─── STATS ─── */
-        function updateStats() {
-            document.getElementById('st').textContent = links.length;
-            document.getElementById('sp').textContent = links.filter(l => l.is_pinned).length;
-            document.getElementById('sc').textContent = cats.length;
-        }
-
-        /* ─── EXPORT / IMPORT ─── */
-        function exportJSON() {
-            const blob = new Blob([JSON.stringify({ categories: cats, links, exportedAt: new Date().toISOString() }, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `linkvault-${Date.now()}.json`;
-            a.click();
-            toast('Data diexport ✓');
-        }
-
-        async function importJSON(ev) {
-            const file = ev.target.files[0]; if (!file) return;
-            try {
-                const data = JSON.parse(await file.text());
-                if (!data.links) { toast('Format tidak valid', 'err'); return; }
-                for (const c of data.categories || []) {
-                    if (!cats.find(x => x.name === c.name)) {
-                        const { data: nc } = await db.from('categories').insert([{ name: c.name, color: c.color || PALETTE[0] }]).select().single();
-                        if (nc) cats.push(nc);
-                    }
-                }
-                for (const l of data.links) {
-                    if (!links.find(x => x.url === l.url)) {
-                        const mc = cats.find(c => c.name === (data.categories || []).find(dc => dc.id === l.category_id)?.name);
-                        await db.from('links').insert([{ title: l.title, url: l.url, description: l.description, category_id: mc?.id || null, is_pinned: l.is_pinned || false }]);
-                    }
-                }
-                await loadAll();
-                toast('Import berhasil ✓');
-            } catch (e) { toast('Gagal import: ' + e.message, 'err'); }
-            ev.target.value = '';
-        }
-
-        /* ─── UTILS ─── */
-        function getDomain(u) { try { return new URL(u).hostname; } catch { return u; } }
-        function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-
-        function toast(msg, type = 'ok') {
-            document.querySelector('.toast')?.remove();
-            const t = document.createElement('div');
-            t.className = 'toast ' + type;
-            t.innerHTML = (type === 'ok' ? '✓ ' : '✕ ') + msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
-        }
-
-        /* ─── KEYBOARD ─── */
-        document.addEventListener('keydown', e => {
-            if (document.getElementById('app').style.display === 'none') return;
-            if (e.key === 'Escape') { closeLink(); closeCat(); closeManage(); }
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); document.getElementById('q').focus(); }
-        });
     </script>
 </body>
 
