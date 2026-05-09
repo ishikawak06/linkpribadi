@@ -285,9 +285,10 @@
         .c-desc.mkd p {
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
+            /* <-- Tambahkan baris ini */
             -webkit-box-orient: vertical;
             overflow: hidden;
-            margin-bottom: 4px;
         }
 
         .c-desc.mkd code {
@@ -497,7 +498,25 @@
             <button class="btn-action" onclick="clearBulk()">Batal</button>
         </div>
     </div>
-
+    <!-- MODAL MANAGE TAGS -->
+    <div class="overlay" id="m-manage" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+        <div class="modal">
+            <h2>🗂 Kelola Tags</h2>
+            <div style="display:flex; gap:8px; margin-bottom:16px;">
+                <input type="text" id="new-tag-name" placeholder="Nama Tag Baru..."
+                    style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border); background:var(--bg3); color:var(--text);">
+                <input type="color" id="new-tag-color" value="#7c6aff"
+                    style="width:40px; height:36px; border:none; border-radius:6px; cursor:pointer; background:transparent;">
+                <button class="btn-primary" style="width:auto; padding:8px 16px;" onclick="saveNewTag()">Tambah</button>
+            </div>
+            <div id="manage-tag-list"
+                style="max-height: 250px; overflow-y: auto; display:flex; flex-direction:column; gap:8px;"></div>
+            <div style="display:flex; justify-content:flex-end; margin-top:16px;">
+                <button class="btn-action"
+                    onclick="document.getElementById('m-manage').style.display='none'">Tutup</button>
+            </div>
+        </div>
+    </div>
     <!-- MODAL LINK -->
     <div class="overlay" id="m-link" style="display:none" onclick="if(event.target===this)this.style.display='none'">
         <div class="modal">
@@ -718,7 +737,61 @@
             await db.from('links').update({ is_pinned: state }).eq('id', id);
             await loadData();
         }
+        // --- MANAGE TAGS (KELOLA KATEGORI) ---
+        function openManage() {
+            renderManageList();
+            document.getElementById('m-manage').style.display = 'flex';
+        }
 
+        function renderManageList() {
+            const list = document.getElementById('manage-tag-list');
+            list.innerHTML = tags.map(t => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg3); padding:8px 12px; border-radius:8px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="color:${t.color}">●</span> <span style="font-size:13px">${t.name}</span>
+                    </div>
+                    <button class="btn-action danger" onclick="deleteTag('${t.id}')">Hapus</button>
+                </div>
+            `).join('');
+        }
+
+        async function saveNewTag() {
+            const name = document.getElementById('new-tag-name').value.trim();
+            const color = document.getElementById('new-tag-color').value;
+            if (!name) return;
+
+            await db.from('tags').insert([{ name, color }]);
+            document.getElementById('new-tag-name').value = '';
+            await loadData();
+            renderManageList();
+        }
+
+        async function deleteTag(id) {
+            if (!confirm('Hapus tag ini secara permanen?')) return;
+            await db.from('tags').delete().eq('id', id);
+            if (activeTag === id) activeTag = 'all'; // Reset view jika tag yg aktif dihapus
+            await loadData();
+            renderManageList();
+        }
+
+        // --- OPEN EDIT (EDIT LINK) ---
+        function openEdit(id) {
+            const l = links.find(x => x.id === id);
+            if (!l) return;
+
+            editId = id;
+            tempOgImage = l.og_image || '';
+            document.getElementById('m-link-ttl').innerText = 'Edit Link';
+            document.getElementById('f-url').value = l.url;
+            document.getElementById('f-ttl').value = l.title;
+            document.getElementById('f-dsc').value = l.description || '';
+
+            // Centang otomatis tags yang dimiliki link ini
+            const selectedTagIds = link_tags.filter(lt => lt.link_id === id).map(lt => lt.tag_id);
+            renderTagSelector(selectedTagIds);
+
+            document.getElementById('m-link').style.display = 'flex';
+        }
         // --- BULK ACTIONS ---
         function toggleBulk(id) {
             if (selectedLinks.has(id)) selectedLinks.delete(id);
