@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 
@@ -36,7 +35,7 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        /* DARK MODE TOGGLE */
+        /* DARK MODE */
         [data-theme="dark"] {
             --bg: #0a0a0f;
             --bg2: #111118;
@@ -112,7 +111,6 @@
             font-family: var(--font-mono);
         }
 
-        /* ACCOUNT SELECTOR */
         .account-wrapper {
             padding: 16px 20px 0;
         }
@@ -202,7 +200,6 @@
             align-items: center;
         }
 
-        /* THEME TOGGLE BTN */
         .theme-btn {
             background: none;
             border: 1px solid var(--border);
@@ -336,24 +333,6 @@
             border: 1px solid rgba(201, 24, 74, 0.3);
         }
 
-        .card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            transition: background 0.3s;
-        }
-
-        .card-title {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--text3);
-            margin-bottom: 16px;
-            font-family: var(--font-mono);
-        }
-
         .grid-3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -468,19 +447,13 @@
             gap: 12px;
         }
 
-        .form-row-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-        }
-
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(4px);
-            z-index: 999;
+            z-index: 9999;
             align-items: center;
             justify-content: center;
         }
@@ -564,6 +537,7 @@
             color: var(--accent2);
         }
 
+        /* KANBAN */
         .kanban {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -576,6 +550,8 @@
             border-radius: var(--radius);
             padding: 16px;
             min-height: 400px;
+            display: flex;
+            flex-direction: column;
         }
 
         .kanban-col-title {
@@ -631,6 +607,7 @@
             margin-top: 8px;
         }
 
+        /* IDEAS */
         .idea-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -653,30 +630,7 @@
             margin-bottom: 10px;
         }
 
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            color: var(--text3);
-            gap: 10px;
-        }
-
-        .spinner {
-            width: 18px;
-            height: 18px;
-            border: 2px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg)
-            }
-        }
-
+        /* CALENDAR */
         .cal-header {
             display: flex;
             align-items: center;
@@ -701,42 +655,7 @@
             gap: 4px;
         }
 
-        .cal-day-name {
-            text-align: center;
-            font-size: 10px;
-            color: var(--text3);
-            padding: 8px 0;
-            font-family: var(--font-mono);
-            text-transform: uppercase;
-        }
-
-        .cal-cell {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px;
-            min-height: 90px;
-            cursor: pointer;
-        }
-
-        .cal-date {
-            font-size: 12px;
-            color: var(--text3);
-            font-family: var(--font-mono);
-            margin-bottom: 6px;
-        }
-
-        .cal-event {
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-bottom: 3px;
-            font-weight: 600;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
+        /* ANALYTICS */
         .analytics-table {
             width: 100%;
             border-collapse: collapse;
@@ -763,7 +682,7 @@
             position: fixed;
             bottom: 24px;
             right: 24px;
-            z-index: 9999;
+            z-index: 10000;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -795,16 +714,6 @@
             }
         }
 
-        .two-col {
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 20px;
-        }
-
-        .section-gap {
-            margin-top: 28px;
-        }
-
         .empty {
             text-align: center;
             padding: 60px 20px;
@@ -822,32 +731,30 @@
             color: var(--text2);
         }
 
-        .hook-area,
         .insight-card {
             background: var(--panel);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 20px;
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
         }
 
-        .quick-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
+        .insight-icon {
+            font-size: 32px;
         }
 
-        .quick-action {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            flex: 1;
-            min-width: 180px;
+        .insight-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .insight-body {
+            font-size: 13px;
+            color: var(--text2);
+            line-height: 1.5;
         }
     </style>
 </head>
@@ -862,7 +769,6 @@
             <div class="brand-sub">Multi-Account System</div>
         </div>
 
-        <!-- ACCOUNT SELECTOR -->
         <div class="account-wrapper">
             <select class="account-select" id="account-select" onchange="switchAccount(this.value)">
                 <option value="akun_utama">Akun: Faqih (Utama)</option>
@@ -873,36 +779,23 @@
 
         <div class="nav-section">
             <div class="nav-label">Overview</div>
-            <div class="nav-item active" onclick="navigate('dashboard')">
-                <span class="nav-icon">🏠</span> Dashboard
+            <div class="nav-item active" onclick="navigate('dashboard')"><span class="nav-icon">🏠</span> Dashboard
             </div>
         </div>
 
         <div class="nav-section">
             <div class="nav-label">Content</div>
-            <div class="nav-item" onclick="navigate('ideas')">
-                <span class="nav-icon">💡</span> Idea Bank
-                <span class="nav-badge" id="badge-ideas">0</span>
-            </div>
-            <div class="nav-item" onclick="navigate('pipeline')">
-                <span class="nav-icon">🔄</span> Pipeline
-            </div>
-            <div class="nav-item" onclick="navigate('calendar')">
-                <span class="nav-icon">📅</span> Kalender
-            </div>
+            <div class="nav-item" onclick="navigate('ideas')"><span class="nav-icon">💡</span> Idea Bank <span
+                    class="nav-badge" id="badge-ideas">0</span></div>
+            <div class="nav-item" onclick="navigate('pipeline')"><span class="nav-icon">🔄</span> Pipeline</div>
+            <div class="nav-item" onclick="navigate('calendar')"><span class="nav-icon">📅</span> Kalender</div>
         </div>
 
         <div class="nav-section">
             <div class="nav-label">Optimasi</div>
-            <div class="nav-item" onclick="navigate('analytics')">
-                <span class="nav-icon">📊</span> Analitik
-            </div>
-            <div class="nav-item" onclick="navigate('hooks')">
-                <span class="nav-icon">🎣</span> Hook Optimizer
-            </div>
-            <div class="nav-item" onclick="navigate('growth')">
-                <span class="nav-icon">🚀</span> Growth Insights
-            </div>
+            <div class="nav-item" onclick="navigate('analytics')"><span class="nav-icon">📊</span> Analitik</div>
+            <div class="nav-item" onclick="navigate('hooks')"><span class="nav-icon">🎣</span> Hook Optimizer</div>
+            <div class="nav-item" onclick="navigate('growth')"><span class="nav-icon">🚀</span> Growth Insights</div>
         </div>
 
         <div class="sidebar-footer">
@@ -913,6 +806,8 @@
 
     <!-- MAIN CONTENT -->
     <main class="main">
+
+        <!-- DASHBOARD -->
         <div class="page active" id="page-dashboard">
             <div class="page-header">
                 <div>
@@ -920,39 +815,345 @@
                     <div class="page-sub">Data eksklusif untuk akun yang sedang dipilih.</div>
                 </div>
             </div>
-
-            <div class="grid-4" id="dashboard-stats">
+            <div class="grid-4">
                 <div class="stat-card">
-                    <div class="stat-icon">💡</div>
                     <div class="stat-label">Total Ide</div>
-                    <div class="stat-value" id="stat-ideas">—</div>
-                    <div class="stat-delta">Siap eksekusi</div>
+                    <div class="stat-value" id="stat-ideas">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">🔄</div>
                     <div class="stat-label">Dalam Pipeline</div>
-                    <div class="stat-value" id="stat-pipeline">—</div>
-                    <div class="stat-delta">Aktif diproduksi</div>
+                    <div class="stat-value" id="stat-pipeline">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">📅</div>
                     <div class="stat-label">Posting Bulan Ini</div>
-                    <div class="stat-value" id="stat-posts">—</div>
-                    <div class="stat-delta">Konten terjadwal</div>
+                    <div class="stat-value" id="stat-posts">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">📊</div>
                     <div class="stat-label">Avg Engagement</div>
-                    <div class="stat-value" id="stat-engage">—</div>
-                    <div class="stat-delta">Dari semua konten</div>
+                    <div class="stat-value" id="stat-engage">0%</div>
                 </div>
             </div>
+            <br>
+            <button class="btn btn-primary" onclick="loadDashboard()">↻ Refresh Data Dashboard</button>
+        </div>
 
-            <div class="section-gap">
-                <button class="btn btn-primary" onclick="loadDashboard()">↻ Refresh Data Dashboard</button>
+        <!-- IDEAS -->
+        <div class="page" id="page-ideas">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Idea Bank</div>
+                    <div class="page-sub">Simpan semua ide konten yang melintas di kepalamu.</div>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('modal-idea')">+ Tambah Ide</button>
+            </div>
+            <div class="idea-grid" id="ideas-container"></div>
+        </div>
+
+        <!-- PIPELINE -->
+        <div class="page" id="page-pipeline">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Content Pipeline</div>
+                    <div class="page-sub">Pantau progres pembuatan kontenmu.</div>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('modal-content')">+ Konten Baru</button>
+            </div>
+            <div class="kanban">
+                <div class="kanban-col">
+                    <div class="kanban-col-title">
+                        <div class="kanban-col-label">💡 Ide</div>
+                        <div class="kanban-count" id="count-ide">0</div>
+                    </div>
+                    <div id="col-ide" style="flex:1;"></div>
+                </div>
+                <div class="kanban-col">
+                    <div class="kanban-col-title">
+                        <div class="kanban-col-label">✏️ Draft & Script</div>
+                        <div class="kanban-count" id="count-draft">0</div>
+                    </div>
+                    <div id="col-draft" style="flex:1;"></div>
+                </div>
+                <div class="kanban-col">
+                    <div class="kanban-col-title">
+                        <div class="kanban-col-label">🎬 Produksi</div>
+                        <div class="kanban-count" id="count-produksi">0</div>
+                    </div>
+                    <div id="col-produksi" style="flex:1;"></div>
+                </div>
+                <div class="kanban-col">
+                    <div class="kanban-col-title">
+                        <div class="kanban-col-label">✅ Siap Posting</div>
+                        <div class="kanban-count" id="count-selesai">0</div>
+                    </div>
+                    <div id="col-selesai" style="flex:1;"></div>
+                </div>
             </div>
         </div>
+
+        <!-- CALENDAR -->
+        <div class="page" id="page-calendar">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Kalender Konten</div>
+                    <div class="page-sub">Jadwal rilis konten agar tetap konsisten.</div>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('modal-schedule')">+ Jadwalkan</button>
+            </div>
+            <div
+                style="background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:24px;">
+                <div class="cal-header">
+                    <div class="cal-month" id="cal-month-label">Jadwal Konten</div>
+                    <div class="cal-nav" id="cal-nav-buttons" style="display:none;">
+                        <button class="btn btn-ghost btn-sm">← Prev</button>
+                        <button class="btn btn-ghost btn-sm">Next →</button>
+                    </div>
+                </div>
+                <div class="cal-grid" id="cal-grid"></div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS -->
+        <div class="page" id="page-analytics">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Analitik Konten</div>
+                    <div class="page-sub">Lacak performa dan temukan pola konten yang berhasil.</div>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('modal-analytic')">+ Input Data</button>
+            </div>
+            <div class="grid-4" style="margin-bottom:24px;">
+                <div class="stat-card">
+                    <div class="stat-label">Total Reach</div>
+                    <div class="stat-value" id="an-reach">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Avg Likes</div>
+                    <div class="stat-value" id="an-likes">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Best Eng. Rate</div>
+                    <div class="stat-value" id="an-best">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Konten Dianalisis</div>
+                    <div class="stat-value" id="an-total">0</div>
+                </div>
+            </div>
+            <div
+                style="background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); overflow-x:auto;">
+                <table class="analytics-table">
+                    <thead>
+                        <tr>
+                            <th>Judul Konten</th>
+                            <th>Format</th>
+                            <th>Likes</th>
+                            <th>Views</th>
+                            <th>Eng. Rate</th>
+                            <th>Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="analytics-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- HOOKS -->
+        <div class="page" id="page-hooks">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Hook Optimizer</div>
+                    <div class="page-sub">Simpan dan buat hook yang memancing penonton.</div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div
+                    style="background:var(--panel); padding:20px; border-radius:var(--radius); border:1px solid var(--border);">
+                    <h3 style="margin-bottom:16px;">Tulis Hook Baru</h3>
+                    <textarea class="form-textarea" id="hook-input"
+                        placeholder="Ketik hook kontenmu di sini..."></textarea>
+                    <button class="btn btn-primary" style="margin-top:10px; width:100%; justify-content:center;"
+                        onclick="saveHookManual()">Simpan Hook Ini</button>
+                </div>
+                <div
+                    style="background:var(--panel); padding:20px; border-radius:var(--radius); border:1px solid var(--border);">
+                    <h3 style="margin-bottom:16px;">Hook Tersimpan</h3>
+                    <div id="saved-hooks-list" style="max-height:300px; overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GROWTH -->
+        <div class="page" id="page-growth">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Growth Insights</div>
+                    <div class="page-sub">Rekomendasi berbasis AI dari data analitikmu.</div>
+                </div>
+            </div>
+            <div id="key-insights"></div>
+        </div>
     </main>
+
+    <!-- ========================= MODALS ========================= -->
+
+    <!-- Modal Idea -->
+    <div class="modal-overlay" id="modal-idea">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Tambah Ide Konten</div>
+                <button class="modal-close" onclick="closeModal('modal-idea')">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Judul / Hook Utama</label>
+                <input type="text" class="form-input" id="idea-title"
+                    placeholder="Contoh: 3 Cara Meningkatkan Followers">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Format Konten</label>
+                    <select class="form-select" id="idea-type">
+                        <option value="Reels">Reels / TikTok</option>
+                        <option value="Carousel">Carousel</option>
+                        <option value="Feed">Single Feed</option>
+                        <option value="Stories">Stories</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kategori</label>
+                    <input type="text" class="form-input" id="idea-category" placeholder="Edukasi, Hiburan, dll">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Deskripsi Lengkap / Poin-poin</label>
+                <textarea class="form-textarea" id="idea-desc" placeholder="Jelaskan idenya..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Skor Potensi (1-10)</label>
+                <input type="number" class="form-input" id="idea-score" min="1" max="10" value="7">
+            </div>
+            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;"
+                onclick="saveIdea()">Simpan Ide</button>
+        </div>
+    </div>
+
+    <!-- Modal Content Pipeline -->
+    <div class="modal-overlay" id="modal-content">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Konten Pipeline</div>
+                <button class="modal-close" onclick="closeModal('modal-content')">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Judul Konten</label>
+                <input type="text" class="form-input" id="content-title">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Format</label>
+                    <select class="form-select" id="content-type">
+                        <option value="Reels">Reels</option>
+                        <option value="Carousel">Carousel</option>
+                        <option value="Feed">Feed</option>
+                        <option value="Stories">Stories</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="content-status">
+                        <option value="ide">💡 Ide</option>
+                        <option value="draft">✏️ Draft / Script</option>
+                        <option value="produksi">🎬 Sedang Produksi</option>
+                        <option value="selesai">✅ Selesai</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Hook</label>
+                <textarea class="form-textarea" id="content-hook" style="min-height:50px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Notes</label>
+                <textarea class="form-textarea" id="content-notes"></textarea>
+            </div>
+            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;"
+                onclick="saveContent()">Simpan Konten</button>
+        </div>
+    </div>
+
+    <!-- Modal Schedule (KALENDER) -->
+    <div class="modal-overlay" id="modal-schedule">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Jadwalkan Konten</div>
+                <button class="modal-close" onclick="closeModal('modal-schedule')">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Judul Konten</label>
+                <input type="text" class="form-input" id="sched-title">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Format</label>
+                    <select class="form-select" id="sched-type">
+                        <option value="Reels">Reels</option>
+                        <option value="Carousel">Carousel</option>
+                        <option value="Feed">Feed</option>
+                        <option value="Stories">Stories</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tanggal Posting</label>
+                    <input type="date" class="form-input" id="sched-date">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Waktu Posting (Opsional)</label>
+                <input type="time" class="form-input" id="sched-time">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Catatan Tambahan</label>
+                <textarea class="form-textarea" id="sched-notes"></textarea>
+            </div>
+            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;"
+                onclick="saveSchedule()">Simpan Jadwal</button>
+        </div>
+    </div>
+
+    <!-- Modal Analytics -->
+    <div class="modal-overlay" id="modal-analytic">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Input Data Analitik</div>
+                <button class="modal-close" onclick="closeModal('modal-analytic')">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Judul Konten</label>
+                <input type="text" class="form-input" id="an-title">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Format</label>
+                    <select class="form-select" id="an-type">
+                        <option value="Reels">Reels</option>
+                        <option value="Carousel">Carousel</option>
+                        <option value="Feed">Feed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tanggal Posting</label>
+                    <input type="date" class="form-input" id="an-date">
+                </div>
+            </div>
+            <div class="form-row" style="margin-bottom:16px;">
+                <div><label class="form-label">Views</label><input type="number" class="form-input" id="an-views-in"
+                        value="0"></div>
+                <div><label class="form-label">Likes</label><input type="number" class="form-input" id="an-likes-in"
+                        value="0"></div>
+            </div>
+            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;"
+                onclick="saveAnalytic()">Simpan Analitik</button>
+        </div>
+    </div>
 
     <!-- TOAST CONTAINER -->
     <div class="toast-container" id="toast-container"></div>
@@ -1004,7 +1205,7 @@
 
         // ==================== SUPABASE ====================
         const SUPA_URL = 'https://tdoxttalxwunrweypybw.supabase.co';
-        const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // GANTI DENGAN KEY ASLI ANDA
+        const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkb3h0dGFseHd1bnJ3ZXlweWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTQ4NDIsImV4cCI6MjA5MzY3MDg0Mn0.X9-1HiW9uge5s2-Q85VF8hAgKp-u01xzf5JEGaoy0Rg';
         const { createClient } = supabase;
         const db = createClient(SUPA_URL, SUPA_KEY);
 
@@ -1017,6 +1218,19 @@
             document.getElementById('toast-container').appendChild(el);
             setTimeout(() => el.remove(), 3500);
         }
+
+        function openModal(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('open');
+        }
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('open');
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+        });
 
         function navigate(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1040,22 +1254,6 @@
             if (page === 'growth') loadGrowth();
         }
 
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            if (modal) modal.classList.remove('open');
-        }
-
-        function statusLabel(s) {
-            const m = { ide: '💡 Ide', draft: '✏️ Draft', produksi: '🎬 Produksi', selesai: '✅ Selesai' };
-            return m[s] || s;
-        }
-
-        function formatDate(d) {
-            if (!d) return '—';
-            const dt = new Date(d);
-            return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-        }
-
         function formatNum(n) {
             if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
             if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
@@ -1067,52 +1265,62 @@
             try {
                 const [ideas, pipeline, schedule, analytics] = await Promise.all([
                     db.from('cf_ideas').select('id').eq('account_id', currentAccount),
-                    db.from('cf_pipeline').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false }).limit(5),
-                    db.from('cf_schedule').select('*').eq('account_id', currentAccount).gte('post_date', new Date().toISOString().split('T')[0]).order('post_date').limit(5),
+                    db.from('cf_pipeline').select('*').eq('account_id', currentAccount),
+                    db.from('cf_schedule').select('id').eq('account_id', currentAccount),
                     db.from('cf_analytics').select('likes, views').eq('account_id', currentAccount)
                 ]);
 
-                const ideaCount = ideas.data?.length || 0;
-                const pipelineCount = pipeline.data?.filter(p => p.status !== 'selesai').length || 0;
+                if (ideas.error) throw ideas.error;
 
-                const now = new Date();
-                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-                const { data: monthPosts } = await db.from('cf_schedule')
-                    .select('id')
-                    .eq('account_id', currentAccount)
-                    .gte('post_date', monthStart);
+                const safeIdeas = ideas.data || [];
+                const safePipeline = pipeline.data || [];
+                const safeAnalytics = analytics.data || [];
+                const safeSchedule = schedule.data || [];
 
-                let avgEngage = '—';
-                if (analytics.data?.length > 0) {
-                    const total = analytics.data.reduce((s, a) => s + (a.views > 0 ? (a.likes / a.views) * 100 : 0), 0);
-                    avgEngage = (total / analytics.data.length).toFixed(1) + '%';
+                const ideaCount = safeIdeas.length;
+                const pipelineCount = safePipeline.filter(p => p.status !== 'selesai').length;
+
+                let avgEngage = '0%';
+                if (safeAnalytics.length > 0) {
+                    const total = safeAnalytics.reduce((s, a) => s + (a.views > 0 ? (a.likes / a.views) * 100 : 0), 0);
+                    avgEngage = (total / safeAnalytics.length).toFixed(1) + '%';
                 }
 
-                if (document.getElementById('stat-ideas')) document.getElementById('stat-ideas').textContent = ideaCount;
-                if (document.getElementById('stat-pipeline')) document.getElementById('stat-pipeline').textContent = pipelineCount;
-                if (document.getElementById('stat-posts')) document.getElementById('stat-posts').textContent = monthPosts?.length || 0;
-                if (document.getElementById('stat-engage')) document.getElementById('stat-engage').textContent = avgEngage;
-                if (document.getElementById('badge-ideas')) document.getElementById('badge-ideas').textContent = ideaCount;
+                document.getElementById('stat-ideas').textContent = ideaCount;
+                document.getElementById('stat-pipeline').textContent = pipelineCount;
+                document.getElementById('stat-posts').textContent = safeSchedule.length;
+                document.getElementById('stat-engage').textContent = avgEngage;
+                document.getElementById('badge-ideas').textContent = ideaCount;
 
             } catch (e) {
-                console.error(e);
+                toast('Error memuat Dashboard: ' + e.message, 'error');
             }
         }
 
         // ==================== IDEAS ====================
-        let allIdeas = [];
-        let ideaTypeFilter = 'all';
-
         async function loadIdeas() {
-            const container = document.getElementById('ideas-container');
-            if (container) container.innerHTML = '<div class="loading"><div class="spinner"></div> Memuat ide...</div>';
-
             const { data, error } = await db.from('cf_ideas').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false });
-            if (error) { toast('Gagal memuat ide', 'error'); return; }
-            allIdeas = data || [];
+            if (error) { toast('Error memuat ide: ' + error.message, 'error'); return; }
 
-            if (document.getElementById('badge-ideas')) document.getElementById('badge-ideas').textContent = allIdeas.length;
-            if (typeof renderIdeas === 'function') renderIdeas();
+            const safeData = data || [];
+            document.getElementById('badge-ideas').textContent = safeData.length;
+            const container = document.getElementById('ideas-container');
+
+            if (safeData.length === 0) {
+                container.innerHTML = `<div class="empty" style="grid-column:1/-1;"><div class="empty-icon">💡</div><div class="empty-title">Belum ada ide. Tambahkan ide pertamamu!</div></div>`;
+                return;
+            }
+
+            container.innerHTML = safeData.map(idea => `
+                <div class="idea-card">
+                    <div class="idea-card-hook">${idea.title}</div>
+                    <div style="font-size:12px; color:var(--text2); margin-bottom:10px;">${idea.description || '-'}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="tag tag-${idea.content_type?.toLowerCase() || 'reels'}">${idea.content_type}</span>
+                        <button class="btn btn-sm btn-danger" onclick="deleteIdea(${idea.id})">Hapus</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
         async function saveIdea() {
@@ -1125,51 +1333,64 @@
                 description: document.getElementById('idea-desc').value,
                 content_type: document.getElementById('idea-type').value,
                 category: document.getElementById('idea-category').value,
-                potential_score: parseInt(document.getElementById('idea-score').value) || null,
-                reference: document.getElementById('idea-ref').value,
+                potential_score: parseInt(document.getElementById('idea-score').value) || null
             });
 
-            if (error) { toast('Gagal menyimpan: ' + error.message, 'error'); return; }
-            toast('Ide berhasil disimpan! 💡');
+            if (error) { toast('Error menyimpan ide: ' + error.message, 'error'); return; }
+            toast('Ide berhasil disimpan!');
             closeModal('modal-idea');
             loadIdeas();
         }
 
         async function deleteIdea(id) {
-            if (!confirm('Hapus ide ini?')) return;
-            await db.from('cf_ideas').delete().eq('id', id);
+            if (!confirm('Yakin ingin menghapus ide ini?')) return;
+            const { error } = await db.from('cf_ideas').delete().eq('id', id);
+            if (error) { toast('Error hapus ide: ' + error.message, 'error'); return; }
             toast('Ide dihapus');
             loadIdeas();
         }
 
-        async function ideaToPipeline(id) {
-            const idea = allIdeas.find(i => i.id === id);
-            if (!idea) return;
-            const { error } = await db.from('cf_pipeline').insert({
-                account_id: currentAccount,
-                title: idea.title,
-                hook: idea.description,
-                content_type: idea.content_type,
-                status: 'ide',
-                notes: idea.description,
-            });
-            if (error) { toast('Gagal memindah ke pipeline', 'error'); return; }
-            toast('Dipindah ke Pipeline! 🚀');
-        }
-
         // ==================== PIPELINE ====================
-        let allPipeline = [];
-
         async function loadPipeline() {
             const { data, error } = await db.from('cf_pipeline').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false });
-            if (error) { toast('Gagal memuat pipeline', 'error'); return; }
-            allPipeline = data || [];
-            if (typeof renderKanban === 'function') renderKanban();
+            if (error) { toast('Error memuat pipeline: ' + error.message, 'error'); return; }
+
+            const safeData = data || []; // Mencegah error jika data kosong bernilai null
+            const cols = ['ide', 'draft', 'produksi', 'selesai'];
+            const labels = { ide: 'Ide', draft: 'Draft', produksi: 'Produksi', selesai: 'Selesai' };
+
+            cols.forEach(col => {
+                const items = safeData.filter(p => p.status === col);
+                document.getElementById('count-' + col).textContent = items.length;
+
+                const colDiv = document.getElementById('col-' + col);
+
+                // MENGGANTI TEXT "KOSONG" MENJADI TOMBOL TAMBAH YANG BISA DIKLIK
+                if (items.length === 0) {
+                    colDiv.innerHTML = `
+                        <div style="text-align:center; padding:14px; font-size:12px; color:var(--text3); border: 2px dashed var(--border); border-radius: 8px; cursor: pointer; transition: 0.2s;" 
+                             onmouseover="this.style.background='var(--bg3)'; this.style.color='var(--text)';" 
+                             onmouseout="this.style.background='transparent'; this.style.color='var(--text3)';"
+                             onclick="openModal('modal-content'); document.getElementById('content-status').value='${col}';">
+                            + Tambah ${labels[col]}
+                        </div>`;
+                } else {
+                    colDiv.innerHTML = items.map(item => `
+                        <div class="kanban-card">
+                            <div class="kanban-card-title">${item.title}</div>
+                            <div class="kanban-card-meta">
+                                <span class="tag tag-${item.content_type?.toLowerCase() || 'reels'}">${item.content_type}</span>
+                                <button class="btn btn-sm btn-ghost" onclick="deletePipeline(${item.id})" style="margin-left:auto; padding:2px 6px;">🗑</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            });
         }
 
         async function saveContent() {
             const title = document.getElementById('content-title').value.trim();
-            if (!title) { toast('Judul konten wajib diisi!', 'error'); return; }
+            if (!title) { toast('Judul wajib!', 'error'); return; }
 
             const { error } = await db.from('cf_pipeline').insert({
                 account_id: currentAccount,
@@ -1177,30 +1398,56 @@
                 hook: document.getElementById('content-hook').value,
                 content_type: document.getElementById('content-type').value,
                 status: document.getElementById('content-status').value,
-                target_date: document.getElementById('content-date').value || null,
                 notes: document.getElementById('content-notes').value,
             });
-            if (error) { toast('Gagal menyimpan: ' + error.message, 'error'); return; }
-            toast('Konten masuk pipeline! 🔄');
+
+            if (error) { toast('Error pipeline: ' + error.message, 'error'); return; }
+            toast('Konten ditambahkan!');
             closeModal('modal-content');
             loadPipeline();
         }
 
-        // ==================== CALENDAR ====================
-        let scheduleData = [];
-        let calYear = new Date().getFullYear();
-        let calMonth = new Date().getMonth();
+        async function deletePipeline(id) {
+            if (!confirm('Hapus konten ini dari pipeline?')) return;
+            await db.from('cf_pipeline').delete().eq('id', id);
+            loadPipeline();
+        }
 
+        // ==================== CALENDAR ====================
         async function renderCalendar() {
-            const { data } = await db.from('cf_schedule').select('*').eq('account_id', currentAccount);
-            scheduleData = data || [];
-            // UI Render logic here...
+            const { data, error } = await db.from('cf_schedule').select('*').eq('account_id', currentAccount).order('post_date', { ascending: true });
+            if (error) { toast('Error kalender: ' + error.message, 'error'); return; }
+
+            const safeData = data || [];
+            const grid = document.getElementById('cal-grid');
+
+            if (safeData.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; padding: 40px; text-align:center; color:var(--text3);">Belum ada jadwal konten. Klik tombol <b>+ Jadwalkan</b> di kanan atas.</div>`;
+                return;
+            }
+
+            // Render ke list sederhana agar mudah dibaca
+            grid.innerHTML = safeData.map(s => `
+                <div style="grid-column: 1/-1; display:flex; justify-content:space-between; align-items:center; background:var(--bg2); border:1px solid var(--border); padding:12px 16px; border-radius:8px; margin-bottom:8px;">
+                    <div>
+                        <div style="font-size:12px; color:var(--accent); font-weight:700; margin-bottom:4px; font-family:var(--font-mono);">
+                            📅 ${s.post_date || 'Tanpa Tanggal'} ${s.post_time ? '⏱ ' + s.post_time : ''}
+                        </div>
+                        <div style="font-weight:600; font-size:14px; margin-bottom:2px;">${s.title}</div>
+                        <div style="font-size:11px; color:var(--text2);">${s.notes || ''}</div>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <span class="tag tag-${s.content_type?.toLowerCase() || 'reels'}">${s.content_type}</span>
+                        <button class="btn btn-sm btn-danger" onclick="deleteSchedule(${s.id})">🗑</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
         async function saveSchedule() {
             const title = document.getElementById('sched-title').value.trim();
             const date = document.getElementById('sched-date').value;
-            if (!title || !date) { toast('Judul dan tanggal wajib diisi!', 'error'); return; }
+            if (!title || !date) { toast('Judul dan tanggal posting wajib diisi!', 'error'); return; }
 
             const { error } = await db.from('cf_schedule').insert({
                 account_id: currentAccount,
@@ -1210,22 +1457,66 @@
                 post_time: document.getElementById('sched-time').value,
                 notes: document.getElementById('sched-notes').value,
             });
-            if (error) { toast('Gagal menyimpan jadwal: ' + error.message, 'error'); return; }
-            toast('Jadwal tersimpan! 📅');
+
+            if (error) { toast('Error menyimpan jadwal: ' + error.message, 'error'); return; }
+            toast('Jadwal berhasil ditambahkan! 📅');
             closeModal('modal-schedule');
             renderCalendar();
+            loadDashboard(); // Perbarui statistik dashboard
+        }
+
+        async function deleteSchedule(id) {
+            if (!confirm('Yakin ingin menghapus jadwal ini?')) return;
+            await db.from('cf_schedule').delete().eq('id', id);
+            toast('Jadwal dihapus.');
+            renderCalendar();
+            loadDashboard();
         }
 
         // ==================== ANALYTICS ====================
         async function loadAnalytics() {
             const { data, error } = await db.from('cf_analytics').select('*').eq('account_id', currentAccount).order('post_date', { ascending: false });
-            if (error) { toast('Gagal memuat analitik', 'error'); return; }
-            // UI Render logic here...
+            if (error) { toast('Gagal memuat analitik: ' + error.message, 'error'); return; }
+
+            const anData = data || [];
+
+            const totalReach = anData.reduce((s, a) => s + (a.views || 0), 0);
+            const avgLikes = anData.length ? Math.round(anData.reduce((s, a) => s + (a.likes || 0), 0) / anData.length) : 0;
+            let bestEngage = 0;
+            anData.forEach(a => {
+                const e = a.views > 0 ? (a.likes / a.views) * 100 : 0;
+                if (e > bestEngage) bestEngage = e;
+            });
+
+            document.getElementById('an-reach').textContent = formatNum(totalReach);
+            document.getElementById('an-likes').textContent = formatNum(avgLikes);
+            document.getElementById('an-best').textContent = bestEngage.toFixed(1) + '%';
+            document.getElementById('an-total').textContent = anData.length;
+
+            const tbody = document.getElementById('analytics-tbody');
+            if (anData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text3);">Belum ada data. Klik + Input Data.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = anData.map(a => {
+                const engage = a.views > 0 ? ((a.likes / a.views) * 100).toFixed(1) : '0.0';
+                return `
+                <tr>
+                    <td style="font-weight:600;">${a.title}</td>
+                    <td><span class="tag tag-${a.content_type?.toLowerCase()}">${a.content_type}</span></td>
+                    <td>${formatNum(a.likes)}</td>
+                    <td>${formatNum(a.views)}</td>
+                    <td style="color:${parseFloat(engage) > 3 ? 'var(--green)' : 'var(--text2)'}; font-weight:bold;">${engage}%</td>
+                    <td>${a.post_date || '-'}</td>
+                </tr>
+                `;
+            }).join('');
         }
 
         async function saveAnalytic() {
             const title = document.getElementById('an-title').value.trim();
-            if (!title) { toast('Judul wajib diisi!', 'error'); return; }
+            if (!title) { toast('Judul analitik wajib!', 'error'); return; }
 
             const { error } = await db.from('cf_analytics').insert({
                 account_id: currentAccount,
@@ -1233,68 +1524,248 @@
                 content_type: document.getElementById('an-type').value,
                 post_date: document.getElementById('an-date').value || null,
                 likes: parseInt(document.getElementById('an-likes-in').value) || 0,
-                views: parseInt(document.getElementById('an-views-in').value) || 0,
-                comments: parseInt(document.getElementById('an-comments-in').value) || 0,
-                saves: parseInt(document.getElementById('an-saves-in').value) || 0,
-                shares: parseInt(document.getElementById('an-shares-in').value) || 0,
-                notes: document.getElementById('an-notes-in').value,
+                views: parseInt(document.getElementById('an-views-in').value) || 0
             });
-            if (error) { toast('Gagal menyimpan: ' + error.message, 'error'); return; }
-            toast('Data analitik tersimpan! 📊');
+
+            if (error) { toast('Error simpan analitik: ' + error.message, 'error'); return; }
+            toast('Data Analitik ditambahkan! 📊');
             closeModal('modal-analytic');
             loadAnalytics();
         }
 
         // ==================== HOOKS ====================
         async function loadHooks() {
-            const { data } = await db.from('cf_hooks').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false }).limit(10);
-            // UI Render logic here...
+            const { data, error } = await db.from('cf_hooks').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false });
+            if (error) { toast('Error load hooks: ' + error.message, 'error'); return; }
+
+            const safeData = data || [];
+            const list = document.getElementById('saved-hooks-list');
+
+            if (safeData.length === 0) {
+                list.innerHTML = `<div class="empty"><div class="empty-title">Belum ada hook tersimpan</div></div>`;
+                return;
+            }
+
+            list.innerHTML = safeData.map(h => `
+                <div style="padding:12px; border-bottom:1px solid var(--border); display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <div style="font-size:14px; font-weight:600;">${h.original_hook}</div>
+                    </div>
+                    <button class="btn btn-sm btn-danger" onclick="deleteHook(${h.id})">🗑</button>
+                </div>
+            `).join('');
         }
 
-        async function saveHook() {
-            if (!window._currentHookData) return;
-            window._currentHookData.account_id = currentAccount; // Ensure correct account
-            const { error } = await db.from('cf_hooks').insert(window._currentHookData);
-            if (error) { toast('Gagal menyimpan hook: ' + error.message, 'error'); return; }
-            toast('Hook tersimpan! 💾');
+        async function saveHookManual() {
+            const hook = document.getElementById('hook-input').value.trim();
+            if (!hook) { toast('Tulis hook terlebih dahulu!', 'error'); return; }
+
+            const { error } = await db.from('cf_hooks').insert({
+                account_id: currentAccount,
+                original_hook: hook
+            });
+            if (error) { toast('Error simpan hook: ' + error.message, 'error'); return; }
+            toast('Hook disimpan!');
+            document.getElementById('hook-input').value = '';
+            loadHooks();
+        }
+
+        async function deleteHook(id) {
+            await db.from('cf_hooks').delete().eq('id', id);
             loadHooks();
         }
 
         // ==================== GROWTH ====================
         async function loadGrowth() {
-            const [{ data: analytics }, { data: pipeline }, { data: schedule }] = await Promise.all([
-                db.from('cf_analytics').select('*').eq('account_id', currentAccount),
-                db.from('cf_pipeline').select('*').eq('account_id', currentAccount),
-                db.from('cf_schedule').select('*').eq('account_id', currentAccount),
-            ]);
-            // UI Render logic here...
+            const { data: analytics } = await db.from('cf_analytics').select('*').eq('account_id', currentAccount);
+            const insightsDiv = document.getElementById('key-insights');
+            const safeData = analytics || [];
+
+            if (safeData.length === 0) {
+                insightsDiv.innerHTML = `
+                <div class="insight-card">
+                    <div class="insight-icon">🎯</div>
+                    <div>
+                        <div class="insight-title">Belum Ada Data</div>
+                        <div class="insight-body">Tambahkan data analitik agar AI bisa menganalisis pertumbuhan akun Anda.</div>
+                    </div>
+                </div>`;
+                return;
+            }
+
+            insightsDiv.innerHTML = `
+                <div class="insight-card">
+                    <div class="insight-icon">📈</div>
+                    <div>
+                        <div class="insight-title">Sistem Membaca Pola Konten</div>
+                        <div class="insight-body">Sistem sedang memonitor ${safeData.length} post Anda. Tingkatkan terus frekuensi posting untuk algoritma AI yang lebih tajam.</div>
+                    </div>
+                </div>
+            `;
         }
 
         // ==================== INIT ====================
-        // ==================== INIT ====================
         async function init() {
-            // Try to create tables
-            try {
-                await db.from('cf_ideas').select('id').limit(1);
-            } catch (e) { }
-            try {
-                await db.from('cf_pipeline').select('id').limit(1);
-            } catch (e) { }
-            try {
-                await db.from('cf_schedule').select('id').limit(1);
-            } catch (e) { }
-            try {
-                await db.from('cf_analytics').select('id').limit(1);
-            } catch (e) { }
-            try {
-                await db.from('cf_hooks').select('id').limit(1);
-            } catch (e) { }
-
-            loadDashboard();
+            // Biarkan supabase menyiapkan koneksi, lalu load dashboard
+            setTimeout(() => { loadDashboard(); }, 500);
         }
 
         init();
     </script>
 </body>
 
-</html>
+</html> sql : -- ==========================================
+-- 1. PEMBERSIHAN TABEL LAMA (Jika Ada)
+-- ==========================================
+ALTER TABLE IF EXISTS links DROP COLUMN IF EXISTS category_id;
+DROP TABLE IF EXISTS categories CASCADE;
+
+-- ==========================================
+-- 2. BUAT TABEL REFERENSI (Folders & Tags)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS folders (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  parent_id UUID REFERENCES folders(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS tags (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  color TEXT DEFAULT '#7c6aff',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ==========================================
+-- 3. BUAT TABEL UTAMA (Links)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS links (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  url TEXT NOT NULL,
+  description TEXT,
+  og_image TEXT,
+  folder_id UUID REFERENCES folders(id) ON DELETE SET NULL,
+  read_status TEXT DEFAULT 'unread',
+  status_code INTEGER DEFAULT 200,
+  is_pinned BOOLEAN DEFAULT FALSE,
+  view_count INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- (Opsional) Memastikan kolom ditambahkan jika tabel links ternyata sudah terlanjur ada dari versi lawas
+ALTER TABLE links ADD COLUMN IF NOT EXISTS og_image TEXT;
+ALTER TABLE links ADD COLUMN IF NOT EXISTS folder_id UUID REFERENCES folders(id) ON DELETE SET NULL;
+ALTER TABLE links ADD COLUMN IF NOT EXISTS read_status TEXT DEFAULT 'unread';
+ALTER TABLE links ADD COLUMN IF NOT EXISTS status_code INTEGER DEFAULT 200;
+
+-- ==========================================
+-- 4. BUAT TABEL RELASI & FITUR TAMBAHAN
+-- ==========================================
+CREATE TABLE IF NOT EXISTS link_tags (
+  link_id UUID REFERENCES links(id) ON DELETE CASCADE,
+  tag_id UUID REFERENCES tags(id) ON DELETE CASCADE,
+  PRIMARY KEY (link_id, tag_id)
+);
+
+CREATE TABLE IF NOT EXISTS visit_logs (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  link_id UUID REFERENCES links(id) ON DELETE CASCADE,
+  visited_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS highlights (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  link_id UUID REFERENCES links(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ==========================================
+-- 5. TABEL APLIKASI LAIN (Streak, Journal, Urge)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS streak_data (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL DEFAULT 'default_user',
+  start_date DATE NOT NULL,
+  last_check_in DATE,
+  current_streak INTEGER DEFAULT 0,
+  longest_streak INTEGER DEFAULT 0,
+  total_relapses INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS journal_entries (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL DEFAULT 'default_user',
+  entry_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  mood INTEGER CHECK (mood BETWEEN 1 AND 5),
+  triggers TEXT[],
+  notes TEXT,
+  is_relapse BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS urge_log (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL DEFAULT 'default_user',
+  logged_at TIMESTAMPTZ DEFAULT now(),
+  technique_used TEXT,
+  outcome TEXT CHECK (outcome IN ('berhasil_tahan', 'relapse'))
+);
+
+INSERT INTO streak_data (user_id, start_date, last_check_in, current_streak, longest_streak, total_relapses)
+VALUES ('default_user', CURRENT_DATE, CURRENT_DATE, 0, 0, 0)
+ON CONFLICT DO NOTHING;
+
+-- RLS & Policies (Menggunakan DROP IF EXISTS untuk mencegah Error 42710)
+ALTER TABLE streak_data ENABLE ROW LEVEL SECURITY;
+ALTER TABLE journal_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE urge_log ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "allow_all_streak" ON streak_data;
+CREATE POLICY "allow_all_streak" ON streak_data FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "allow_all_journal" ON journal_entries;
+CREATE POLICY "allow_all_journal" ON journal_entries FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "allow_all_urge" ON urge_log;
+CREATE POLICY "allow_all_urge" ON urge_log FOR ALL USING (true) WITH CHECK (true);
+
+-- ==========================================
+-- 6. REFRESH CACHE SUPABASE (Mencegah Error Schema Cache)
+-- ==========================================
+NOTIFY pgrst, 'reload schema';
+
+-- Tambahkan kolom baru ke journal_entries untuk Advanced Journal
+ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS sleep_hours NUMERIC(4,2) DEFAULT 0;
+ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS temptation_severity INTEGER CHECK (temptation_severity BETWEEN 0 AND 10) DEFAULT 0;
+
+-- ==========================================
+-- 7. TABEL CREATOR OS (DENGAN IF NOT EXISTS)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS cf_ideas (id bigint generated always as identity primary key, title text, description text, content_type text, category text, potential_score int, reference text, created_at timestamptz default now());
+
+CREATE TABLE IF NOT EXISTS cf_pipeline (id bigint generated always as identity primary key, title text, hook text, content_type text, status text default 'ide', target_date date, notes text, created_at timestamptz default now());
+
+CREATE TABLE IF NOT EXISTS cf_schedule (id bigint generated always as identity primary key, title text, content_type text, post_date date, post_time text, notes text, created_at timestamptz default now());
+
+CREATE TABLE IF NOT EXISTS cf_analytics (id bigint generated always as identity primary key, title text, content_type text, post_date date, likes int default 0, views int default 0, comments int default 0, saves int default 0, shares int default 0, notes text, created_at timestamptz default now());
+
+CREATE TABLE IF NOT EXISTS cf_hooks (id bigint generated always as identity primary key, original_hook text, optimized_hook text, content_type text, niche text, clarity_score int, curiosity_score int, urgency_score int, overall_score int, created_at timestamptz default now());
+
+-- Tambahkan kolom account_id ke semua tabel
+ALTER TABLE cf_ideas ADD COLUMN IF NOT EXISTS account_id TEXT DEFAULT 'akun_utama';
+ALTER TABLE cf_pipeline ADD COLUMN IF NOT EXISTS account_id TEXT DEFAULT 'akun_utama';
+ALTER TABLE cf_schedule ADD COLUMN IF NOT EXISTS account_id TEXT DEFAULT 'akun_utama';
+ALTER TABLE cf_analytics ADD COLUMN IF NOT EXISTS account_id TEXT DEFAULT 'akun_utama';
+ALTER TABLE cf_hooks ADD COLUMN IF NOT EXISTS account_id TEXT DEFAULT 'akun_utama';
+
+-- Optional: Buat index untuk mempercepat pencarian per akun
+CREATE INDEX IF NOT EXISTS idx_ideas_account ON cf_ideas(account_id);
+CREATE INDEX IF NOT EXISTS idx_pipeline_account ON cf_pipeline(account_id);
+CREATE INDEX IF NOT EXISTS idx_schedule_account ON cf_schedule(account_id);
+CREATE INDEX IF NOT EXISTS idx_analytics_account ON cf_analytics(account_id);
+CREATE INDEX IF NOT EXISTS idx_hooks_account ON cf_hooks(account_id);
