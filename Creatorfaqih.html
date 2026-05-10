@@ -1,1 +1,1300 @@
 
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreatorFaqih — Creator OS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Serif:ital@0;1&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* LIGHT MODE (DEFAULT) */
+        :root {
+            --bg: #f3f4f6;
+            --bg2: #ffffff;
+            --bg3: #e5e7eb;
+            --panel: #ffffff;
+            --border: rgba(0, 0, 0, 0.08);
+            --border2: rgba(0, 0, 0, 0.15);
+            --accent: #ff6b35;
+            --accent2: #ff9f1c;
+            --accent3: #c9184a;
+            --green: #2ecc71;
+            --blue: #3498db;
+            --purple: #9b59b6;
+            --text: #111827;
+            --text2: #4b5563;
+            --text3: #9ca3af;
+            --font-head: 'Syne', sans-serif;
+            --font-mono: 'DM Mono', monospace;
+            --font-serif: 'Instrument Serif', serif;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* DARK MODE TOGGLE */
+        [data-theme="dark"] {
+            --bg: #0a0a0f;
+            --bg2: #111118;
+            --bg3: #1a1a24;
+            --panel: #16161f;
+            --border: rgba(255, 255, 255, 0.07);
+            --border2: rgba(255, 255, 255, 0.12);
+            --text: #f0ece8;
+            --text2: #9b9aaa;
+            --text3: #5c5b6e;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-head);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 240px;
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            padding: 0 0 24px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .sidebar-brand {
+            padding: 28px 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-logo {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+        }
+
+        .brand-name {
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--text);
+            margin-top: 4px;
+        }
+
+        .brand-sub {
+            font-size: 10px;
+            color: var(--text3);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 3px;
+            font-family: var(--font-mono);
+        }
+
+        /* ACCOUNT SELECTOR */
+        .account-wrapper {
+            padding: 16px 20px 0;
+        }
+
+        .account-select {
+            width: 100%;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .account-select:focus {
+            border-color: var(--accent);
+        }
+
+        .nav-section {
+            padding: 16px 12px 8px;
+        }
+
+        .nav-label {
+            font-size: 9px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text3);
+            padding: 0 12px 8px;
+            font-family: var(--font-mono);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: var(--text2);
+            font-size: 13px;
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .nav-item:hover {
+            background: var(--bg3);
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            background: rgba(255, 107, 53, 0.12);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-family: var(--font-mono);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text3);
+            font-family: var(--font-mono);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* THEME TOGGLE BTN */
+        .theme-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .theme-btn:hover {
+            background: var(--bg3);
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.4
+            }
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 240px;
+            min-height: 100vh;
+            padding: 32px 36px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadein 0.2s ease;
+        }
+
+        @keyframes fadein {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .page-sub {
+            font-size: 13px;
+            color: var(--text2);
+            margin-top: 4px;
+        }
+
+        .page-title span {
+            color: var(--accent);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-family: var(--font-head);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ff7a4a;
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            background: var(--bg3);
+            color: var(--text2);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--border2);
+            color: var(--text);
+        }
+
+        .btn-sm {
+            padding: 7px 13px;
+            font-size: 12px;
+        }
+
+        .btn-danger {
+            background: rgba(201, 24, 74, 0.15);
+            color: var(--accent3);
+            border: 1px solid rgba(201, 24, 74, 0.3);
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: background 0.3s;
+        }
+
+        .card-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text3);
+            margin-bottom: 16px;
+            font-family: var(--font-mono);
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-family: var(--font-mono);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1;
+            margin: 8px 0 4px;
+        }
+
+        .stat-delta {
+            font-size: 12px;
+            color: var(--green);
+            font-family: var(--font-mono);
+        }
+
+        .stat-icon {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            font-size: 28px;
+            opacity: 0.15;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            color: var(--text2);
+            margin-bottom: 6px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--text);
+            font-family: var(--font-head);
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--accent);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg2);
+            border: 1px solid var(--border2);
+            border-radius: 16px;
+            padding: 28px;
+            width: 560px;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideup 0.2s ease;
+        }
+
+        @keyframes slideup {
+            from {
+                transform: translateY(16px);
+                opacity: 0
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text3);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        .tag-reels {
+            background: rgba(255, 107, 53, 0.12);
+            color: var(--accent);
+        }
+
+        .tag-feed {
+            background: rgba(76, 201, 240, 0.12);
+            color: var(--blue);
+        }
+
+        .tag-stories {
+            background: rgba(181, 23, 158, 0.12);
+            color: var(--purple);
+        }
+
+        .tag-carousel {
+            background: rgba(255, 159, 28, 0.12);
+            color: var(--accent2);
+        }
+
+        .kanban {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .kanban-col {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            min-height: 400px;
+        }
+
+        .kanban-col-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .kanban-col-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-family: var(--font-mono);
+        }
+
+        .kanban-count {
+            background: var(--bg3);
+            color: var(--text3);
+            font-size: 10px;
+            font-family: var(--font-mono);
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        .kanban-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .kanban-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .kanban-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .kanban-card-meta {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .idea-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .idea-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .idea-card-hook {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text3);
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .cal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .cal-nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .cal-month {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .cal-day-name {
+            text-align: center;
+            font-size: 10px;
+            color: var(--text3);
+            padding: 8px 0;
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+        }
+
+        .cal-cell {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+            min-height: 90px;
+            cursor: pointer;
+        }
+
+        .cal-date {
+            font-size: 12px;
+            color: var(--text3);
+            font-family: var(--font-mono);
+            margin-bottom: 6px;
+        }
+
+        .cal-event {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 3px;
+            font-weight: 600;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .analytics-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .analytics-table th {
+            text-align: left;
+            font-size: 10px;
+            color: var(--text3);
+            text-transform: uppercase;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-mono);
+        }
+
+        .analytics-table td {
+            padding: 12px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text2);
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            background: var(--bg2);
+            border: 1px solid var(--border2);
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-size: 13px;
+            font-weight: 500;
+            animation: toastin 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        @keyframes toastin {
+            from {
+                transform: translateX(20px);
+                opacity: 0
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1
+            }
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+        }
+
+        .section-gap {
+            margin-top: 28px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        .empty-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text2);
+        }
+
+        .hook-area,
+        .insight-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .quick-action {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            flex: 1;
+            min-width: 180px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-logo">⚡ Creator OS</div>
+            <div class="brand-name">Creator OS</div>
+            <div class="brand-sub">Multi-Account System</div>
+        </div>
+
+        <!-- ACCOUNT SELECTOR -->
+        <div class="account-wrapper">
+            <select class="account-select" id="account-select" onchange="switchAccount(this.value)">
+                <option value="akun_utama">Akun: Faqih (Utama)</option>
+                <option value="klien_a">Akun: Klien A</option>
+                <option value="klien_b">Akun: Klien B</option>
+            </select>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-label">Overview</div>
+            <div class="nav-item active" onclick="navigate('dashboard')">
+                <span class="nav-icon">🏠</span> Dashboard
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-label">Content</div>
+            <div class="nav-item" onclick="navigate('ideas')">
+                <span class="nav-icon">💡</span> Idea Bank
+                <span class="nav-badge" id="badge-ideas">0</span>
+            </div>
+            <div class="nav-item" onclick="navigate('pipeline')">
+                <span class="nav-icon">🔄</span> Pipeline
+            </div>
+            <div class="nav-item" onclick="navigate('calendar')">
+                <span class="nav-icon">📅</span> Kalender
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-label">Optimasi</div>
+            <div class="nav-item" onclick="navigate('analytics')">
+                <span class="nav-icon">📊</span> Analitik
+            </div>
+            <div class="nav-item" onclick="navigate('hooks')">
+                <span class="nav-icon">🎣</span> Hook Optimizer
+            </div>
+            <div class="nav-item" onclick="navigate('growth')">
+                <span class="nav-icon">🚀</span> Growth Insights
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <div><span class="status-dot"></span>Connected</div>
+            <button class="theme-btn" onclick="toggleTheme()" id="theme-icon">🌙</button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <div class="page active" id="page-dashboard">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Dashboard <span id="dash-account-name">Utama</span> 👋</div>
+                    <div class="page-sub">Data eksklusif untuk akun yang sedang dipilih.</div>
+                </div>
+            </div>
+
+            <div class="grid-4" id="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">💡</div>
+                    <div class="stat-label">Total Ide</div>
+                    <div class="stat-value" id="stat-ideas">—</div>
+                    <div class="stat-delta">Siap eksekusi</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔄</div>
+                    <div class="stat-label">Dalam Pipeline</div>
+                    <div class="stat-value" id="stat-pipeline">—</div>
+                    <div class="stat-delta">Aktif diproduksi</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-label">Posting Bulan Ini</div>
+                    <div class="stat-value" id="stat-posts">—</div>
+                    <div class="stat-delta">Konten terjadwal</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-label">Avg Engagement</div>
+                    <div class="stat-value" id="stat-engage">—</div>
+                    <div class="stat-delta">Dari semua konten</div>
+                </div>
+            </div>
+
+            <div class="section-gap">
+                <button class="btn btn-primary" onclick="loadDashboard()">↻ Refresh Data Dashboard</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // ==================== THEME MANAGEMENT ====================
+        function toggleTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                document.body.removeAttribute('data-theme');
+                document.getElementById('theme-icon').textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('theme-icon').textContent = '☀️';
+        }
+
+        // ==================== ACCOUNT MANAGEMENT ====================
+        let currentAccount = localStorage.getItem('activeAccount') || 'akun_utama';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const selectEl = document.getElementById('account-select');
+            if (selectEl) selectEl.value = currentAccount;
+        });
+
+        function switchAccount(accId) {
+            currentAccount = accId;
+            localStorage.setItem('activeAccount', accId);
+
+            const accountLabel = document.querySelector(`#account-select option[value="${accId}"]`).text;
+            const titleSpan = document.getElementById('dash-account-name');
+            if (titleSpan) titleSpan.textContent = accountLabel.split(': ')[1] || 'Utama';
+
+            toast('Beralih ke akun: ' + (accountLabel.split(': ')[1] || accId));
+
+            const activePage = document.querySelector('.page.active');
+            if (activePage) {
+                const activePageId = activePage.id.replace('page-', '');
+                navigate(activePageId);
+            }
+        }
+
+        // ==================== SUPABASE ====================
+        const SUPA_URL = 'https://tdoxttalxwunrweypybw.supabase.co';
+        const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // GANTI DENGAN KEY ASLI ANDA
+        const { createClient } = supabase;
+        const db = createClient(SUPA_URL, SUPA_KEY);
+
+        // ==================== UTILITIES ====================
+        function toast(msg, type = 'success') {
+            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.innerHTML = `<span class="toast-icon">${icons[type]}</span>${msg}`;
+            document.getElementById('toast-container').appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }
+
+        function navigate(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            const targetPage = document.getElementById('page-' + page);
+            if (targetPage) targetPage.classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(n => {
+                if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + page + "'")) {
+                    n.classList.add('active');
+                }
+            });
+
+            if (page === 'dashboard') loadDashboard();
+            if (page === 'ideas') loadIdeas();
+            if (page === 'pipeline') loadPipeline();
+            if (page === 'calendar') renderCalendar();
+            if (page === 'analytics') loadAnalytics();
+            if (page === 'hooks') loadHooks();
+            if (page === 'growth') loadGrowth();
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.remove('open');
+        }
+
+        function statusLabel(s) {
+            const m = { ide: '💡 Ide', draft: '✏️ Draft', produksi: '🎬 Produksi', selesai: '✅ Selesai' };
+            return m[s] || s;
+        }
+
+        function formatDate(d) {
+            if (!d) return '—';
+            const dt = new Date(d);
+            return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+        }
+
+        function formatNum(n) {
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+            return n.toString();
+        }
+
+        // ==================== DASHBOARD ====================
+        async function loadDashboard() {
+            try {
+                const [ideas, pipeline, schedule, analytics] = await Promise.all([
+                    db.from('cf_ideas').select('id').eq('account_id', currentAccount),
+                    db.from('cf_pipeline').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false }).limit(5),
+                    db.from('cf_schedule').select('*').eq('account_id', currentAccount).gte('post_date', new Date().toISOString().split('T')[0]).order('post_date').limit(5),
+                    db.from('cf_analytics').select('likes, views').eq('account_id', currentAccount)
+                ]);
+
+                const ideaCount = ideas.data?.length || 0;
+                const pipelineCount = pipeline.data?.filter(p => p.status !== 'selesai').length || 0;
+
+                const now = new Date();
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+                const { data: monthPosts } = await db.from('cf_schedule')
+                    .select('id')
+                    .eq('account_id', currentAccount)
+                    .gte('post_date', monthStart);
+
+                let avgEngage = '—';
+                if (analytics.data?.length > 0) {
+                    const total = analytics.data.reduce((s, a) => s + (a.views > 0 ? (a.likes / a.views) * 100 : 0), 0);
+                    avgEngage = (total / analytics.data.length).toFixed(1) + '%';
+                }
+
+                if (document.getElementById('stat-ideas')) document.getElementById('stat-ideas').textContent = ideaCount;
+                if (document.getElementById('stat-pipeline')) document.getElementById('stat-pipeline').textContent = pipelineCount;
+                if (document.getElementById('stat-posts')) document.getElementById('stat-posts').textContent = monthPosts?.length || 0;
+                if (document.getElementById('stat-engage')) document.getElementById('stat-engage').textContent = avgEngage;
+                if (document.getElementById('badge-ideas')) document.getElementById('badge-ideas').textContent = ideaCount;
+
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // ==================== IDEAS ====================
+        let allIdeas = [];
+        let ideaTypeFilter = 'all';
+
+        async function loadIdeas() {
+            const container = document.getElementById('ideas-container');
+            if (container) container.innerHTML = '<div class="loading"><div class="spinner"></div> Memuat ide...</div>';
+
+            const { data, error } = await db.from('cf_ideas').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false });
+            if (error) { toast('Gagal memuat ide', 'error'); return; }
+            allIdeas = data || [];
+
+            if (document.getElementById('badge-ideas')) document.getElementById('badge-ideas').textContent = allIdeas.length;
+            if (typeof renderIdeas === 'function') renderIdeas();
+        }
+
+        async function saveIdea() {
+            const title = document.getElementById('idea-title').value.trim();
+            if (!title) { toast('Judul ide wajib diisi!', 'error'); return; }
+
+            const { error } = await db.from('cf_ideas').insert({
+                account_id: currentAccount,
+                title,
+                description: document.getElementById('idea-desc').value,
+                content_type: document.getElementById('idea-type').value,
+                category: document.getElementById('idea-category').value,
+                potential_score: parseInt(document.getElementById('idea-score').value) || null,
+                reference: document.getElementById('idea-ref').value,
+            });
+
+            if (error) { toast('Gagal menyimpan: ' + error.message, 'error'); return; }
+            toast('Ide berhasil disimpan! 💡');
+            closeModal('modal-idea');
+            loadIdeas();
+        }
+
+        async function deleteIdea(id) {
+            if (!confirm('Hapus ide ini?')) return;
+            await db.from('cf_ideas').delete().eq('id', id);
+            toast('Ide dihapus');
+            loadIdeas();
+        }
+
+        async function ideaToPipeline(id) {
+            const idea = allIdeas.find(i => i.id === id);
+            if (!idea) return;
+            const { error } = await db.from('cf_pipeline').insert({
+                account_id: currentAccount,
+                title: idea.title,
+                hook: idea.description,
+                content_type: idea.content_type,
+                status: 'ide',
+                notes: idea.description,
+            });
+            if (error) { toast('Gagal memindah ke pipeline', 'error'); return; }
+            toast('Dipindah ke Pipeline! 🚀');
+        }
+
+        // ==================== PIPELINE ====================
+        let allPipeline = [];
+
+        async function loadPipeline() {
+            const { data, error } = await db.from('cf_pipeline').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false });
+            if (error) { toast('Gagal memuat pipeline', 'error'); return; }
+            allPipeline = data || [];
+            if (typeof renderKanban === 'function') renderKanban();
+        }
+
+        async function saveContent() {
+            const title = document.getElementById('content-title').value.trim();
+            if (!title) { toast('Judul konten wajib diisi!', 'error'); return; }
+
+            const { error } = await db.from('cf_pipeline').insert({
+                account_id: currentAccount,
+                title,
+                hook: document.getElementById('content-hook').value,
+                content_type: document.getElementById('content-type').value,
+                status: document.getElementById('content-status').value,
+                target_date: document.getElementById('content-date').value || null,
+                notes: document.getElementById('content-notes').value,
+            });
+            if (error) { toast('Gagal menyimpan: ' + error.message, 'error'); return; }
+            toast('Konten masuk pipeline! 🔄');
+            closeModal('modal-content');
+            loadPipeline();
+        }
+
+        // ==================== CALENDAR ====================
+        let scheduleData = [];
+        let calYear = new Date().getFullYear();
+        let calMonth = new Date().getMonth();
+
+        async function renderCalendar() {
+            const { data } = await db.from('cf_schedule').select('*').eq('account_id', currentAccount);
+            scheduleData = data || [];
+            // UI Render logic here...
+        }
+
+        async function saveSchedule() {
+            const title = document.getElementById('sched-title').value.trim();
+            const date = document.getElementById('sched-date').value;
+            if (!title || !date) { toast('Judul dan tanggal wajib diisi!', 'error'); return; }
+
+            const { error } = await db.from('cf_schedule').insert({
+                account_id: currentAccount,
+                title,
+                content_type: document.getElementById('sched-type').value,
+                post_date: date,
+                post_time: document.getElementById('sched-time').value,
+                notes: document.getElementById('sched-notes').value,
+            });
+            if (error) { toast('Gagal menyimpan jadwal: ' + error.message, 'error'); return; }
+            toast('Jadwal tersimpan! 📅');
+            closeModal('modal-schedule');
+            renderCalendar();
+        }
+
+        // ==================== ANALYTICS ====================
+        async function loadAnalytics() {
+            const { data, error } = await db.from('cf_analytics').select('*').eq('account_id', currentAccount).order('post_date', { ascending: false });
+            if (error) { toast('Gagal memuat analitik', 'error'); return; }
+            // UI Render logic here...
+        }
+
+        async function saveAnalytic() {
+            const title = document.getElementById('an-title').value.trim();
+            if (!title) { toast('Judul wajib diisi!', 'error'); return; }
+
+            const { error } = await db.from('cf_analytics').insert({
+                account_id: currentAccount,
+                title,
+                content_type: document.getElementById('an-type').value,
+                post_date: document.getElementById('an-date').value || null,
+                likes: parseInt(document.getElementById('an-likes-in').value) || 0,
+                views: parseInt(document.getElementById('an-views-in').value) || 0,
+                comments: parseInt(document.getElementById('an-comments-in').value) || 0,
+                saves: parseInt(document.getElementById('an-saves-in').value) || 0,
+                shares: parseInt(document.getElementById('an-shares-in').value) || 0,
+                notes: document.getElementById('an-notes-in').value,
+            });
+            if (error) { toast('Gagal menyimpan: ' + error.message, 'error'); return; }
+            toast('Data analitik tersimpan! 📊');
+            closeModal('modal-analytic');
+            loadAnalytics();
+        }
+
+        // ==================== HOOKS ====================
+        async function loadHooks() {
+            const { data } = await db.from('cf_hooks').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false }).limit(10);
+            // UI Render logic here...
+        }
+
+        async function saveHook() {
+            if (!window._currentHookData) return;
+            window._currentHookData.account_id = currentAccount; // Ensure correct account
+            const { error } = await db.from('cf_hooks').insert(window._currentHookData);
+            if (error) { toast('Gagal menyimpan hook: ' + error.message, 'error'); return; }
+            toast('Hook tersimpan! 💾');
+            loadHooks();
+        }
+
+        // ==================== GROWTH ====================
+        async function loadGrowth() {
+            const [{ data: analytics }, { data: pipeline }, { data: schedule }] = await Promise.all([
+                db.from('cf_analytics').select('*').eq('account_id', currentAccount),
+                db.from('cf_pipeline').select('*').eq('account_id', currentAccount),
+                db.from('cf_schedule').select('*').eq('account_id', currentAccount),
+            ]);
+            // UI Render logic here...
+        }
+
+        // ==================== INIT ====================
+        // ==================== INIT ====================
+        async function init() {
+            // Try to create tables
+            try {
+                await db.from('cf_ideas').select('id').limit(1);
+            } catch (e) { }
+            try {
+                await db.from('cf_pipeline').select('id').limit(1);
+            } catch (e) { }
+            try {
+                await db.from('cf_schedule').select('id').limit(1);
+            } catch (e) { }
+            try {
+                await db.from('cf_analytics').select('id').limit(1);
+            } catch (e) { }
+            try {
+                await db.from('cf_hooks').select('id').limit(1);
+            } catch (e) { }
+
+            loadDashboard();
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
