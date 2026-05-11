@@ -1,1771 +1,480 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CreatorFaqih — Creator OS</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Serif:ital@0;1&display=swap"
-        rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Lofi Content Prompt Generator</title>
     <style>
-        /* LIGHT MODE (DEFAULT) */
         :root {
-            --bg: #f3f4f6;
-            --bg2: #ffffff;
-            --bg3: #e5e7eb;
-            --panel: #ffffff;
-            --border: rgba(0, 0, 0, 0.08);
-            --border2: rgba(0, 0, 0, 0.15);
-            --accent: #ff6b35;
-            --accent2: #ff9f1c;
-            --accent3: #c9184a;
-            --green: #2ecc71;
-            --blue: #3498db;
-            --purple: #9b59b6;
-            --text: #111827;
-            --text2: #4b5563;
-            --text3: #9ca3af;
-            --font-head: 'Syne', sans-serif;
-            --font-mono: 'DM Mono', monospace;
-            --font-serif: 'Instrument Serif', serif;
-            --radius: 12px;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        /* DARK MODE */
-        [data-theme="dark"] {
-            --bg: #0a0a0f;
-            --bg2: #111118;
-            --bg3: #1a1a24;
-            --panel: #16161f;
-            --border: rgba(255, 255, 255, 0.07);
-            --border2: rgba(255, 255, 255, 0.12);
-            --text: #f0ece8;
-            --text2: #9b9aaa;
-            --text3: #5c5b6e;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --bg-dark: #09090b;
+            --panel-bg: #18181b;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --accent-gold: #fbbf24;
+            --border-color: #27272a;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: var(--font-head);
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 240px;
-            background: var(--bg2);
-            border-right: 1px solid var(--border);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
             display: flex;
-            flex-direction: column;
-            z-index: 100;
-            padding: 0 0 24px;
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        .sidebar-brand {
-            padding: 28px 24px 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .brand-logo {
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            color: var(--accent);
-            text-transform: uppercase;
-            font-family: var(--font-mono);
-        }
-
-        .brand-name {
-            font-size: 22px;
-            font-weight: 800;
-            line-height: 1.1;
-            color: var(--text);
-            margin-top: 4px;
-        }
-
-        .brand-sub {
-            font-size: 10px;
-            color: var(--text3);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin-top: 3px;
-            font-family: var(--font-mono);
-        }
-
-        .account-wrapper {
-            padding: 16px 20px 0;
-        }
-
-        .account-select {
-            width: 100%;
-            background: var(--bg3);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 8px;
-            border-radius: 6px;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            outline: none;
-        }
-
-        .account-select:focus {
-            border-color: var(--accent);
-        }
-
-        .nav-section {
-            padding: 16px 12px 8px;
-        }
-
-        .nav-label {
-            font-size: 9px;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--text3);
-            padding: 0 12px 8px;
-            font-family: var(--font-mono);
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.15s;
-            color: var(--text2);
-            font-size: 13px;
-            font-weight: 500;
-            user-select: none;
-        }
-
-        .nav-item:hover {
-            background: var(--bg3);
-            color: var(--text);
-        }
-
-        .nav-item.active {
-            background: rgba(255, 107, 53, 0.12);
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        .nav-icon {
-            font-size: 16px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .nav-badge {
-            margin-left: auto;
-            background: var(--accent);
-            color: white;
-            font-size: 9px;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 20px;
-            font-family: var(--font-mono);
-        }
-
-        .sidebar-footer {
-            margin-top: auto;
-            padding: 16px 24px;
-            border-top: 1px solid var(--border);
-            font-size: 11px;
-            color: var(--text3);
-            font-family: var(--font-mono);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .theme-btn {
-            background: none;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 4px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .theme-btn:hover {
-            background: var(--bg3);
-        }
-
-        .status-dot {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background: var(--green);
-            border-radius: 50%;
-            margin-right: 6px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1
-            }
-
-            50% {
-                opacity: 0.4
-            }
-        }
-
-        /* MAIN */
-        .main {
-            margin-left: 240px;
-            min-height: 100vh;
-            padding: 32px 36px;
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-            animation: fadein 0.2s ease;
-        }
-
-        @keyframes fadein {
-            from {
-                opacity: 0;
-                transform: translateY(8px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
-        }
-
-        .page-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            margin-bottom: 32px;
-        }
-
-        .page-title {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--text);
-        }
-
-        .page-sub {
-            font-size: 13px;
-            color: var(--text2);
-            margin-top: 4px;
-        }
-
-        .page-title span {
-            color: var(--accent);
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-family: var(--font-head);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s;
-            border: none;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #ff7a4a;
-            transform: translateY(-1px);
-        }
-
-        .btn-ghost {
-            background: var(--bg3);
-            color: var(--text2);
-            border: 1px solid var(--border);
-        }
-
-        .btn-ghost:hover {
-            border-color: var(--border2);
-            color: var(--text);
-        }
-
-        .btn-sm {
-            padding: 7px 13px;
-            font-size: 12px;
-        }
-
-        .btn-danger {
-            background: rgba(201, 24, 74, 0.15);
-            color: var(--accent3);
-            border: 1px solid rgba(201, 24, 74, 0.3);
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-
-        .grid-4 {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
-
-        .stat-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent), var(--accent2));
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: var(--text3);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-family: var(--font-mono);
-        }
-
-        .stat-value {
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--text);
-            line-height: 1;
-            margin: 8px 0 4px;
-        }
-
-        .stat-delta {
-            font-size: 12px;
-            color: var(--green);
-            font-family: var(--font-mono);
-        }
-
-        .stat-icon {
-            position: absolute;
-            right: 16px;
-            top: 16px;
-            font-size: 28px;
-            opacity: 0.15;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 11px;
-            color: var(--text2);
-            margin-bottom: 6px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            font-family: var(--font-mono);
-        }
-
-        .form-input,
-        .form-textarea,
-        .form-select {
-            width: 100%;
-            background: var(--bg3);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 12px;
-            color: var(--text);
-            font-family: var(--font-head);
-            font-size: 13px;
-            outline: none;
-            transition: border-color 0.15s;
-        }
-
-        .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
-            border-color: var(--accent);
-        }
-
-        .form-textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
-            z-index: 9999;
-            align-items: center;
             justify-content: center;
+            padding: 40px 20px;
+            line-height: 1.6;
         }
 
-        .modal-overlay.open {
-            display: flex;
-        }
-
-        .modal {
-            background: var(--bg2);
-            border: 1px solid var(--border2);
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: var(--panel-bg);
+            padding: 30px;
             border-radius: 16px;
-            padding: 28px;
-            width: 560px;
-            max-width: 95vw;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideup 0.2s ease;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), 
+                        0 0 20px rgba(6, 182, 212, 0.05), 
+                        0 0 20px rgba(139, 92, 246, 0.05);
         }
 
-        @keyframes slideup {
-            from {
-                transform: translateY(16px);
-                opacity: 0
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text3);
-            font-size: 20px;
-            cursor: pointer;
-            padding: 4px;
-        }
-
-        .tag {
-            display: inline-flex;
-            align-items: center;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            font-family: var(--font-mono);
-        }
-
-        .tag-reels {
-            background: rgba(255, 107, 53, 0.12);
-            color: var(--accent);
-        }
-
-        .tag-feed {
-            background: rgba(76, 201, 240, 0.12);
-            color: var(--blue);
-        }
-
-        .tag-stories {
-            background: rgba(181, 23, 158, 0.12);
-            color: var(--purple);
-        }
-
-        .tag-carousel {
-            background: rgba(255, 159, 28, 0.12);
-            color: var(--accent2);
-        }
-
-        /* KANBAN */
-        .kanban {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
-
-        .kanban-col {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px;
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .kanban-col-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
-        .kanban-col-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            font-family: var(--font-mono);
-        }
-
-        .kanban-count {
-            background: var(--bg3);
-            color: var(--text3);
-            font-size: 10px;
-            font-family: var(--font-mono);
-            padding: 2px 7px;
-            border-radius: 10px;
-        }
-
-        .kanban-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
+        h1 {
+            text-align: center;
             margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.15s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            font-size: 1.8rem;
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .kanban-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-1px);
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
         }
 
-        .kanban-card-title {
-            font-size: 13px;
-            font-weight: 600;
-            line-height: 1.4;
+        .info-box {
+            background-color: rgba(6, 182, 212, 0.1);
+            border-left: 4px solid var(--accent-cyan);
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            font-size: 0.85rem;
+            color: #e4e4e7;
         }
 
-        .kanban-card-meta {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            margin-top: 8px;
-        }
-
-        /* IDEAS */
-        .idea-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 16px;
-        }
-
-        .idea-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 18px;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .idea-card-hook {
-            font-size: 15px;
-            font-weight: 700;
-            line-height: 1.4;
-            margin-bottom: 10px;
-        }
-
-        /* CALENDAR */
-        .cal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .input-group {
             margin-bottom: 20px;
         }
 
-        .cal-nav {
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #000;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 16px;
-        }
-
-        .cal-month {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .cal-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
-
-        /* ANALYTICS */
-        .analytics-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .analytics-table th {
-            text-align: left;
-            font-size: 10px;
-            color: var(--text3);
-            text-transform: uppercase;
-            padding: 8px 12px;
-            border-bottom: 1px solid var(--border);
-            font-family: var(--font-mono);
-        }
-
-        .analytics-table td {
-            padding: 12px 12px;
-            border-bottom: 1px solid var(--border);
-            font-size: 13px;
-            color: var(--text2);
-        }
-
-        .toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
+            justify-content: center;
             gap: 8px;
         }
 
-        .toast {
-            background: var(--bg2);
-            border: 1px solid var(--border2);
-            border-radius: 10px;
-            padding: 12px 18px;
-            font-size: 13px;
-            font-weight: 500;
-            animation: toastin 0.2s ease;
+        button.generate-btn {
+            background: #27272a;
+            border: 1px solid #3f3f46;
+        }
+        button.generate-btn:hover {
+            background: #3f3f46;
+        }
+
+        button.ai-btn {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-gold));
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+        }
+
+        button.ai-btn:hover {
+            opacity: 0.9;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-section {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .prompt-card {
+            background-color: #000;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .prompt-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--accent-cyan);
             display: flex;
             align-items: center;
-            gap: 10px;
-            box-shadow: var(--shadow);
+            gap: 8px;
         }
 
-        @keyframes toastin {
-            from {
-                transform: translateX(20px);
-                opacity: 0
-            }
+        .prompt-card h3.video-title { color: var(--accent-purple); }
+        .prompt-card h3.music-title { color: #f472b6; }
+        .prompt-card h3.youtube-title { color: var(--accent-gold); }
 
-            to {
-                transform: translateX(0);
-                opacity: 1
-            }
+        .prompt-text {
+            background-color: #18181b;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.95rem;
+            color: #d4d4d8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 15px;
+            border: 1px solid #27272a;
         }
 
-        .empty {
+        .copy-btn {
+            background-color: transparent;
+            border: 1px solid var(--text-muted);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--accent-cyan);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .loading-overlay {
+            display: none;
             text-align: center;
-            padding: 60px 20px;
-        }
-
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.4;
-        }
-
-        .empty-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text2);
-        }
-
-        .insight-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
             padding: 20px;
-            display: flex;
-            gap: 16px;
-            margin-bottom: 16px;
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 1.1rem;
+            animation: pulse 1.5s infinite;
         }
 
-        .insight-icon {
-            font-size: 32px;
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
 
-        .insight-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .insight-body {
-            font-size: 13px;
-            color: var(--text2);
-            line-height: 1.5;
+        /* Responsive */
+        @media (max-width: 600px) {
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
-
 <body>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-brand">
-            <div class="brand-logo">⚡ Creator OS</div>
-            <div class="brand-name">Creator OS</div>
-            <div class="brand-sub">Multi-Account System</div>
+    <div class="container">
+        <h1>Lofi Consistency Hub</h1>
+        <p class="subtitle">Generator prompt cerdas untuk Gambar, Video (Looping), dan Musik</p>
+
+        <div class="info-box">
+            💡 <strong>Tips:</strong> Isi sedikit ide, lalu gunakan <strong>✨ AI Magic</strong> untuk membiarkan Gemini mengembangkan ide Anda menjadi konsep Lofi yang sangat detail dan konsisten!
         </div>
 
-        <div class="account-wrapper">
-            <select class="account-select" id="account-select" onchange="switchAccount(this.value)">
-                <option value="akun_utama">Akun: Faqih (Utama)</option>
-                <option value="klien_a">Akun: Klien A</option>
-                <option value="klien_b">Akun: Klien B</option>
-            </select>
+        <div class="input-group">
+            <label for="subject">Subjek / Karakter (Opsional)</label>
+            <input type="text" id="subject" placeholder="Contoh: Seorang gadis anime berambut pendek memakai headphone besar">
         </div>
 
-        <div class="nav-section">
-            <div class="nav-label">Overview</div>
-            <div class="nav-item active" onclick="navigate('dashboard')"><span class="nav-icon">🏠</span> Dashboard
-            </div>
+        <div class="input-group">
+            <label for="setting">Latar / Suasana (Opsional)</label>
+            <input type="text" id="setting" placeholder="Contoh: Duduk di meja belajar dekat jendela besar saat hujan">
         </div>
 
-        <div class="nav-section">
-            <div class="nav-label">Content</div>
-            <div class="nav-item" onclick="navigate('ideas')"><span class="nav-icon">💡</span> Idea Bank <span
-                    class="nav-badge" id="badge-ideas">0</span></div>
-            <div class="nav-item" onclick="navigate('pipeline')"><span class="nav-icon">🔄</span> Pipeline</div>
-            <div class="nav-item" onclick="navigate('calendar')"><span class="nav-icon">📅</span> Kalender</div>
+        <div class="input-group">
+            <label for="details">Detail Tambahan (Opsional)</label>
+            <input type="text" id="details" placeholder="Contoh: Ada kucing putih, secangkir kopi beruap, lampu neon">
         </div>
 
-        <div class="nav-section">
-            <div class="nav-label">Optimasi</div>
-            <div class="nav-item" onclick="navigate('analytics')"><span class="nav-icon">📊</span> Analitik</div>
-            <div class="nav-item" onclick="navigate('hooks')"><span class="nav-icon">🎣</span> Hook Optimizer</div>
-            <div class="nav-item" onclick="navigate('growth')"><span class="nav-icon">🚀</span> Growth Insights</div>
+        <div class="button-group">
+            <button class="generate-btn" onclick="generatePromptsManual()">🎲 Generate Acak (Manual)</button>
+            <button class="ai-btn" id="aiBtn" onclick="generateWithAI()">✨ Generate dengan AI (Gemini)</button>
         </div>
 
-        <div class="sidebar-footer">
-            <div><span class="status-dot"></span>Connected</div>
-            <button class="theme-btn" onclick="toggleTheme()" id="theme-icon">🌙</button>
-        </div>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="main">
-
-        <!-- DASHBOARD -->
-        <div class="page active" id="page-dashboard">
-            <div class="page-header">
-                <div>
-                    <div class="page-title">Dashboard <span id="dash-account-name">Utama</span> 👋</div>
-                    <div class="page-sub">Data eksklusif untuk akun yang sedang dipilih.</div>
-                </div>
-            </div>
-            <div class="grid-4">
-                <div class="stat-card">
-                    <div class="stat-label">Total Ide</div>
-                    <div class="stat-value" id="stat-ideas">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Dalam Pipeline</div>
-                    <div class="stat-value" id="stat-pipeline">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Posting Bulan Ini</div>
-                    <div class="stat-value" id="stat-posts">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Avg Engagement</div>
-                    <div class="stat-value" id="stat-engage">0%</div>
-                </div>
-            </div>
-            <br>
-            <button class="btn btn-primary" onclick="loadDashboard()">↻ Refresh Data Dashboard</button>
+        <div class="loading-overlay" id="loadingOverlay">
+            ✨ Gemini sedang meracik konsep Lofi Anda...
         </div>
 
-        <!-- IDEAS -->
-        <div class="page" id="page-ideas">
-            <div class="page-header">
-                <div>
-                    <div class="page-title">Idea Bank</div>
-                    <div class="page-sub">Simpan semua ide konten yang melintas di kepalamu.</div>
-                </div>
-                <button class="btn btn-primary" onclick="openModal('modal-idea')">+ Tambah Ide</button>
+        <div class="output-section" id="outputSection">
+            
+            <div class="prompt-card">
+                <h3>1. Prompt Gambar (Midjourney v6.1 dsb)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Gunakan prompt ini di Midjourney untuk mendapatkan base image yang konsisten.</p>
+                <div class="prompt-text" id="imagePrompt"></div>
+                <button class="copy-btn" onclick="copyText('imagePrompt')">Salin Prompt Gambar</button>
             </div>
-            <div class="idea-grid" id="ideas-container"></div>
-        </div>
 
-        <!-- PIPELINE -->
-        <div class="page" id="page-pipeline">
-            <div class="page-header">
-                <div>
-                    <div class="page-title">Content Pipeline</div>
-                    <div class="page-sub">Pantau progres pembuatan kontenmu.</div>
-                </div>
-                <button class="btn btn-primary" onclick="openModal('modal-content')">+ Konten Baru</button>
+            <div class="prompt-card">
+                <h3 class="video-title">2. Prompt Video (Image-to-Video)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Upload gambar dari tahap 1, lalu gunakan prompt ini di Luma/Runway/Kling untuk animasi looping halus.</p>
+                <div class="prompt-text" id="videoPrompt"></div>
+                <button class="copy-btn" onclick="copyText('videoPrompt')">Salin Prompt Video</button>
             </div>
-            <div class="kanban">
-                <div class="kanban-col">
-                    <div class="kanban-col-title">
-                        <div class="kanban-col-label">💡 Ide</div>
-                        <div class="kanban-count" id="count-ide">0</div>
-                    </div>
-                    <div id="col-ide" style="flex:1;"></div>
-                </div>
-                <div class="kanban-col">
-                    <div class="kanban-col-title">
-                        <div class="kanban-col-label">✏️ Draft & Script</div>
-                        <div class="kanban-count" id="count-draft">0</div>
-                    </div>
-                    <div id="col-draft" style="flex:1;"></div>
-                </div>
-                <div class="kanban-col">
-                    <div class="kanban-col-title">
-                        <div class="kanban-col-label">🎬 Produksi</div>
-                        <div class="kanban-count" id="count-produksi">0</div>
-                    </div>
-                    <div id="col-produksi" style="flex:1;"></div>
-                </div>
-                <div class="kanban-col">
-                    <div class="kanban-col-title">
-                        <div class="kanban-col-label">✅ Siap Posting</div>
-                        <div class="kanban-count" id="count-selesai">0</div>
-                    </div>
-                    <div id="col-selesai" style="flex:1;"></div>
-                </div>
-            </div>
-        </div>
 
-        <!-- CALENDAR -->
-        <div class="page" id="page-calendar">
-            <div class="page-header">
-                <div>
-                    <div class="page-title">Kalender Konten</div>
-                    <div class="page-sub">Jadwal rilis konten agar tetap konsisten.</div>
-                </div>
-                <button class="btn btn-primary" onclick="openModal('modal-schedule')">+ Jadwalkan</button>
+            <div class="prompt-card">
+                <h3 class="music-title">3. Prompt Musik (Suno / Udio)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Gunakan prompt ini untuk membuat musik lofi yang temanya sinkron dengan visual di atas.</p>
+                <div class="prompt-text" id="musicPrompt"></div>
+                <button class="copy-btn" onclick="copyText('musicPrompt')">Salin Prompt Musik</button>
             </div>
-            <div
-                style="background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:24px;">
-                <div class="cal-header">
-                    <div class="cal-month" id="cal-month-label">Jadwal Konten</div>
-                    <div class="cal-nav" id="cal-nav-buttons" style="display:none;">
-                        <button class="btn btn-ghost btn-sm">← Prev</button>
-                        <button class="btn btn-ghost btn-sm">Next →</button>
-                    </div>
-                </div>
-                <div class="cal-grid" id="cal-grid"></div>
-            </div>
-        </div>
 
-        <!-- ANALYTICS -->
-        <div class="page" id="page-analytics">
-            <div class="page-header">
-                <div>
-                    <div class="page-title">Analitik Konten</div>
-                    <div class="page-sub">Lacak performa dan temukan pola konten yang berhasil.</div>
-                </div>
-                <button class="btn btn-primary" onclick="openModal('modal-analytic')">+ Input Data</button>
+            <div class="prompt-card">
+                <h3 class="youtube-title">🎬 Bonus: Ide Judul YouTube</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Judul estetik yang cocok dengan tema Lofi Anda.</p>
+                <div class="prompt-text" id="ytTitlePrompt"></div>
+                <button class="copy-btn" onclick="copyText('ytTitlePrompt')">Salin Judul</button>
             </div>
-            <div class="grid-4" style="margin-bottom:24px;">
-                <div class="stat-card">
-                    <div class="stat-label">Total Reach</div>
-                    <div class="stat-value" id="an-reach">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Avg Likes</div>
-                    <div class="stat-value" id="an-likes">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Best Eng. Rate</div>
-                    <div class="stat-value" id="an-best">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Konten Dianalisis</div>
-                    <div class="stat-value" id="an-total">0</div>
-                </div>
-            </div>
-            <div
-                style="background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); overflow-x:auto;">
-                <table class="analytics-table">
-                    <thead>
-                        <tr>
-                            <th>Judul Konten</th>
-                            <th>Format</th>
-                            <th>Likes</th>
-                            <th>Views</th>
-                            <th>Eng. Rate</th>
-                            <th>Tanggal</th>
-                        </tr>
-                    </thead>
-                    <tbody id="analytics-tbody"></tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- HOOKS -->
-        <div class="page" id="page-hooks">
-            <div class="page-header">
-                <div>
-                    <div class="page-title">Hook Optimizer</div>
-                    <div class="page-sub">Simpan dan buat hook yang memancing penonton.</div>
-                </div>
-            </div>
-            <div class="grid-2">
-                <div
-                    style="background:var(--panel); padding:20px; border-radius:var(--radius); border:1px solid var(--border);">
-                    <h3 style="margin-bottom:16px;">Tulis Hook Baru</h3>
-                    <textarea class="form-textarea" id="hook-input"
-                        placeholder="Ketik hook kontenmu di sini..."></textarea>
-                    <button class="btn btn-primary" style="margin-top:10px; width:100%; justify-content:center;"
-                        onclick="saveHookManual()">Simpan Hook Ini</button>
-                </div>
-                <div
-                    style="background:var(--panel); padding:20px; border-radius:var(--radius); border:1px solid var(--border);">
-                    <h3 style="margin-bottom:16px;">Hook Tersimpan</h3>
-                    <div id="saved-hooks-list" style="max-height:300px; overflow-y:auto;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- GROWTH -->
-        <div class="page" id="page-growth">
-            <div class="page-header">
-                <div>
-                    <div class="page-title">Growth Insights</div>
-                    <div class="page-sub">Rekomendasi berbasis AI dari data analitikmu.</div>
-                </div>
-            </div>
-            <div id="key-insights"></div>
-        </div>
-    </main>
-
-    <!-- ========================= MODALS ========================= -->
-
-    <!-- Modal Idea -->
-    <div class="modal-overlay" id="modal-idea">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Tambah Ide Konten</div>
-                <button class="modal-close" onclick="closeModal('modal-idea')">✕</button>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Judul / Hook Utama</label>
-                <input type="text" class="form-input" id="idea-title"
-                    placeholder="Contoh: 3 Cara Meningkatkan Followers">
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Format Konten</label>
-                    <select class="form-select" id="idea-type">
-                        <option value="Reels">Reels / TikTok</option>
-                        <option value="Carousel">Carousel</option>
-                        <option value="Feed">Single Feed</option>
-                        <option value="Stories">Stories</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Kategori</label>
-                    <input type="text" class="form-input" id="idea-category" placeholder="Edukasi, Hiburan, dll">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Deskripsi Lengkap / Poin-poin</label>
-                <textarea class="form-textarea" id="idea-desc" placeholder="Jelaskan idenya..."></textarea>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Skor Potensi (1-10)</label>
-                <input type="number" class="form-input" id="idea-score" min="1" max="10" value="7">
-            </div>
-            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;"
-                onclick="saveIdea()">Simpan Ide</button>
         </div>
     </div>
 
-    <!-- Modal Content Pipeline -->
-    <div class="modal-overlay" id="modal-content">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Konten Pipeline</div>
-                <button class="modal-close" onclick="closeModal('modal-content')">✕</button>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Judul Konten</label>
-                <input type="text" class="form-input" id="content-title">
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Format</label>
-                    <select class="form-select" id="content-type">
-                        <option value="Reels">Reels</option>
-                        <option value="Carousel">Carousel</option>
-                        <option value="Feed">Feed</option>
-                        <option value="Stories">Stories</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Status</label>
-                    <select class="form-select" id="content-status">
-                        <option value="ide">💡 Ide</option>
-                        <option value="draft">✏️ Draft / Script</option>
-                        <option value="produksi">🎬 Sedang Produksi</option>
-                        <option value="selesai">✅ Selesai</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Hook</label>
-                <textarea class="form-textarea" id="content-hook" style="min-height:50px;"></textarea>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Notes</label>
-                <textarea class="form-textarea" id="content-notes"></textarea>
-            </div>
-            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;"
-                onclick="saveContent()">Simpan Konten</button>
-        </div>
-    </div>
-
-    <!-- Modal Schedule (KALENDER) -->
-    <div class="modal-overlay" id="modal-schedule">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Jadwalkan Konten</div>
-                <button class="modal-close" onclick="closeModal('modal-schedule')">✕</button>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Judul Konten</label>
-                <input type="text" class="form-input" id="sched-title">
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Format</label>
-                    <select class="form-select" id="sched-type">
-                        <option value="Reels">Reels</option>
-                        <option value="Carousel">Carousel</option>
-                        <option value="Feed">Feed</option>
-                        <option value="Stories">Stories</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Tanggal Posting</label>
-                    <input type="date" class="form-input" id="sched-date">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Waktu Posting (Opsional)</label>
-                <input type="time" class="form-input" id="sched-time">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Catatan Tambahan</label>
-                <textarea class="form-textarea" id="sched-notes"></textarea>
-            </div>
-            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;"
-                onclick="saveSchedule()">Simpan Jadwal</button>
-        </div>
-    </div>
-
-    <!-- Modal Analytics -->
-    <div class="modal-overlay" id="modal-analytic">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Input Data Analitik</div>
-                <button class="modal-close" onclick="closeModal('modal-analytic')">✕</button>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Judul Konten</label>
-                <input type="text" class="form-input" id="an-title">
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Format</label>
-                    <select class="form-select" id="an-type">
-                        <option value="Reels">Reels</option>
-                        <option value="Carousel">Carousel</option>
-                        <option value="Feed">Feed</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Tanggal Posting</label>
-                    <input type="date" class="form-input" id="an-date">
-                </div>
-            </div>
-            <div class="form-row" style="margin-bottom:16px;">
-                <div><label class="form-label">Views</label><input type="number" class="form-input" id="an-views-in"
-                        value="0"></div>
-                <div><label class="form-label">Likes</label><input type="number" class="form-input" id="an-likes-in"
-                        value="0"></div>
-            </div>
-            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;"
-                onclick="saveAnalytic()">Simpan Analitik</button>
-        </div>
-    </div>
-
-    <!-- TOAST CONTAINER -->
-    <div class="toast-container" id="toast-container"></div>
+    <div class="notification" id="notif">Berhasil disalin!</div>
 
     <script>
-        // ==================== THEME MANAGEMENT ====================
-        function toggleTheme() {
-            const isDark = document.body.getAttribute('data-theme') === 'dark';
-            if (isDark) {
-                document.body.removeAttribute('data-theme');
-                document.getElementById('theme-icon').textContent = '🌙';
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.body.setAttribute('data-theme', 'dark');
-                document.getElementById('theme-icon').textContent = '☀️';
-                localStorage.setItem('theme', 'dark');
-            }
-        }
+        // --- GEMINI API SETUP ---
+        const apiKey = ""; // API Key disuntikkan secara otomatis oleh environment
+        const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.setAttribute('data-theme', 'dark');
-            document.getElementById('theme-icon').textContent = '☀️';
-        }
-
-        // ==================== ACCOUNT MANAGEMENT ====================
-        let currentAccount = localStorage.getItem('activeAccount') || 'akun_utama';
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const selectEl = document.getElementById('account-select');
-            if (selectEl) selectEl.value = currentAccount;
-        });
-
-        function switchAccount(accId) {
-            currentAccount = accId;
-            localStorage.setItem('activeAccount', accId);
-
-            const accountLabel = document.querySelector(`#account-select option[value="${accId}"]`).text;
-            const titleSpan = document.getElementById('dash-account-name');
-            if (titleSpan) titleSpan.textContent = accountLabel.split(': ')[1] || 'Utama';
-
-            toast('Beralih ke akun: ' + (accountLabel.split(': ')[1] || accId));
-
-            const activePage = document.querySelector('.page.active');
-            if (activePage) {
-                const activePageId = activePage.id.replace('page-', '');
-                navigate(activePageId);
-            }
-        }
-
-        // ==================== SUPABASE ====================
-        const SUPA_URL = 'https://tdoxttalxwunrweypybw.supabase.co';
-        const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkb3h0dGFseHd1bnJ3ZXlweWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTQ4NDIsImV4cCI6MjA5MzY3MDg0Mn0.X9-1HiW9uge5s2-Q85VF8hAgKp-u01xzf5JEGaoy0Rg';
-        const { createClient } = supabase;
-        const db = createClient(SUPA_URL, SUPA_KEY);
-
-        // ==================== UTILITIES ====================
-        function toast(msg, type = 'success') {
-            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
-            const el = document.createElement('div');
-            el.className = `toast ${type}`;
-            el.innerHTML = `<span class="toast-icon">${icons[type]}</span>${msg}`;
-            document.getElementById('toast-container').appendChild(el);
-            setTimeout(() => el.remove(), 3500);
-        }
-
-        function openModal(id) {
-            const el = document.getElementById(id);
-            if (el) el.classList.add('open');
-        }
-        function closeModal(id) {
-            const el = document.getElementById(id);
-            if (el) el.classList.remove('open');
-        }
-
-        document.querySelectorAll('.modal-overlay').forEach(m => {
-            m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-        });
-
-        function navigate(page) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-            const targetPage = document.getElementById('page-' + page);
-            if (targetPage) targetPage.classList.add('active');
-
-            document.querySelectorAll('.nav-item').forEach(n => {
-                if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + page + "'")) {
-                    n.classList.add('active');
+        // Fungsi fetch dengan Exponential Backoff untuk keandalan API
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            let delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error;
+                    await new Promise(res => setTimeout(res, delays[i]));
                 }
-            });
-
-            if (page === 'dashboard') loadDashboard();
-            if (page === 'ideas') loadIdeas();
-            if (page === 'pipeline') loadPipeline();
-            if (page === 'calendar') renderCalendar();
-            if (page === 'analytics') loadAnalytics();
-            if (page === 'hooks') loadHooks();
-            if (page === 'growth') loadGrowth();
+            }
         }
 
-        function formatNum(n) {
-            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-            return n.toString();
-        }
+        // --- FUNGSI AI (GEMINI) ---
+        async function generateWithAI() {
+            const btn = document.getElementById('aiBtn');
+            const outputSection = document.getElementById('outputSection');
+            const loading = document.getElementById('loadingOverlay');
 
-        // ==================== DASHBOARD ====================
-        async function loadDashboard() {
+            let uSubject = document.getElementById('subject').value.trim();
+            let uSetting = document.getElementById('setting').value.trim();
+            let uDetails = document.getElementById('details').value.trim();
+
+            let userConcept = [uSubject, uSetting, uDetails].filter(Boolean).join(". ");
+            if (!userConcept) {
+                userConcept = "A random, completely unique and relaxing lofi aesthetic scene.";
+            }
+
+            // Siapkan UI loading
+            btn.disabled = true;
+            outputSection.style.display = 'none';
+            loading.style.display = 'block';
+
+            const systemInstruction = "You are an expert prompt engineer for aesthetic lofi hip hop YouTube channels. Your job is to take a basic user concept and expand it into highly detailed, cohesive prompts for image, video, and music generation, along with an aesthetic YouTube title.";
+            
+            const promptText = `Based on this concept: "${userConcept}"
+            Expand it and generate the following in JSON format:
+            1. 'imagePrompt': A highly descriptive prompt for Midjourney v6.1 (include lighting, mood, lofi anime/studio ghibli aesthetic, 8k resolution, aspect ratio --ar 16:9).
+            2. 'videoPrompt': A prompt for an Image-to-Video AI. Focus strictly on subtle, relaxing looping motions (e.g., gentle breeze, slow blinking, dust motes). No sudden movements.
+            3. 'musicPrompt': A prompt for Suno/Udio (include lofi hip hop beat, instruments, BPM, chillhop vibe).
+            4. 'youtubeTitle': An aesthetic YouTube video title for this specific scene (include emojis and tags like [lofi / chill / study / relax]).`;
+
+            const payload = {
+                contents: [{ parts: [{ text: promptText }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            imagePrompt: { type: "STRING" },
+                            videoPrompt: { type: "STRING" },
+                            musicPrompt: { type: "STRING" },
+                            youtubeTitle: { type: "STRING" }
+                        },
+                        required: ["imagePrompt", "videoPrompt", "musicPrompt", "youtubeTitle"]
+                    }
+                }
+            };
+
             try {
-                const [ideas, pipeline, schedule, analytics] = await Promise.all([
-                    db.from('cf_ideas').select('id').eq('account_id', currentAccount),
-                    db.from('cf_pipeline').select('*').eq('account_id', currentAccount),
-                    db.from('cf_schedule').select('id').eq('account_id', currentAccount),
-                    db.from('cf_analytics').select('likes, views').eq('account_id', currentAccount)
-                ]);
+                const result = await fetchWithRetry(GEMINI_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-                if (ideas.error) throw ideas.error;
+                const rawText = result.candidates[0].content.parts[0].text;
+                const aiData = JSON.parse(rawText);
 
-                const safeIdeas = ideas.data || [];
-                const safePipeline = pipeline.data || [];
-                const safeAnalytics = analytics.data || [];
-                const safeSchedule = schedule.data || [];
+                // Render ke UI
+                document.getElementById('imagePrompt').innerText = aiData.imagePrompt;
+                document.getElementById('videoPrompt').innerText = aiData.videoPrompt;
+                document.getElementById('musicPrompt').innerText = aiData.musicPrompt;
+                document.getElementById('ytTitlePrompt').innerText = aiData.youtubeTitle;
 
-                const ideaCount = safeIdeas.length;
-                const pipelineCount = safePipeline.filter(p => p.status !== 'selesai').length;
-
-                let avgEngage = '0%';
-                if (safeAnalytics.length > 0) {
-                    const total = safeAnalytics.reduce((s, a) => s + (a.views > 0 ? (a.likes / a.views) * 100 : 0), 0);
-                    avgEngage = (total / safeAnalytics.length).toFixed(1) + '%';
-                }
-
-                document.getElementById('stat-ideas').textContent = ideaCount;
-                document.getElementById('stat-pipeline').textContent = pipelineCount;
-                document.getElementById('stat-posts').textContent = safeSchedule.length;
-                document.getElementById('stat-engage').textContent = avgEngage;
-                document.getElementById('badge-ideas').textContent = ideaCount;
-
-            } catch (e) {
-                toast('Error memuat Dashboard: ' + e.message, 'error');
+                outputSection.style.display = 'flex';
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                alert("Terjadi kesalahan saat memanggil AI. Silakan coba lagi. Pastikan koneksi internet stabil.");
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
             }
         }
 
-        // ==================== IDEAS ====================
-        async function loadIdeas() {
-            const { data, error } = await db.from('cf_ideas').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false });
-            if (error) { toast('Error memuat ide: ' + error.message, 'error'); return; }
+        // --- DATABASE RANDOMIZER MANUAL (Fallback/Alternatif) ---
+        const randomSubjects = ["A cute anime girl with messy hair", "A chill anime boy wearing a hoodie", "A sleepy cat wearing tiny headphones"];
+        const randomActions = ["studying intensely", "reading a thick book", "sipping hot coffee", "looking softly at the rain"];
+        const randomSettings = ["in a cozy messy bedroom", "at a quiet midnight cafe", "in a sunlit library"];
+        const randomTimes = ["during golden hour sunset", "at midnight", "on a rainy afternoon"];
+        const randomLightings = ["warm ambient lighting", "soft neon purple and cyan glows", "moonlight shining through the window"];
+        const randomStyles = ["studio ghibli aesthetic", "90s retro anime style", "makoto shinkai style"];
+        const randomMotions = ["slowly blinks their eyes", "hair is blowing very gently in a subtle breeze", "rain subtly falling outside the window"];
+        const musicVibes = ["chillhop", "jazzhop", "ambient lofi", "rainy day lofi"];
+        const musicInstruments = ["soft piano", "jazzy saxophone", "mellow acoustic guitar", "warm vinyl crackle"];
 
-            const safeData = data || [];
-            document.getElementById('badge-ideas').textContent = safeData.length;
-            const container = document.getElementById('ideas-container');
+        function getRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+        function getRandomBPM(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
-            if (safeData.length === 0) {
-                container.innerHTML = `<div class="empty" style="grid-column:1/-1;"><div class="empty-icon">💡</div><div class="empty-title">Belum ada ide. Tambahkan ide pertamamu!</div></div>`;
-                return;
+        function generatePromptsManual() {
+            let uSubject = document.getElementById('subject').value.trim();
+            let uSetting = document.getElementById('setting').value.trim();
+            let uDetails = document.getElementById('details').value.trim();
+
+            let finalSubject = uSubject || `${getRandom(randomSubjects)} ${getRandom(randomActions)}`;
+            let finalSetting = uSetting || `${getRandom(randomSettings)}, ${getRandom(randomTimes)}`;
+            let finalDetails = uDetails ? `, ${uDetails}` : "";
+            let dynamicStyle = getRandom(randomStyles);
+            let dynamicLighting = getRandom(randomLightings);
+
+            const imageTemplate = `${finalSubject}, ${finalSetting}${finalDetails}, ${dynamicStyle}, ${dynamicLighting}, lofi relaxing mood, cozy atmosphere, highly detailed, 8k resolution --ar 16:9 --v 6.1 --stylize 250`;
+            
+            let motion1 = getRandom(randomMotions);
+            let motion2 = getRandom(randomMotions);
+            while(motion1 === motion2) { motion2 = getRandom(randomMotions); }
+            const videoTemplate = `[Use chosen image as starting frame]. Extremely subtle and smooth animation. The character ${motion1}, and ${motion2}. Static camera, no sudden movements, seamless perfect loop, relaxing lofi aesthetic, high quality rendering.`;
+
+            let vibe = getRandom(musicVibes);
+            let inst1 = getRandom(musicInstruments);
+            let inst2 = getRandom(musicInstruments);
+            while(inst1 === inst2) { inst2 = getRandom(musicInstruments); }
+            let bpm = getRandomBPM(70, 85);
+            const musicTemplate = `Lofi hip hop beat, ${vibe}, relaxing study music, tempo ${bpm} BPM, featuring ${inst1} and ${inst2}, mellow atmosphere, instrumental only, no vocals, seamless loop structure, cozy vibes.`;
+
+            document.getElementById('imagePrompt').innerText = imageTemplate;
+            document.getElementById('videoPrompt').innerText = videoTemplate;
+            document.getElementById('musicPrompt').innerText = musicTemplate;
+            document.getElementById('ytTitlePrompt').innerText = `🎵 Relaxing Lofi Radio - Beats to relax/study to [${vibe}]`;
+
+            document.getElementById('outputSection').style.display = 'flex';
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // --- FUNGSI COPY ---
+        function copyText(elementId) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            
+            try {
+                document.execCommand('copy');
+                const notif = document.getElementById('notif');
+                notif.style.opacity = '1';
+                notif.style.transform = 'translateY(0)';
+                setTimeout(() => {
+                    notif.style.opacity = '0';
+                }, 2500);
+            } catch (err) {
+                console.error('Gagal menyalin teks: ', err);
             }
-
-            container.innerHTML = safeData.map(idea => `
-                <div class="idea-card">
-                    <div class="idea-card-hook">${idea.title}</div>
-                    <div style="font-size:12px; color:var(--text2); margin-bottom:10px;">${idea.description || '-'}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span class="tag tag-${idea.content_type?.toLowerCase() || 'reels'}">${idea.content_type}</span>
-                        <button class="btn btn-sm btn-danger" onclick="deleteIdea(${idea.id})">Hapus</button>
-                    </div>
-                </div>
-            `).join('');
+            document.body.removeChild(tempTextArea);
         }
-
-        async function saveIdea() {
-            const title = document.getElementById('idea-title').value.trim();
-            if (!title) { toast('Judul ide wajib diisi!', 'error'); return; }
-
-            const { error } = await db.from('cf_ideas').insert({
-                account_id: currentAccount,
-                title,
-                description: document.getElementById('idea-desc').value,
-                content_type: document.getElementById('idea-type').value,
-                category: document.getElementById('idea-category').value,
-                potential_score: parseInt(document.getElementById('idea-score').value) || null
-            });
-
-            if (error) { toast('Error menyimpan ide: ' + error.message, 'error'); return; }
-            toast('Ide berhasil disimpan!');
-            closeModal('modal-idea');
-            loadIdeas();
-        }
-
-        async function deleteIdea(id) {
-            if (!confirm('Yakin ingin menghapus ide ini?')) return;
-            const { error } = await db.from('cf_ideas').delete().eq('id', id);
-            if (error) { toast('Error hapus ide: ' + error.message, 'error'); return; }
-            toast('Ide dihapus');
-            loadIdeas();
-        }
-
-        // ==================== PIPELINE ====================
-        async function loadPipeline() {
-            const { data, error } = await db.from('cf_pipeline').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false });
-            if (error) { toast('Error memuat pipeline: ' + error.message, 'error'); return; }
-
-            const safeData = data || []; // Mencegah error jika data kosong bernilai null
-            const cols = ['ide', 'draft', 'produksi', 'selesai'];
-            const labels = { ide: 'Ide', draft: 'Draft', produksi: 'Produksi', selesai: 'Selesai' };
-
-            cols.forEach(col => {
-                const items = safeData.filter(p => p.status === col);
-                document.getElementById('count-' + col).textContent = items.length;
-
-                const colDiv = document.getElementById('col-' + col);
-
-                // MENGGANTI TEXT "KOSONG" MENJADI TOMBOL TAMBAH YANG BISA DIKLIK
-                if (items.length === 0) {
-                    colDiv.innerHTML = `
-                        <div style="text-align:center; padding:14px; font-size:12px; color:var(--text3); border: 2px dashed var(--border); border-radius: 8px; cursor: pointer; transition: 0.2s;" 
-                             onmouseover="this.style.background='var(--bg3)'; this.style.color='var(--text)';" 
-                             onmouseout="this.style.background='transparent'; this.style.color='var(--text3)';"
-                             onclick="openModal('modal-content'); document.getElementById('content-status').value='${col}';">
-                            + Tambah ${labels[col]}
-                        </div>`;
-                } else {
-                    colDiv.innerHTML = items.map(item => `
-                        <div class="kanban-card">
-                            <div class="kanban-card-title">${item.title}</div>
-                            <div class="kanban-card-meta">
-                                <span class="tag tag-${item.content_type?.toLowerCase() || 'reels'}">${item.content_type}</span>
-                                <button class="btn btn-sm btn-ghost" onclick="deletePipeline(${item.id})" style="margin-left:auto; padding:2px 6px;">🗑</button>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            });
-        }
-
-        async function saveContent() {
-            const title = document.getElementById('content-title').value.trim();
-            if (!title) { toast('Judul wajib!', 'error'); return; }
-
-            const { error } = await db.from('cf_pipeline').insert({
-                account_id: currentAccount,
-                title,
-                hook: document.getElementById('content-hook').value,
-                content_type: document.getElementById('content-type').value,
-                status: document.getElementById('content-status').value,
-                notes: document.getElementById('content-notes').value,
-            });
-
-            if (error) { toast('Error pipeline: ' + error.message, 'error'); return; }
-            toast('Konten ditambahkan!');
-            closeModal('modal-content');
-            loadPipeline();
-        }
-
-        async function deletePipeline(id) {
-            if (!confirm('Hapus konten ini dari pipeline?')) return;
-            await db.from('cf_pipeline').delete().eq('id', id);
-            loadPipeline();
-        }
-
-        // ==================== CALENDAR ====================
-        async function renderCalendar() {
-            const { data, error } = await db.from('cf_schedule').select('*').eq('account_id', currentAccount).order('post_date', { ascending: true });
-            if (error) { toast('Error kalender: ' + error.message, 'error'); return; }
-
-            const safeData = data || [];
-            const grid = document.getElementById('cal-grid');
-
-            if (safeData.length === 0) {
-                grid.innerHTML = `<div style="grid-column: 1/-1; padding: 40px; text-align:center; color:var(--text3);">Belum ada jadwal konten. Klik tombol <b>+ Jadwalkan</b> di kanan atas.</div>`;
-                return;
-            }
-
-            // Render ke list sederhana agar mudah dibaca
-            grid.innerHTML = safeData.map(s => `
-                <div style="grid-column: 1/-1; display:flex; justify-content:space-between; align-items:center; background:var(--bg2); border:1px solid var(--border); padding:12px 16px; border-radius:8px; margin-bottom:8px;">
-                    <div>
-                        <div style="font-size:12px; color:var(--accent); font-weight:700; margin-bottom:4px; font-family:var(--font-mono);">
-                            📅 ${s.post_date || 'Tanpa Tanggal'} ${s.post_time ? '⏱ ' + s.post_time : ''}
-                        </div>
-                        <div style="font-weight:600; font-size:14px; margin-bottom:2px;">${s.title}</div>
-                        <div style="font-size:11px; color:var(--text2);">${s.notes || ''}</div>
-                    </div>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <span class="tag tag-${s.content_type?.toLowerCase() || 'reels'}">${s.content_type}</span>
-                        <button class="btn btn-sm btn-danger" onclick="deleteSchedule(${s.id})">🗑</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function saveSchedule() {
-            const title = document.getElementById('sched-title').value.trim();
-            const date = document.getElementById('sched-date').value;
-            if (!title || !date) { toast('Judul dan tanggal posting wajib diisi!', 'error'); return; }
-
-            const { error } = await db.from('cf_schedule').insert({
-                account_id: currentAccount,
-                title,
-                content_type: document.getElementById('sched-type').value,
-                post_date: date,
-                post_time: document.getElementById('sched-time').value,
-                notes: document.getElementById('sched-notes').value,
-            });
-
-            if (error) { toast('Error menyimpan jadwal: ' + error.message, 'error'); return; }
-            toast('Jadwal berhasil ditambahkan! 📅');
-            closeModal('modal-schedule');
-            renderCalendar();
-            loadDashboard(); // Perbarui statistik dashboard
-        }
-
-        async function deleteSchedule(id) {
-            if (!confirm('Yakin ingin menghapus jadwal ini?')) return;
-            await db.from('cf_schedule').delete().eq('id', id);
-            toast('Jadwal dihapus.');
-            renderCalendar();
-            loadDashboard();
-        }
-
-        // ==================== ANALYTICS ====================
-        async function loadAnalytics() {
-            const { data, error } = await db.from('cf_analytics').select('*').eq('account_id', currentAccount).order('post_date', { ascending: false });
-            if (error) { toast('Gagal memuat analitik: ' + error.message, 'error'); return; }
-
-            const anData = data || [];
-
-            const totalReach = anData.reduce((s, a) => s + (a.views || 0), 0);
-            const avgLikes = anData.length ? Math.round(anData.reduce((s, a) => s + (a.likes || 0), 0) / anData.length) : 0;
-            let bestEngage = 0;
-            anData.forEach(a => {
-                const e = a.views > 0 ? (a.likes / a.views) * 100 : 0;
-                if (e > bestEngage) bestEngage = e;
-            });
-
-            document.getElementById('an-reach').textContent = formatNum(totalReach);
-            document.getElementById('an-likes').textContent = formatNum(avgLikes);
-            document.getElementById('an-best').textContent = bestEngage.toFixed(1) + '%';
-            document.getElementById('an-total').textContent = anData.length;
-
-            const tbody = document.getElementById('analytics-tbody');
-            if (anData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text3);">Belum ada data. Klik + Input Data.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = anData.map(a => {
-                const engage = a.views > 0 ? ((a.likes / a.views) * 100).toFixed(1) : '0.0';
-                return `
-                <tr>
-                    <td style="font-weight:600;">${a.title}</td>
-                    <td><span class="tag tag-${a.content_type?.toLowerCase()}">${a.content_type}</span></td>
-                    <td>${formatNum(a.likes)}</td>
-                    <td>${formatNum(a.views)}</td>
-                    <td style="color:${parseFloat(engage) > 3 ? 'var(--green)' : 'var(--text2)'}; font-weight:bold;">${engage}%</td>
-                    <td>${a.post_date || '-'}</td>
-                </tr>
-                `;
-            }).join('');
-        }
-
-        async function saveAnalytic() {
-            const title = document.getElementById('an-title').value.trim();
-            if (!title) { toast('Judul analitik wajib!', 'error'); return; }
-
-            const { error } = await db.from('cf_analytics').insert({
-                account_id: currentAccount,
-                title,
-                content_type: document.getElementById('an-type').value,
-                post_date: document.getElementById('an-date').value || null,
-                likes: parseInt(document.getElementById('an-likes-in').value) || 0,
-                views: parseInt(document.getElementById('an-views-in').value) || 0
-            });
-
-            if (error) { toast('Error simpan analitik: ' + error.message, 'error'); return; }
-            toast('Data Analitik ditambahkan! 📊');
-            closeModal('modal-analytic');
-            loadAnalytics();
-        }
-
-        // ==================== HOOKS ====================
-        async function loadHooks() {
-            const { data, error } = await db.from('cf_hooks').select('*').eq('account_id', currentAccount).order('created_at', { ascending: false });
-            if (error) { toast('Error load hooks: ' + error.message, 'error'); return; }
-
-            const safeData = data || [];
-            const list = document.getElementById('saved-hooks-list');
-
-            if (safeData.length === 0) {
-                list.innerHTML = `<div class="empty"><div class="empty-title">Belum ada hook tersimpan</div></div>`;
-                return;
-            }
-
-            list.innerHTML = safeData.map(h => `
-                <div style="padding:12px; border-bottom:1px solid var(--border); display:flex; gap:10px;">
-                    <div style="flex:1;">
-                        <div style="font-size:14px; font-weight:600;">${h.original_hook}</div>
-                    </div>
-                    <button class="btn btn-sm btn-danger" onclick="deleteHook(${h.id})">🗑</button>
-                </div>
-            `).join('');
-        }
-
-        async function saveHookManual() {
-            const hook = document.getElementById('hook-input').value.trim();
-            if (!hook) { toast('Tulis hook terlebih dahulu!', 'error'); return; }
-
-            const { error } = await db.from('cf_hooks').insert({
-                account_id: currentAccount,
-                original_hook: hook
-            });
-            if (error) { toast('Error simpan hook: ' + error.message, 'error'); return; }
-            toast('Hook disimpan!');
-            document.getElementById('hook-input').value = '';
-            loadHooks();
-        }
-
-        async function deleteHook(id) {
-            await db.from('cf_hooks').delete().eq('id', id);
-            loadHooks();
-        }
-
-        // ==================== GROWTH ====================
-        async function loadGrowth() {
-            const { data: analytics } = await db.from('cf_analytics').select('*').eq('account_id', currentAccount);
-            const insightsDiv = document.getElementById('key-insights');
-            const safeData = analytics || [];
-
-            if (safeData.length === 0) {
-                insightsDiv.innerHTML = `
-                <div class="insight-card">
-                    <div class="insight-icon">🎯</div>
-                    <div>
-                        <div class="insight-title">Belum Ada Data</div>
-                        <div class="insight-body">Tambahkan data analitik agar AI bisa menganalisis pertumbuhan akun Anda.</div>
-                    </div>
-                </div>`;
-                return;
-            }
-
-            insightsDiv.innerHTML = `
-                <div class="insight-card">
-                    <div class="insight-icon">📈</div>
-                    <div>
-                        <div class="insight-title">Sistem Membaca Pola Konten</div>
-                        <div class="insight-body">Sistem sedang memonitor ${safeData.length} post Anda. Tingkatkan terus frekuensi posting untuk algoritma AI yang lebih tajam.</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // ==================== INIT ====================
-        async function init() {
-            // Biarkan supabase menyiapkan koneksi, lalu load dashboard
-            setTimeout(() => { loadDashboard(); }, 500);
-        }
-
-        init();
     </script>
 </body>
-
-</html> sql : -- ==========================================
--- 1. PEMBERSIHAN TABEL LAMA (Jika Ada)
--- ==========================================
-ALTER TABLE IF EXISTS links DROP COLUMN IF EXISTS category_id;
-DROP TABLE IF EXISTS categories CASCADE;
-
--- ==========================================
--- 2. BUAT TABEL REFERENSI (Folders & Tags)
--- ==========================================
-CREATE TABLE IF NOT EXISTS folders (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  parent_id UUID REFERENCES folders(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS tags (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  color TEXT DEFAULT '#7c6aff',
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- ==========================================
--- 3. BUAT TABEL UTAMA (Links)
--- ==========================================
-CREATE TABLE IF NOT EXISTS links (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT NOT NULL,
-  url TEXT NOT NULL,
-  description TEXT,
-  og_image TEXT,
-  folder_id UUID REFERENCES folders(id) ON DELETE SET NULL,
-  read_status TEXT DEFAULT 'unread',
-  status_code INTEGER DEFAULT 200,
-  is_pinned BOOLEAN DEFAULT FALSE,
-  view_count INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- (Opsional) Memastikan kolom ditambahkan jika tabel links ternyata sudah terlanjur ada dari versi lawas
-ALTER TABLE links ADD COLUMN IF NOT EXISTS og_image TEXT;
-ALTER TABLE links ADD COLUMN IF NOT EXISTS folder_id UUID REFERENCES folders(id) ON DELETE SET NULL;
-ALTER TABLE links ADD COLUMN IF NOT EXISTS read_status TEXT DEFAULT 'unread';
-ALTER TABLE links ADD COLUMN IF NOT EXISTS status_code INTEGER DEFAULT 200;
-
--- ==========================================
--- 4. BUAT TABEL RELASI & FITUR TAMBAHAN
--- ==========================================
-CREATE TABLE IF NOT EXISTS link_tags (
-  link_id UUID REFERENCES links(id) ON DELETE CASCADE,
-  tag_id UUID REFERENCES tags(id) ON DELETE CASCADE,
-  PRIMARY KEY (link_id, tag_id)
-);
-
-CREATE TABLE IF NOT EXISTS visit_logs (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  link_id UUID REFERENCES links(id) ON DELETE CASCADE,
-  visited_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS highlights (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  link_id UUID REFERENCES links(id) ON DELETE CASCADE,
-  content TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- ==========================================
--- 5. TABEL APLIKASI LAIN (Streak, Journal, Urge)
--- ==========================================
-CREATE TABLE IF NOT EXISTS streak_data (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id TEXT NOT NULL DEFAULT 'default_user',
-  start_date DATE NOT NULL,
-  last_check_in DATE,
-  current_streak INTEGER DEFAULT 0,
-  longest_streak INTEGER DEFAULT 0,
-  total_relapses INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
-);
-
-CREATE TABLE IF NOT EXISTS journal_entries (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id TEXT NOT NULL DEFAULT 'default_user',
-  entry_date DATE NOT NULL DEFAULT CURRENT_DATE,
-  mood INTEGER CHECK (mood BETWEEN 1 AND 5),
-  triggers TEXT[],
-  notes TEXT,
-  is_relapse BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
-CREATE TABLE IF NOT EXISTS urge_log (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id TEXT NOT NULL DEFAULT 'default_user',
-  logged_at TIMESTAMPTZ DEFAULT now(),
-  technique_used TEXT,
-  outcome TEXT CHECK (outcome IN ('berhasil_tahan', 'relapse'))
-);
-
-INSERT INTO streak_data (user_id, start_date, last_check_in, current_streak, longest_streak, total_relapses)
-VALUES ('default_user', CURRENT_DATE, CURRENT_DATE, 0, 0, 0)
-ON CONFLICT DO NOTHING;
-
--- RLS & Policies (Menggunakan DROP IF EXISTS untuk mencegah Error 42710)
-ALTER TABLE streak_data ENABLE ROW LEVEL SECURITY;
-ALTER TABLE journal_entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE urge_log ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "allow_all_streak" ON streak_data;
-CREATE POLICY "allow_all_streak" ON streak_data FOR ALL USING (true) WITH CHECK (true);
-
-DROP POLICY IF EXISTS "allow_all_journal" ON journal_entries;
-CREATE POLICY "allow_all_journal" ON journal_entries FOR ALL USING (true) WITH CHECK (true);
-
-DROP POLICY IF EXISTS "allow_all_urge" ON urge_log;
-CREATE POLICY "allow_all_urge" ON urge_log FOR ALL USING (true) WITH CHECK (true);
-
--- ==========================================
--- 6. REFRESH CACHE SUPABASE (Mencegah Error Schema Cache)
--- ==========================================
-NOTIFY pgrst, 'reload schema';
-
--- Tambahkan kolom baru ke journal_entries untuk Advanced Journal
-ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS sleep_hours NUMERIC(4,2) DEFAULT 0;
-ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS temptation_severity INTEGER CHECK (temptation_severity BETWEEN 0 AND 10) DEFAULT 0;
-
--- ==========================================
--- 7. TABEL CREATOR OS (DENGAN IF NOT EXISTS)
--- ==========================================
-CREATE TABLE IF NOT EXISTS cf_ideas (id bigint generated always as identity primary key, title text, description text, content_type text, category text, potential_score int, reference text, created_at timestamptz default now());
-
-CREATE TABLE IF NOT EXISTS cf_pipeline (id bigint generated always as identity primary key, title text, hook text, content_type text, status text default 'ide', target_date date, notes text, created_at timestamptz default now());
-
-CREATE TABLE IF NOT EXISTS cf_schedule (id bigint generated always as identity primary key, title text, content_type text, post_date date, post_time text, notes text, created_at timestamptz default now());
-
-CREATE TABLE IF NOT EXISTS cf_analytics (id bigint generated always as identity primary key, title text, content_type text, post_date date, likes int default 0, views int default 0, comments int default 0, saves int default 0, shares int default 0, notes text, created_at timestamptz default now());
-
-CREATE TABLE IF NOT EXISTS cf_hooks (id bigint generated always as identity primary key, original_hook text, optimized_hook text, content_type text, niche text, clarity_score int, curiosity_score int, urgency_score int, overall_score int, created_at timestamptz default now());
-
--- Tambahkan kolom account_id ke semua tabel
-ALTER TABLE cf_ideas ADD COLUMN IF NOT EXISTS account_id TEXT DEFAULT 'akun_utama';
-ALTER TABLE cf_pipeline ADD COLUMN IF NOT EXISTS account_id TEXT DEFAULT 'akun_utama';
-ALTER TABLE cf_schedule ADD COLUMN IF NOT EXISTS account_id TEXT DEFAULT 'akun_utama';
-ALTER TABLE cf_analytics ADD COLUMN IF NOT EXISTS account_id TEXT DEFAULT 'akun_utama';
-ALTER TABLE cf_hooks ADD COLUMN IF NOT EXISTS account_id TEXT DEFAULT 'akun_utama';
-
--- Optional: Buat index untuk mempercepat pencarian per akun
-CREATE INDEX IF NOT EXISTS idx_ideas_account ON cf_ideas(account_id);
-CREATE INDEX IF NOT EXISTS idx_pipeline_account ON cf_pipeline(account_id);
-CREATE INDEX IF NOT EXISTS idx_schedule_account ON cf_schedule(account_id);
-CREATE INDEX IF NOT EXISTS idx_analytics_account ON cf_analytics(account_id);
-CREATE INDEX IF NOT EXISTS idx_hooks_account ON cf_hooks(account_id);
+</html>
