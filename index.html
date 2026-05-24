@@ -1108,6 +1108,7 @@
             </div>
 
             <!-- DASHBOARD VIEW -->
+            <!-- DASHBOARD VIEW -->
             <div class="dashboard-grid" id="dashboard-view" style="display:none">
                 <div class="stat-card">
                     <h3>📈 Pertumbuhan Koleksi</h3>
@@ -1120,6 +1121,36 @@
                 <div class="stat-card" style="grid-column: 1 / -1;">
                     <h3>🔥 Top Link Sering Dibuka</h3>
                     <ul id="top-links-list" style="list-style:none; margin-top:12px;"></ul>
+                </div>
+                <div class="stat-card" style="grid-column: 1 / -1;" id="streak-calendar-card">
+                    <div
+                        style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+                        <h3>📅 Kalender Streak</h3>
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                            <select id="hm-folder-select" onchange="renderDashboardHeatmap()"
+                                style="padding:7px 12px; background:var(--bg3); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:13px;">
+                                <option value="all">Semua Folder</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="hm-legend-row" class="hm-legend" style="margin-bottom:14px;">
+                        <div class="hm-leg-item">
+                            <div class="hm-leg-box" style="background:#20c997"></div> Check-in
+                        </div>
+                        <div class="hm-leg-item">
+                            <div class="hm-leg-box" style="background:#a9e34b"></div> Grace Day
+                        </div>
+                        <div class="hm-leg-item">
+                            <div class="hm-leg-box" style="background:#339af0"></div> Freeze
+                        </div>
+                        <div class="hm-leg-item">
+                            <div class="hm-leg-box" style="background:rgba(250,82,82,.6)"></div> Broken
+                        </div>
+                        <div class="hm-leg-item">
+                            <div class="hm-leg-box" style="background:var(--bg3)"></div> Kosong
+                        </div>
+                    </div>
+                    <div id="dashboard-heatmap-container"></div>
                 </div>
             </div>
         </main>
@@ -2072,6 +2103,7 @@
             const gColor = isDark ? '#1c1c38' : '#e0e6ed';
             Chart.defaults.color = tColor;
 
+            // Chart Tags
             const tagCounts = tags.map(t => link_tags.filter(lt => lt.tag_id === t.id).length);
             if (chartInstances.tags) chartInstances.tags.destroy();
             chartInstances.tags = new Chart(document.getElementById('chartTags'), {
@@ -2080,6 +2112,7 @@
                 options: { plugins: { legend: { position: 'right' } } }
             });
 
+            // Chart Growth
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'];
             const dataG = [0, 0, 0, 0, 0, links.length];
             if (chartInstances.growth) chartInstances.growth.destroy();
@@ -2089,12 +2122,100 @@
                 options: { scales: { x: { grid: { display: false } }, y: { grid: { color: gColor } } } }
             });
 
+            // Top Links
             const top = [...links].sort((a, b) => b.view_count - a.view_count).slice(0, 5);
             document.getElementById('top-links-list').innerHTML = top.map(l => `
         <li style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border);">
             <span style="font-weight:600; font-size:13px; overflow:hidden; white-space:nowrap; max-width:70%">${l.title}</span>
             <span style="color:var(--text3); font-size:12px;">👁 ${l.view_count} views</span>
         </li>`).join('');
+
+            // Populate folder select di kalender
+            const sel = document.getElementById('hm-folder-select');
+            sel.innerHTML = '<option value="all">Semua Folder</option>' +
+                folders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+
+            renderDashboardHeatmap();
+        }
+
+        function renderDashboardHeatmap() {
+            const container = document.getElementById('dashboard-heatmap-container');
+            const selVal = document.getElementById('hm-folder-select').value;
+
+            // Tentukan folder yang ditampilkan
+            const targetFolders = selVal === 'all' ? folders : folders.filter(f => f.id === selVal);
+            if (!targetFolders.length) { container.innerHTML = '<p style="color:var(--text3);font-size:13px;">Belum ada folder.</p>'; return; }
+
+            // Hitung rentang 6 bulan ke belakang, mulai dari Senin
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            const rangeStart = new Date(today);
+            rangeStart.setMonth(rangeStart.getMonth() - 6);
+            while (rangeStart.getDay() !== 1) rangeStart.setDate(rangeStart.getDate() - 1);
+
+            // Kumpulkan semua tanggal dalam rentang
+            const allDates = [];
+            const cur = new Date(rangeStart);
+            while (cur <= today) {
+                allDates.push(cur.toISOString().split('T')[0]);
+                cur.setDate(cur.getDate() + 1);
+            }
+            // Padding akhir sampai Minggu
+            const lastDay = new Date(allDates[allDates.length - 1]);
+            while (lastDay.getDay() !== 0) {
+                lastDay.setDate(lastDay.getDate() + 1);
+                allDates.push(lastDay.toISOString().split('T')[0]);
+            }
+
+            const dayLabels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+
+            let html = '';
+
+            for (const folder of targetFolders) {
+                // Build event map untuk folder ini
+                const eventMap = {};
+                streak_events
+                    .filter(e => e.folder_id === folder.id)
+                    .forEach(e => {
+                        // Jika satu hari ada beberapa event, prioritaskan: checkin > grace > freeze > broken
+                        const priority = { checkin: 4, grace: 3, freeze: 2, auto_broken: 1, manual_reset: 1 };
+                        if (!eventMap[e.event_date] || (priority[e.event_type] || 0) > (priority[eventMap[e.event_date]] || 0)) {
+                            eventMap[e.event_date] = e.event_type;
+                        }
+                    });
+
+                // Hitung summary folder
+                const totalCI = Object.values(eventMap).filter(v => v === 'checkin').length;
+                const totalGrace = Object.values(eventMap).filter(v => v === 'grace').length;
+                const streak = folder.streak_current || 0;
+                const diff = folder.difficulty || 'medium';
+                const diffLabel = { easy: '🟢 Easy', medium: '🟡 Medium', hard: '🔴 Hard' };
+
+                html += `
+        <div style="margin-bottom:28px;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+                <span style="font-weight:800; font-size:15px;">📁 ${folder.name}</span>
+                <span style="font-size:11px; color:var(--text3);">${diffLabel[diff]}</span>
+                <span style="font-size:12px; color:var(--accent); font-weight:700; margin-left:auto;">🔥 ${streak} hari</span>
+                <span style="font-size:11px; color:var(--text3);">✅ ${totalCI} check-in &nbsp;|&nbsp; 🆘 ${totalGrace} grace</span>
+            </div>
+            <div class="heatmap-grid">
+                ${dayLabels.map(d => `<div class="heatmap-day-label">${d}</div>`).join('')}
+                ${allDates.map(ds => {
+                    const etype = eventMap[ds];
+                    let cls = 'hm-cell';
+                    if (ds > todayStr) cls += ' future';
+                    else if (etype === 'checkin') cls += ' checkin';
+                    else if (etype === 'grace') cls += ' grace';
+                    else if (etype === 'freeze') cls += ' freeze';
+                    else if (etype === 'auto_broken' || etype === 'manual_reset') cls += ' broken';
+                    return `<div class="${cls}" title="${ds}${etype ? ' · ' + etype : ''}"></div>`;
+                }).join('')}
+            </div>
+        </div>`;
+            }
+
+            container.innerHTML = html;
         }
 
         // ==================== NOTES ====================
